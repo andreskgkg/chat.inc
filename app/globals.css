@@ -81,6 +81,14 @@ button {
   font-weight: 500;
 }
 
+.app-stats {
+  max-width: min(68vw, 560px);
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .conversation {
   width: min(calc(100% - (var(--page-gutter) * 2)), var(--chat-width));
   margin: 0 auto;

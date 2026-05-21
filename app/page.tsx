@@ -26,6 +26,11 @@ export default function Home() {
   const [historyError, setHistoryError] = useState("");
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const [someoneTyping, setSomeoneTyping] = useState(false);
+  const [stats, setStats] = useState<ChatStatsResponse>({
+    daysRunning: 0,
+    messagesSent: 0,
+    peopleConnected: 1,
+  });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
@@ -144,6 +149,34 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    async function updateStats() {
+      const nextStats = await updateConnectionStatus(true);
+
+      if (!isCancelled) {
+        setStats(nextStats);
+      }
+    }
+
+    void updateStats();
+    const intervalId = window.setInterval(updateStats, 15_000);
+
+    function handleBeforeUnload() {
+      void updateConnectionStatus(false);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      void updateConnectionStatus(false);
+    };
+  }, []);
+
+  useEffect(() => {
     const active = input.trim().length > 0 && isComposerFocused && !isSending;
 
     void updateTypingStatus(active);
@@ -207,7 +240,7 @@ export default function Home() {
         <a href="/" aria-label="chat.inc home">
           chat.inc
         </a>
-        <span>one-sentence AI</span>
+        <span className="app-stats">{formatStats(stats)}</span>
       </header>
 
       <section className="conversation" aria-label="chat.inc conversation">
@@ -297,6 +330,12 @@ type TypingStatusResponse = {
   someoneTyping?: boolean;
 };
 
+type ChatStatsResponse = {
+  daysRunning: number;
+  messagesSent: number;
+  peopleConnected: number;
+};
+
 function getMessageText(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
@@ -362,6 +401,46 @@ async function updateTypingStatus(active: boolean) {
     },
     method: "POST",
   }).catch(() => undefined);
+}
+
+async function updateConnectionStatus(active: boolean) {
+  const fallbackStats = {
+    daysRunning: 0,
+    messagesSent: 0,
+    peopleConnected: 1,
+  };
+
+  try {
+    const response = await fetch("/api/stats", {
+      body: JSON.stringify({
+        active,
+        clientId: getClientId(),
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      keepalive: true,
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      return fallbackStats;
+    }
+
+    return (await response.json()) as ChatStatsResponse;
+  } catch {
+    return fallbackStats;
+  }
+}
+
+function formatStats(stats: ChatStatsResponse) {
+  return `${formatNumber(stats.peopleConnected)} connected · ${formatNumber(
+    stats.messagesSent,
+  )} messages · ${formatNumber(stats.daysRunning)} days running`;
+}
+
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
 }
 
 function isEditableTarget(target: EventTarget | null) {
