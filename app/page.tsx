@@ -552,7 +552,6 @@ function isVotableMessage(message: UIMessage) {
   return (
     message.role === "assistant" &&
     message.id !== "welcome" &&
-    !message.id.startsWith("msg_") &&
     getMessageText(message).trim().length > 0
   );
 }
