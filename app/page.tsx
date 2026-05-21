@@ -100,8 +100,8 @@ export default function Home() {
       <section className="conversation" aria-label="chat.inc conversation">
         {visibleMessages.length === 0 ? (
           <div className="empty-state">
-            <h1>What can I help with?</h1>
-            <p>Ask anything and get the shortest useful answer.</p>
+            <p className="message-label">chat.inc</p>
+            <p>ask and get the shortest useful answer.</p>
           </div>
         ) : (
           <div className="message-list" aria-live="polite">
