@@ -11,7 +11,7 @@ const starterMessages: UIMessage[] = [
     parts: [
       {
         type: "text",
-        text: "Ask me anything and I will answer in one concise sentence.",
+        text: "ask me anything and i will answer in one concise sentence.",
       },
     ],
   },
@@ -89,9 +89,9 @@ export default function Home() {
                   key={message.id}
                 >
                   <p className="message-label">
-                    {message.role === "user" ? "You" : "chat.inc"}
+                    {message.role === "user" ? "you" : "chat.inc"}
                   </p>
-                  {text ? <p>{text}</p> : <TypingIndicator />}
+                  {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
                 </article>
               );
             })}
@@ -141,6 +141,10 @@ function getMessageText(message: UIMessage) {
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
+}
+
+function formatMessageText(message: UIMessage, text: string) {
+  return message.role === "assistant" ? text.toLocaleLowerCase() : text;
 }
 
 function TypingIndicator() {

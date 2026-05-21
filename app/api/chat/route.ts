@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
 const systemPrompt =
-  "You are chat.inc: concise, useful, and calm. Reply in exactly one short, complete sentence unless you must refuse for safety or need one sentence to clarify. Never end mid-sentence or mid-thought; if space is limited, make the answer shorter so it still ends cleanly.";
+  "You are chat.inc: concise, useful, and calm. Reply in exactly one short, complete sentence unless you must refuse for safety or need one sentence to clarify. Use lowercase text only. Never end mid-sentence or mid-thought; if space is limited, make the answer shorter so it still ends cleanly.";
 
 export const maxDuration = 30;
 
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     });
 
     return result.toUIMessageStreamResponse({
-      onError: () => "Sorry, the model had trouble replying; please try again.",
+      onError: () => "sorry, the model had trouble replying; please try again.",
     });
   } catch (error) {
     console.error("Chat request failed", error);
