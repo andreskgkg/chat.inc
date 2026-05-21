@@ -24,6 +24,8 @@ export default function Home() {
   });
   const [input, setInput] = useState("");
   const [historyError, setHistoryError] = useState("");
+  const [isComposerFocused, setIsComposerFocused] = useState(false);
+  const [someoneTyping, setSomeoneTyping] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
@@ -111,6 +113,62 @@ export default function Home() {
     };
   }, [isSending, setMessages]);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadTypingStatus() {
+      try {
+        const clientId = getClientId();
+        const response = await fetch(`/api/typing?clientId=${encodeURIComponent(clientId)}`, {
+          cache: "no-store",
+        });
+        const data = (await response.json()) as TypingStatusResponse;
+
+        if (!isCancelled) {
+          setSomeoneTyping(Boolean(data.someoneTyping));
+        }
+      } catch {
+        if (!isCancelled) {
+          setSomeoneTyping(false);
+        }
+      }
+    }
+
+    void loadTypingStatus();
+    const intervalId = window.setInterval(loadTypingStatus, 2000);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const active = input.trim().length > 0 && isComposerFocused && !isSending;
+
+    void updateTypingStatus(active);
+
+    if (!active) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void updateTypingStatus(true);
+    }, 2500);
+
+    return () => window.clearInterval(intervalId);
+  }, [input, isComposerFocused, isSending]);
+
+  useEffect(() => {
+    function handleBeforeUnload() {
+      void updateTypingStatus(false);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -122,6 +180,7 @@ export default function Home() {
 
     setInput("");
     clearError();
+    void updateTypingStatus(false);
     focusComposer();
 
     void sendMessage({ text: trimmedInput })
@@ -176,6 +235,13 @@ export default function Home() {
             </article>
           ) : null}
 
+          {someoneTyping ? (
+            <article className="message">
+              <p className="message-label">someone is typing</p>
+              <TypingIndicator />
+            </article>
+          ) : null}
+
           <div className="scroll-anchor" ref={bottomRef} />
         </div>
       </section>
@@ -189,6 +255,11 @@ export default function Home() {
             rows={1}
             value={input}
             onChange={(event) => setInput(event.target.value)}
+            onFocus={() => setIsComposerFocused(true)}
+            onBlur={() => {
+              setIsComposerFocused(false);
+              void updateTypingStatus(false);
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
@@ -220,6 +291,10 @@ export default function Home() {
 type SharedMessagesResponse = {
   messages?: SharedChatMessage[];
   error?: string;
+};
+
+type TypingStatusResponse = {
+  someoneTyping?: boolean;
 };
 
 function getMessageText(message: UIMessage) {
@@ -260,6 +335,33 @@ function haveSameMessages(firstMessages: UIMessage[], secondMessages: UIMessage[
       getMessageText(message) === getMessageText(otherMessage)
     );
   });
+}
+
+function getClientId() {
+  const storageKey = "chat.inc.clientId";
+  const existingClientId = window.localStorage.getItem(storageKey);
+
+  if (existingClientId) {
+    return existingClientId;
+  }
+
+  const clientId = crypto.randomUUID();
+  window.localStorage.setItem(storageKey, clientId);
+
+  return clientId;
+}
+
+async function updateTypingStatus(active: boolean) {
+  await fetch("/api/typing", {
+    body: JSON.stringify({
+      active,
+      clientId: getClientId(),
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  }).catch(() => undefined);
 }
 
 function isEditableTarget(target: EventTarget | null) {
