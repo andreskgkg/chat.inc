@@ -64,7 +64,7 @@ export default function Home() {
     });
   }, [status, visibleMessages]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedInput = input.trim();
@@ -75,14 +75,24 @@ export default function Home() {
 
     setInput("");
     clearError();
+    focusComposer();
 
-    try {
-      await sendMessage({ text: trimmedInput });
-    } catch {
-      // useChat exposes request failures through its error state.
-    } finally {
-      inputRef.current?.focus();
+    void sendMessage({ text: trimmedInput })
+      .catch(() => {
+        // useChat exposes request failures through its error state.
+      })
+      .finally(focusComposer);
+  }
+
+  function focusComposer() {
+    const composer = inputRef.current;
+
+    if (!composer) {
+      return;
     }
+
+    composer.focus({ preventScroll: true });
+    requestAnimationFrame(() => composer.focus({ preventScroll: true }));
   }
 
   return (
@@ -140,7 +150,15 @@ export default function Home() {
             }}
           />
 
-          <button type="submit" disabled={isSending || input.trim().length === 0}>
+          <button
+            type="submit"
+            disabled={isSending || input.trim().length === 0}
+            onMouseDown={(event) => event.preventDefault()}
+            onTouchStart={(event) => {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }}
+          >
             {isSending ? "Sending" : "Send"}
           </button>
         </form>
