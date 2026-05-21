@@ -40,6 +40,7 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasLoadedSharedHistoryRef = useRef(false);
   const shouldPlayInitialScrollRef = useRef(false);
+  const shouldStickToBottomRef = useRef(true);
   const isSending = status === "submitted" || status === "streaming";
   const isTypingActive = input.trim().length > 0 && isComposerFocused && !isSending;
 
@@ -71,6 +72,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    function updateStickToBottom() {
+      shouldStickToBottomRef.current = isNearPageBottom();
+    }
+
+    updateStickToBottom();
+    window.addEventListener("resize", updateStickToBottom);
+    window.addEventListener("scroll", updateStickToBottom, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", updateStickToBottom);
+      window.removeEventListener("scroll", updateStickToBottom);
+    };
+  }, []);
+
+  useEffect(() => {
     if (visibleMessages.length === 0) {
       return;
     }
@@ -80,11 +96,16 @@ export default function Home() {
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
+          shouldStickToBottomRef.current = true;
           scrollToBottom("smooth");
           shouldPlayInitialScrollRef.current = false;
         });
       });
 
+      return;
+    }
+
+    if (!shouldStickToBottomRef.current) {
       return;
     }
 
@@ -269,6 +290,7 @@ export default function Home() {
 
     setInput("");
     clearError();
+    shouldStickToBottomRef.current = true;
     void updateTypingStatus(false);
     focusComposer();
 
@@ -308,6 +330,13 @@ export default function Home() {
       behavior,
       block: "end",
     });
+  }
+
+  function isNearPageBottom() {
+    const pageHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    const distanceFromBottom = pageHeight - window.scrollY - window.innerHeight;
+
+    return distanceFromBottom < 220;
   }
 
   return (
