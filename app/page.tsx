@@ -32,6 +32,31 @@ export default function Home() {
   );
 
   useEffect(() => {
+    inputRef.current?.focus();
+
+    function handlePageKeyDown(event: KeyboardEvent) {
+      if (
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.key.length !== 1 ||
+        isEditableTarget(event.target)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      setInput((currentInput) => `${currentInput}${event.key}`);
+      inputRef.current?.focus();
+    }
+
+    window.addEventListener("keydown", handlePageKeyDown);
+
+    return () => window.removeEventListener("keydown", handlePageKeyDown);
+  }, []);
+
+  useEffect(() => {
     if (visibleMessages.length === 0) {
       return;
     }
@@ -145,6 +170,17 @@ function getMessageText(message: UIMessage) {
 
 function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
+}
+
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    target.isContentEditable ||
+    ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName)
+  );
 }
 
 function TypingIndicator() {
