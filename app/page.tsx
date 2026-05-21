@@ -349,15 +349,19 @@ export default function Home() {
 
           {status === "submitted" ? (
             <article className="message">
-              <p className="message-label">chat.inc</p>
-              <TypingIndicator />
+              <div className="message-content">
+                <p className="message-label">chat.inc</p>
+                <TypingIndicator />
+              </div>
             </article>
           ) : null}
 
           {someoneTyping ? (
             <article className="message">
-              <p className="message-label">someone is typing</p>
-              <TypingIndicator />
+              <div className="message-content">
+                <p className="message-label">someone is typing</p>
+                <TypingIndicator />
+              </div>
             </article>
           ) : null}
 
