@@ -41,6 +41,7 @@ export default function Home() {
   const hasLoadedSharedHistoryRef = useRef(false);
   const shouldPlayInitialScrollRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
+  const isTypingActive = input.trim().length > 0 && isComposerFocused && !isSending;
 
   const visibleMessages = useMemo(() => messages, [messages]);
 
@@ -234,20 +235,18 @@ export default function Home() {
   }, [visibleMessages]);
 
   useEffect(() => {
-    const active = input.trim().length > 0 && isComposerFocused && !isSending;
+    void updateTypingStatus(isTypingActive);
 
-    void updateTypingStatus(active);
-
-    if (!active) {
+    if (!isTypingActive) {
       return;
     }
 
     const intervalId = window.setInterval(() => {
       void updateTypingStatus(true);
-    }, 2500);
+    }, 8000);
 
     return () => window.clearInterval(intervalId);
-  }, [input, isComposerFocused, isSending]);
+  }, [isTypingActive]);
 
   useEffect(() => {
     function handleBeforeUnload() {

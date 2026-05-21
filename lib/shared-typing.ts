@@ -9,7 +9,7 @@ type PresenceRecord = {
 
 const defaultHistoryRepo = "andreskgkg/chat.inc";
 const defaultPresenceIssueNumber = "2";
-const typingWindowMs = 5000;
+const typingWindowMs = 15_000;
 
 type TypingState = {
   source?: string;
