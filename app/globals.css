@@ -197,13 +197,6 @@ button {
   width: 124px;
 }
 
-.vote-empty {
-  margin: 0;
-  color: var(--soft);
-  font-size: 13px;
-  letter-spacing: -0.02em;
-}
-
 .vote-bars {
   display: grid;
   gap: 8px;

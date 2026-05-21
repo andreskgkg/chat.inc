@@ -311,9 +311,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-        ) : (
-          <span className="vote-empty">no votes yet</span>
-        )}
+        ) : null}
       </aside>
 
       <section className="conversation" aria-label="chat.inc conversation">
