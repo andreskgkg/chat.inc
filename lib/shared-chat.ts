@@ -1,5 +1,3 @@
-import { get, list, put } from "@vercel/blob";
-
 export type SharedChatRole = "user" | "assistant";
 
 export type SharedChatMessage = {
@@ -9,44 +7,19 @@ export type SharedChatMessage = {
   createdAt: string;
 };
 
-const sharedMessagesPrefix = "shared-chat/messages/";
-const maxStoredMessages = 240;
+const defaultHistoryRepo = "andreskgkg/chat.inc";
+const historyCommentPageSize = 100;
 const maxMessageLength = 2000;
 
 export async function readSharedMessages() {
-  const blobs = await list({
-    limit: maxStoredMessages,
-    prefix: sharedMessagesPrefix,
-    token: getBlobToken(),
-  });
-  const messages = await Promise.all(
-    blobs.blobs.map(async (blob) => {
-      try {
-        const storedMessage = await get(blob.pathname, {
-          access: "public",
-          token: getBlobToken(),
-          useCache: false,
-        });
-
-        if (!storedMessage || storedMessage.statusCode !== 200) {
-          return null;
-        }
-
-        const text = await new Response(storedMessage.stream).text();
-
-        return sanitizeMessage(JSON.parse(text) as Partial<SharedChatMessage>);
-      } catch {
-        return null;
-      }
-    }),
-  );
+  const comments = await readHistoryComments();
+  const messages = comments.map(commentToMessage);
 
   return messages
     .filter(isSharedChatMessage)
     .sort((firstMessage, secondMessage) =>
       firstMessage.createdAt.localeCompare(secondMessage.createdAt),
-    )
-    .slice(-maxStoredMessages);
+    );
 }
 
 export async function appendSharedMessages(messagesToAppend: SharedChatMessage[]) {
@@ -57,15 +30,7 @@ export async function appendSharedMessages(messagesToAppend: SharedChatMessage[]
   }
 
   await Promise.all(
-    sanitizedMessages.map((message) =>
-      put(messagePath(message), JSON.stringify(message), {
-        access: "public",
-        allowOverwrite: true,
-        cacheControlMaxAge: 60,
-        contentType: "application/json",
-        token: getBlobToken(),
-      }),
-    ),
+    sanitizedMessages.map((message) => createHistoryComment(historyCommentBody(message))),
   );
 }
 
@@ -76,6 +41,103 @@ export function createSharedMessage(role: SharedChatRole, text: string, id?: str
     text,
     createdAt: new Date().toISOString(),
   };
+}
+
+type GitHubIssueComment = {
+  body: string | null;
+  created_at: string;
+};
+
+type HistoryCommentBody = {
+  source?: string;
+  version?: number;
+  message?: Partial<SharedChatMessage>;
+};
+
+async function readHistoryComments() {
+  const comments: GitHubIssueComment[] = [];
+
+  for (let page = 1; ; page += 1) {
+    const pageComments = await githubFetch<GitHubIssueComment[]>(
+      `/repos/${historyRepo()}/issues/${historyIssueNumber()}/comments?per_page=${historyCommentPageSize}&page=${page}`,
+    );
+
+    comments.push(...pageComments);
+
+    if (pageComments.length < historyCommentPageSize) {
+      return comments;
+    }
+  }
+}
+
+async function createHistoryComment(body: string) {
+  await githubFetch(`/repos/${historyRepo()}/issues/${historyIssueNumber()}/comments`, {
+    body: JSON.stringify({ body }),
+    method: "POST",
+  });
+}
+
+async function githubFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = process.env.GITHUB_TOKEN;
+
+  if (!token) {
+    throw new Error("Missing GITHUB_TOKEN environment variable.");
+  }
+
+  const response = await fetch(`https://api.github.com${path}`, {
+    ...init,
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...init?.headers,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub history request failed with ${response.status}.`);
+  }
+
+  return (await response.json()) as T;
+}
+
+function commentToMessage(comment: GitHubIssueComment) {
+  try {
+    const parsed = JSON.parse(comment.body || "") as HistoryCommentBody;
+    const message = sanitizeMessage(parsed.message);
+
+    return message
+      ? {
+          ...message,
+          createdAt: message.createdAt || comment.created_at,
+        }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function historyCommentBody(message: SharedChatMessage) {
+  return JSON.stringify({
+    source: "chat.inc",
+    version: 1,
+    message,
+  } satisfies HistoryCommentBody);
+}
+
+function historyRepo() {
+  return process.env.GITHUB_HISTORY_REPO || defaultHistoryRepo;
+}
+
+function historyIssueNumber() {
+  const issueNumber = process.env.GITHUB_HISTORY_ISSUE_NUMBER;
+
+  if (!issueNumber) {
+    throw new Error("Missing GITHUB_HISTORY_ISSUE_NUMBER environment variable.");
+  }
+
+  return issueNumber;
 }
 
 function sanitizeMessage(message: Partial<SharedChatMessage> | undefined | null) {
@@ -101,18 +163,6 @@ function sanitizeMessage(message: Partial<SharedChatMessage> | undefined | null)
         ? message.createdAt
         : new Date().toISOString(),
   } satisfies SharedChatMessage;
-}
-
-function messagePath(message: SharedChatMessage) {
-  return `${sharedMessagesPrefix}${safePathSegment(message.id)}.json`;
-}
-
-function safePathSegment(value: string) {
-  return value.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 120);
-}
-
-function getBlobToken() {
-  return process.env.BLOB_READ_WRITE_TOKEN;
 }
 
 function isSharedChatMessage(
