@@ -293,7 +293,6 @@ export default function Home() {
       </header>
 
       <aside className="vote-rail" aria-label="top upvoted responses">
-        <p>top replies</p>
         {votes.top.length > 0 ? (
           <div className="vote-bars">
             {votes.top.map((message) => (
@@ -309,7 +308,6 @@ export default function Home() {
                     inlineSize: `${Math.max(10, (message.votes / votes.top[0].votes) * 100)}%`,
                   }}
                 />
-                <strong>{message.votes}</strong>
               </button>
             ))}
           </div>
