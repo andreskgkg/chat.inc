@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 const starterMessages: UIMessage[] = [
   {
@@ -23,12 +23,24 @@ export default function Home() {
   });
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
 
   const visibleMessages = useMemo(
     () => messages.filter((message) => message.id !== "welcome"),
     [messages],
   );
+
+  useEffect(() => {
+    if (visibleMessages.length === 0) {
+      return;
+    }
+
+    bottomRef.current?.scrollIntoView({
+      behavior: status === "streaming" ? "auto" : "smooth",
+      block: "end",
+    });
+  }, [status, visibleMessages]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,6 +102,8 @@ export default function Home() {
                 <TypingIndicator />
               </article>
             ) : null}
+
+            <div className="scroll-anchor" ref={bottomRef} />
           </div>
         )}
       </section>

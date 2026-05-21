@@ -67,7 +67,7 @@ button {
 .conversation {
   width: min(100%, 760px);
   margin: 0 auto;
-  padding: clamp(30px, 7vw, 78px) 22px 126px;
+  padding: clamp(30px, 7vw, 78px) 22px 190px;
 }
 
 .empty-state {
@@ -103,6 +103,10 @@ button {
 .message-list {
   display: grid;
   gap: 24px;
+}
+
+.scroll-anchor {
+  height: 72px;
 }
 
 .message {
@@ -255,7 +259,7 @@ button {
   }
 
   .conversation {
-    padding: 34px 16px 124px;
+    padding: 34px 16px 176px;
   }
 
   .composer-dock {
