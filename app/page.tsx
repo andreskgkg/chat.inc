@@ -289,7 +289,6 @@ export default function Home() {
         <a href="/" aria-label="chat.inc home">
           chat.inc
         </a>
-        <span className="app-stats">{formatStats(stats)}</span>
       </header>
 
       <aside className="vote-rail" aria-label="top upvoted responses">
