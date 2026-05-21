@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       maxOutputTokens: 512,
       providerOptions: {
         openai: {
-          reasoningEffort: "minimal",
+          reasoningEffort: "none",
           textVerbosity: "low",
         },
       },
