@@ -133,6 +133,7 @@ button {
 }
 
 .message {
+  position: relative;
   width: 100%;
 }
 
@@ -153,21 +154,6 @@ button {
   min-width: 0;
 }
 
-.message-votable .message-content {
-  margin-left: 34px;
-}
-
-.message-votable .message-text-row {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 6px;
-  margin-left: -34px;
-}
-
-.message-votable .message-text {
-  grid-column: 2;
-}
-
 .message p {
   margin: 0;
   color: var(--text);
@@ -184,9 +170,11 @@ button {
 }
 
 .upvote-button {
-  align-self: center;
-  justify-self: end;
-  width: 24px;
+  position: absolute;
+  top: 31px;
+  left: -8px;
+  width: 18px;
+  transform: translateX(-100%);
   border: 0;
   background: transparent;
   color: var(--soft);
@@ -195,7 +183,7 @@ button {
   line-height: 1;
   opacity: 0;
   padding: 0;
-  text-align: right;
+  text-align: center;
   transition: opacity 140ms ease;
 }
 
@@ -387,10 +375,6 @@ button {
     gap: 26px;
   }
 
-  .message {
-    position: relative;
-  }
-
   .message p {
     font-size: 20px;
     letter-spacing: -0.045em;
@@ -401,25 +385,10 @@ button {
     font-size: 14px !important;
   }
 
-  .message-votable .message-content {
-    margin-left: 0;
-  }
-
-  .message-votable .message-text-row {
-    display: block;
-    margin-left: 0;
-  }
-
-  .message-votable .message-text {
-    grid-column: auto;
-  }
-
   .upvote-button {
-    position: absolute;
     top: 31px;
     left: -2px;
     width: 16px;
-    transform: translateX(-100%);
     font-size: 15px;
   }
 
