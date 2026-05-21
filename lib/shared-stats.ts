@@ -19,6 +19,7 @@ type PresenceState = {
   source?: string;
   version?: number;
   clients?: Record<string, PresenceRecord>;
+  typing?: Record<string, PresenceRecord>;
 };
 
 type GitHubIssue = {
@@ -73,12 +74,14 @@ function parsePresenceState(body: string | null): Required<PresenceState> {
       source: parsed.source || "chat.inc",
       version: 1,
       clients: parsed.clients || {},
+      typing: parsed.typing || {},
     };
   } catch {
     return {
       source: "chat.inc",
       version: 1,
       clients: {},
+      typing: {},
     };
   }
 }

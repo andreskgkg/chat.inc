@@ -1,14 +1,26 @@
-import { del, get, list, put } from "@vercel/blob";
-
 export type SharedTypingStatus = {
   clientId: string;
-  active: boolean;
   updatedAt: string;
 };
 
-const typingPrefix = "shared-chat/typing/";
+type PresenceRecord = {
+  updatedAt: string;
+};
+
+const defaultHistoryRepo = "andreskgkg/chat.inc";
+const defaultPresenceIssueNumber = "2";
 const typingWindowMs = 5000;
-const maxTypingStatuses = 500;
+
+type TypingState = {
+  source?: string;
+  version?: number;
+  clients?: Record<string, PresenceRecord>;
+  typing?: Record<string, SharedTypingStatus>;
+};
+
+type GitHubIssue = {
+  body: string | null;
+};
 
 export async function setSharedTypingStatus(clientId: string, active: boolean) {
   const sanitizedClientId = sanitizeClientId(clientId);
@@ -17,71 +29,97 @@ export async function setSharedTypingStatus(clientId: string, active: boolean) {
     return;
   }
 
-  if (!active) {
-    await del(typingPath(sanitizedClientId), {
-      token: getBlobToken(),
-    }).catch(() => undefined);
-    return;
+  const issue = await githubFetch<GitHubIssue>(presenceIssuePath());
+  const state = parseTypingState(issue.body);
+
+  pruneInactiveTyping(state);
+
+  if (active) {
+    state.typing[sanitizedClientId] = {
+      clientId: sanitizedClientId,
+      updatedAt: new Date().toISOString(),
+    };
+  } else {
+    delete state.typing[sanitizedClientId];
   }
 
-  await put(
-    typingPath(sanitizedClientId),
-    JSON.stringify({
-      clientId: sanitizedClientId,
-      active: true,
-      updatedAt: new Date().toISOString(),
-    } satisfies SharedTypingStatus),
-    {
-      access: "public",
-      allowOverwrite: true,
-      cacheControlMaxAge: 60,
-      contentType: "application/json",
-      token: getBlobToken(),
-    },
-  );
+  await writeTypingState(state);
 }
 
 export async function isSomeoneElseTyping(clientId: string) {
   const sanitizedClientId = sanitizeClientId(clientId);
-  const blobs = await list({
-    limit: maxTypingStatuses,
-    prefix: typingPrefix,
-    token: getBlobToken(),
-  });
-  const statuses = await Promise.all(
-    blobs.blobs.map(async (blob) => {
-      try {
-        const storedStatus = await get(blob.pathname, {
-          access: "public",
-          token: getBlobToken(),
-          useCache: false,
-        });
+  const issue = await githubFetch<GitHubIssue>(presenceIssuePath());
+  const state = parseTypingState(issue.body);
 
-        if (!storedStatus || storedStatus.statusCode !== 200) {
-          return null;
-        }
+  pruneInactiveTyping(state);
 
-        const text = await new Response(storedStatus.stream).text();
-
-        return sanitizeTypingStatus(JSON.parse(text) as Partial<SharedTypingStatus>);
-      } catch {
-        return null;
-      }
-    }),
-  );
-  const activeAfter = Date.now() - typingWindowMs;
-
-  return statuses.some((status) => {
-    if (!status || status.clientId === sanitizedClientId || !status.active) {
-      return false;
-    }
-
-    return new Date(status.updatedAt).getTime() >= activeAfter;
+  return Object.values(state.typing).some((status) => {
+    return status.clientId !== sanitizedClientId;
   });
 }
 
+function parseTypingState(body: string | null): Required<TypingState> {
+  try {
+    const parsed = JSON.parse(body || "{}") as TypingState;
+
+    return {
+      source: parsed.source || "chat.inc",
+      version: 1,
+      clients: sanitizePresenceMap(parsed.clients),
+      typing: sanitizeTypingMap(parsed.typing),
+    };
+  } catch {
+    return {
+      source: "chat.inc",
+      version: 1,
+      clients: {},
+      typing: {},
+    };
+  }
+}
+
+function sanitizePresenceMap(statuses: TypingState["clients"]) {
+  const sanitizedStatuses: Record<string, PresenceRecord> = {};
+
+  for (const [clientId, status] of Object.entries(statuses || {})) {
+    const sanitizedClientId = sanitizeClientId(clientId);
+
+    if (sanitizedClientId && typeof status.updatedAt === "string") {
+      sanitizedStatuses[sanitizedClientId] = {
+        updatedAt: status.updatedAt,
+      };
+    }
+  }
+
+  return sanitizedStatuses;
+}
+
+function sanitizeTypingMap(statuses: TypingState["typing"]) {
+  const sanitizedStatuses: Record<string, SharedTypingStatus> = {};
+
+  for (const status of Object.values(statuses || {})) {
+    const sanitizedStatus = sanitizeTypingStatus(status);
+
+    if (sanitizedStatus) {
+      sanitizedStatuses[sanitizedStatus.clientId] = sanitizedStatus;
+    }
+  }
+
+  return sanitizedStatuses;
+}
+
+function pruneInactiveTyping(state: Required<TypingState>) {
+  const activeAfter = Date.now() - typingWindowMs;
+
+  for (const [clientId, status] of Object.entries(state.typing)) {
+    if (new Date(status.updatedAt).getTime() < activeAfter) {
+      delete state.typing[clientId];
+    }
+  }
+}
+
 function sanitizeTypingStatus(status: Partial<SharedTypingStatus> | null | undefined) {
-  if (!status || status.active !== true || typeof status.updatedAt !== "string") {
+  if (!status || typeof status.updatedAt !== "string") {
     return null;
   }
 
@@ -93,21 +131,58 @@ function sanitizeTypingStatus(status: Partial<SharedTypingStatus> | null | undef
 
   return {
     clientId,
-    active: true,
     updatedAt: status.updatedAt,
   } satisfies SharedTypingStatus;
 }
 
-function typingPath(clientId: string) {
-  return `${typingPrefix}${clientId}.json`;
+async function writeTypingState(state: Required<TypingState>) {
+  await githubFetch(presenceIssuePath(), {
+    body: JSON.stringify({
+      body: JSON.stringify(state),
+    }),
+    method: "PATCH",
+  });
+}
+
+async function githubFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = process.env.GITHUB_TOKEN;
+
+  if (!token) {
+    throw new Error("Missing GITHUB_TOKEN environment variable.");
+  }
+
+  const response = await fetch(`https://api.github.com${path}`, {
+    ...init,
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...init?.headers,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub typing request failed with ${response.status}.`);
+  }
+
+  return (await response.json()) as T;
+}
+
+function presenceIssuePath() {
+  return `/repos/${historyRepo()}/issues/${presenceIssueNumber()}`;
+}
+
+function historyRepo() {
+  return process.env.GITHUB_HISTORY_REPO || defaultHistoryRepo;
+}
+
+function presenceIssueNumber() {
+  return process.env.GITHUB_PRESENCE_ISSUE_NUMBER || defaultPresenceIssueNumber;
 }
 
 function sanitizeClientId(clientId: unknown) {
   return typeof clientId === "string"
     ? clientId.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 120)
     : "";
-}
-
-function getBlobToken() {
-  return process.env.BLOB_READ_WRITE_TOKEN;
 }
