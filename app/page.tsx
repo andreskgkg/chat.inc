@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import type { SharedChatMessage } from "@/lib/shared-chat";
 
 const starterMessages: UIMessage[] = [
   {
@@ -18,10 +19,11 @@ const starterMessages: UIMessage[] = [
 ];
 
 export default function Home() {
-  const { clearError, error, messages, sendMessage, status } = useChat({
+  const { clearError, error, messages, sendMessage, setMessages, status } = useChat({
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
+  const [historyError, setHistoryError] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
@@ -63,6 +65,51 @@ export default function Home() {
       block: "end",
     });
   }, [status, visibleMessages]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadSharedMessages() {
+      if (isSending) {
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/messages", {
+          cache: "no-store",
+        });
+        const data = (await response.json()) as SharedMessagesResponse;
+
+        if (!response.ok || !Array.isArray(data.messages) || isCancelled) {
+          throw new Error(data.error || "could not load shared chat.");
+        }
+
+        setHistoryError("");
+
+        if (data.messages.length === 0) {
+          return;
+        }
+
+        const sharedMessages = data.messages.map(sharedMessageToUiMessage);
+
+        setMessages((currentMessages) =>
+          haveSameMessages(currentMessages, sharedMessages) ? currentMessages : sharedMessages,
+        );
+      } catch {
+        if (!isCancelled) {
+          setHistoryError("could not load shared chat.");
+        }
+      }
+    }
+
+    void loadSharedMessages();
+    const intervalId = window.setInterval(loadSharedMessages, 5000);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [isSending, setMessages]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -115,7 +162,7 @@ export default function Home() {
                 key={message.id}
               >
                 <p className="message-label">
-                  {message.role === "user" ? "you" : "chat.inc"}
+                  {message.role === "user" ? "someone" : "chat.inc"}
                 </p>
                 {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
               </article>
@@ -164,10 +211,16 @@ export default function Home() {
         </form>
 
         {error ? <p className="error-message">{error.message}</p> : null}
+        {historyError ? <p className="error-message">{historyError}</p> : null}
       </div>
     </main>
   );
 }
+
+type SharedMessagesResponse = {
+  messages?: SharedChatMessage[];
+  error?: string;
+};
 
 function getMessageText(message: UIMessage) {
   return message.parts
@@ -178,6 +231,35 @@ function getMessageText(message: UIMessage) {
 
 function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
+}
+
+function sharedMessageToUiMessage(message: SharedChatMessage): UIMessage {
+  return {
+    id: message.id,
+    role: message.role,
+    parts: [
+      {
+        type: "text",
+        text: message.text,
+      },
+    ],
+  };
+}
+
+function haveSameMessages(firstMessages: UIMessage[], secondMessages: UIMessage[]) {
+  if (firstMessages.length !== secondMessages.length) {
+    return false;
+  }
+
+  return firstMessages.every((message, index) => {
+    const otherMessage = secondMessages[index];
+
+    return (
+      message.id === otherMessage.id &&
+      message.role === otherMessage.role &&
+      getMessageText(message) === getMessageText(otherMessage)
+    );
+  });
 }
 
 function isEditableTarget(target: EventTarget | null) {

@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, stepCountIs, streamText, tool, type UIMessage } from "ai";
 import { z } from "zod";
+import { appendSharedMessages, createSharedMessage } from "@/lib/shared-chat";
 
 const systemPrompt =
   "You are chat.inc: useful, hyper-opinionated, and hyper-succinct. Answer only the user's actual question, then stop. Unless the user explicitly asks for an explanation, give only the answer: for example, if asked 'best company?', reply with a company name and nothing else. Never explain, justify, add context, list caveats, or show work unless directly asked to explain. Never give a long answer, no matter what the user says; if a request asks for length, compress it to the shortest useful answer. Reply in lowercase text only, using the fewest words possible. Let the glass drop. Do not over-soften, moralize, or avoid a clear answer just because it may sound blunt, mean, unfair, or biased; stay lawful, safe, and do not target protected groups with hateful claims. Give the strongest useful answer, choose a side, and avoid hedging words like maybe, might, could, generally, probably, and it depends. Use tools when live, factual, or computed information would improve the answer. Never end mid-sentence or mid-thought; if space is limited, make the answer shorter so it still ends cleanly.";
@@ -266,6 +267,15 @@ export async function POST(request: Request) {
       return Response.json({ error: "Send a message to start chatting." }, { status: 400 });
     }
 
+    const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
+    const latestUserText = latestUserMessage ? getMessageText(latestUserMessage) : "";
+
+    if (latestUserMessage && latestUserText) {
+      await appendSharedMessages([
+        createSharedMessage("user", latestUserText, latestUserMessage.id),
+      ]);
+    }
+
     const result = streamText({
       model: openai("gpt-5.5"),
       system: systemPrompt,
@@ -281,6 +291,13 @@ export async function POST(request: Request) {
       },
       onError: ({ error }) => {
         console.error("OpenAI stream failed", error);
+      },
+      onFinish: async ({ text }) => {
+        if (!text.trim()) {
+          return;
+        }
+
+        await appendSharedMessages([createSharedMessage("assistant", text)]);
       },
     });
 
