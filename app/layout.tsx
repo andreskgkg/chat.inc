@@ -6,6 +6,18 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "chat.inc",
   description: "A tiny chat interface for concise answers.",
+  icons: {
+    icon: [
+      {
+        url: "/favicon-light.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon-dark.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
