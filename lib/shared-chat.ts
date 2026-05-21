@@ -1,4 +1,4 @@
-import { get, put } from "@vercel/blob";
+import { get, list, put } from "@vercel/blob";
 
 export type SharedChatRole = "user" | "assistant";
 
@@ -9,25 +9,38 @@ export type SharedChatMessage = {
   createdAt: string;
 };
 
-const sharedChatPath = "shared-chat/messages.json";
+const sharedMessagesPrefix = "shared-chat/messages/";
 const maxStoredMessages = 240;
 const maxMessageLength = 2000;
-const maxAppendAttempts = 4;
-
-type SharedChatLog = {
-  version: 1;
-  messages: SharedChatMessage[];
-};
-
-type SharedChatSnapshot = {
-  etag?: string;
-  messages: SharedChatMessage[];
-};
 
 export async function readSharedMessages() {
-  const { messages } = await readSharedChatSnapshot();
+  const blobs = await list({
+    limit: maxStoredMessages,
+    prefix: sharedMessagesPrefix,
+  });
+  const messages = await Promise.all(
+    blobs.blobs.map(async (blob) => {
+      const storedMessage = await get(blob.pathname, {
+        access: "private",
+        useCache: false,
+      });
 
-  return messages;
+      if (!storedMessage || storedMessage.statusCode !== 200) {
+        return null;
+      }
+
+      const text = await new Response(storedMessage.stream).text();
+
+      return sanitizeMessage(JSON.parse(text) as Partial<SharedChatMessage>);
+    }),
+  );
+
+  return messages
+    .filter(isSharedChatMessage)
+    .sort((firstMessage, secondMessage) =>
+      firstMessage.createdAt.localeCompare(secondMessage.createdAt),
+    )
+    .slice(-maxStoredMessages);
 }
 
 export async function appendSharedMessages(messagesToAppend: SharedChatMessage[]) {
@@ -37,30 +50,16 @@ export async function appendSharedMessages(messagesToAppend: SharedChatMessage[]
     return;
   }
 
-  for (let attempt = 1; attempt <= maxAppendAttempts; attempt += 1) {
-    const snapshot = await readSharedChatSnapshot();
-    const messages = mergeMessages(snapshot.messages, sanitizedMessages);
-
-    try {
-      await put(
-        sharedChatPath,
-        JSON.stringify({ version: 1, messages } satisfies SharedChatLog),
-        {
-          access: "private",
-          allowOverwrite: Boolean(snapshot.etag),
-          cacheControlMaxAge: 60,
-          contentType: "application/json",
-          ifMatch: snapshot.etag,
-        },
-      );
-
-      return;
-    } catch (error) {
-      if (attempt === maxAppendAttempts) {
-        throw error;
-      }
-    }
-  }
+  await Promise.all(
+    sanitizedMessages.map((message) =>
+      put(messagePath(message), JSON.stringify(message), {
+        access: "private",
+        allowOverwrite: true,
+        cacheControlMaxAge: 60,
+        contentType: "application/json",
+      }),
+    ),
+  );
 }
 
 export function createSharedMessage(role: SharedChatRole, text: string, id?: string): SharedChatMessage {
@@ -70,41 +69,6 @@ export function createSharedMessage(role: SharedChatRole, text: string, id?: str
     text,
     createdAt: new Date().toISOString(),
   };
-}
-
-async function readSharedChatSnapshot(): Promise<SharedChatSnapshot> {
-  const blob = await get(sharedChatPath, {
-    access: "private",
-    useCache: false,
-  });
-
-  if (!blob || blob.statusCode !== 200) {
-    return { messages: [] };
-  }
-
-  const text = await new Response(blob.stream).text();
-  const parsed = JSON.parse(text) as Partial<SharedChatLog>;
-
-  return {
-    etag: blob.blob.etag,
-    messages: Array.isArray(parsed.messages)
-      ? parsed.messages.map(sanitizeMessage).filter(isSharedChatMessage)
-      : [],
-  };
-}
-
-function mergeMessages(currentMessages: SharedChatMessage[], nextMessages: SharedChatMessage[]) {
-  const messagesById = new Map<string, SharedChatMessage>();
-
-  for (const message of [...currentMessages, ...nextMessages]) {
-    messagesById.set(message.id, message);
-  }
-
-  return [...messagesById.values()]
-    .sort((firstMessage, secondMessage) =>
-      firstMessage.createdAt.localeCompare(secondMessage.createdAt),
-    )
-    .slice(-maxStoredMessages);
 }
 
 function sanitizeMessage(message: Partial<SharedChatMessage> | undefined | null) {
@@ -130,6 +94,14 @@ function sanitizeMessage(message: Partial<SharedChatMessage> | undefined | null)
         ? message.createdAt
         : new Date().toISOString(),
   } satisfies SharedChatMessage;
+}
+
+function messagePath(message: SharedChatMessage) {
+  return `${sharedMessagesPrefix}${safePathSegment(message.id)}.json`;
+}
+
+function safePathSegment(value: string) {
+  return value.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 120);
 }
 
 function isSharedChatMessage(
