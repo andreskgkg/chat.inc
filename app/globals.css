@@ -179,7 +179,6 @@ button {
 
 .message:hover .upvote-button,
 .message:focus-within .upvote-button,
-.upvote-button-active,
 .upvote-button:hover {
   opacity: 1;
 }
