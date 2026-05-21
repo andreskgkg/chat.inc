@@ -11,7 +11,7 @@ const starterMessages: UIMessage[] = [
     parts: [
       {
         type: "text",
-        text: "ask me anything and i will answer in one concise sentence.",
+        text: "ask and get the shortest useful answer.",
       },
     ],
   },
@@ -26,10 +26,7 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
 
-  const visibleMessages = useMemo(
-    () => messages.filter((message) => message.id !== "welcome"),
-    [messages],
-  );
+  const visibleMessages = useMemo(() => messages, [messages]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -98,39 +95,32 @@ export default function Home() {
       </header>
 
       <section className="conversation" aria-label="chat.inc conversation">
-        {visibleMessages.length === 0 ? (
-          <div className="empty-state">
-            <p className="message-label">chat.inc</p>
-            <p>ask and get the shortest useful answer.</p>
-          </div>
-        ) : (
-          <div className="message-list" aria-live="polite">
-            {visibleMessages.map((message) => {
-              const text = getMessageText(message);
+        <div className="message-list" aria-live="polite">
+          {visibleMessages.map((message) => {
+            const text = getMessageText(message);
 
-              return (
-                <article
-                  className={`message ${message.role === "user" ? "message-user" : ""}`}
-                  key={message.id}
-                >
-                  <p className="message-label">
-                    {message.role === "user" ? "you" : "chat.inc"}
-                  </p>
-                  {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
-                </article>
-              );
-            })}
-
-            {status === "submitted" ? (
-              <article className="message">
-                <p className="message-label">chat.inc</p>
-                <TypingIndicator />
+            return (
+              <article
+                className={`message ${message.role === "user" ? "message-user" : ""}`}
+                key={message.id}
+              >
+                <p className="message-label">
+                  {message.role === "user" ? "you" : "chat.inc"}
+                </p>
+                {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
               </article>
-            ) : null}
+            );
+          })}
 
-            <div className="scroll-anchor" ref={bottomRef} />
-          </div>
-        )}
+          {status === "submitted" ? (
+            <article className="message">
+              <p className="message-label">chat.inc</p>
+              <TypingIndicator />
+            </article>
+          ) : null}
+
+          <div className="scroll-anchor" ref={bottomRef} />
+        </div>
       </section>
 
       <div className="composer-dock">
