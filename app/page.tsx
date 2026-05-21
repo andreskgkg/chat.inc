@@ -312,8 +312,14 @@ export default function Home() {
     requestAnimationFrame(() => composer.focus({ preventScroll: true }));
   }
 
-  async function handleVote(messageId: string) {
-    const nextVotes = await toggleVote(messageId);
+  async function handleVote(message: UIMessage) {
+    const messageId = message.id;
+
+    setVotes((currentVotes) =>
+      optimisticToggleVote(currentVotes, messageId, getMessageText(message)),
+    );
+
+    const nextVotes = await toggleVote(message.id);
 
     setVotes(nextVotes);
   }
@@ -392,7 +398,7 @@ export default function Home() {
                       <button
                         aria-pressed={hasVoted}
                         className={`upvote-button ${hasVoted ? "upvote-button-active" : ""}`}
-                        onClick={() => void handleVote(message.id)}
+                        onClick={() => void handleVote(message)}
                         type="button"
                       >
                         ↑{voteCount > 0 ? ` ${voteCount}` : ""}
@@ -497,6 +503,8 @@ type VotesResponse = {
   userVotes: string[];
   votes: Record<string, number>;
 };
+
+const maxTopVotedMessages = 8;
 
 function getMessageText(message: UIMessage) {
   return message.parts
@@ -631,8 +639,6 @@ async function fetchVotes() {
 }
 
 async function toggleVote(messageId: string) {
-  const fallbackVotes = await fetchVotes();
-
   try {
     const response = await fetch("/api/votes", {
       body: JSON.stringify({
@@ -646,13 +652,55 @@ async function toggleVote(messageId: string) {
     });
 
     if (!response.ok) {
-      return fallbackVotes;
+      return fetchVotes();
     }
 
     return (await response.json()) as VotesResponse;
   } catch {
-    return fallbackVotes;
+    return fetchVotes();
   }
+}
+
+function optimisticToggleVote(
+  currentVotes: VotesResponse,
+  messageId: string,
+  messageText: string,
+): VotesResponse {
+  const hasVoted = currentVotes.userVotes.includes(messageId);
+  const nextVoteCount = Math.max(0, (currentVotes.votes[messageId] || 0) + (hasVoted ? -1 : 1));
+  const nextVotes = {
+    ...currentVotes.votes,
+    [messageId]: nextVoteCount,
+  };
+
+  if (nextVoteCount === 0) {
+    delete nextVotes[messageId];
+  }
+
+  const nextUserVotes = hasVoted
+    ? currentVotes.userVotes.filter((votedMessageId) => votedMessageId !== messageId)
+    : [...currentVotes.userVotes, messageId];
+  const topByMessageId = new Map(
+    currentVotes.top.map((message) => [message.messageId, message] as const),
+  );
+
+  if (nextVoteCount > 0) {
+    topByMessageId.set(messageId, {
+      messageId,
+      text: messageText,
+      votes: nextVoteCount,
+    });
+  } else {
+    topByMessageId.delete(messageId);
+  }
+
+  return {
+    top: Array.from(topByMessageId.values())
+      .sort((firstMessage, secondMessage) => secondMessage.votes - firstMessage.votes)
+      .slice(0, maxTopVotedMessages),
+    userVotes: nextUserVotes,
+    votes: nextVotes,
+  };
 }
 
 function formatStats(stats: ChatStatsResponse) {
