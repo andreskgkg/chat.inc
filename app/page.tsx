@@ -385,7 +385,9 @@ export default function Home() {
 
             return (
               <article
-                className={`message ${message.role === "user" ? "message-user" : ""}`}
+                className={`message ${message.role === "user" ? "message-user" : ""} ${
+                  canVote ? "message-votable" : ""
+                }`}
                 id={messageElementId(message.id)}
                 key={message.id}
               >

@@ -45,6 +45,8 @@ textarea {
 
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .app-shell {
@@ -141,20 +143,29 @@ button {
 .message-content {
   display: grid;
   gap: 6px;
-  margin-left: 34px;
 }
 
 .message-text-row {
-  display: grid;
   align-items: center;
+}
+
+.message-text {
+  min-width: 0;
+}
+
+.message-votable .message-content {
+  margin-left: 34px;
+}
+
+.message-votable .message-text-row {
+  display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
   gap: 6px;
   margin-left: -34px;
 }
 
-.message-text {
+.message-votable .message-text {
   grid-column: 2;
-  min-width: 0;
 }
 
 .message p {
@@ -163,6 +174,7 @@ button {
   font-size: clamp(17px, 2vw, 20px);
   letter-spacing: -0.035em;
   line-height: 1.42;
+  overflow-wrap: anywhere;
 }
 
 .message-label {
@@ -351,14 +363,15 @@ button {
 
 @media (max-width: 640px) {
   :root {
-    --page-gutter: 12px;
-    --text-inset: 12px;
-    --header-height: calc(60px + var(--safe-top));
-    --composer-clearance: calc(168px + var(--safe-bottom));
+    --page-gutter: 18px;
+    --text-inset: 0px;
+    --header-height: calc(56px + var(--safe-top));
+    --composer-clearance: calc(134px + var(--safe-bottom));
   }
 
   .app-header {
-    padding: calc(20px + var(--safe-top)) 16px 16px;
+    justify-content: center;
+    padding: calc(16px + var(--safe-top)) 16px 14px;
   }
 
   .app-header a,
@@ -367,25 +380,67 @@ button {
   }
 
   .conversation {
-    padding: calc(var(--header-height) + 24px) 0 var(--composer-clearance);
+    padding: calc(var(--header-height) + 18px) 0 var(--composer-clearance);
+  }
+
+  .message-list {
+    gap: 26px;
+  }
+
+  .message p {
+    font-size: 20px;
+    letter-spacing: -0.045em;
+    line-height: 1.32;
+  }
+
+  .message-label {
+    font-size: 14px !important;
+  }
+
+  .message-votable .message-content {
+    margin-left: 28px;
+  }
+
+  .message-votable .message-text-row {
+    grid-template-columns: 22px minmax(0, 1fr);
+    margin-left: -28px;
+  }
+
+  .upvote-button {
+    width: 22px;
+    font-size: 15px;
   }
 
   .composer-dock {
-    padding: 10px var(--page-gutter) calc(14px + var(--safe-bottom));
+    padding: 12px var(--page-gutter) calc(12px + var(--safe-bottom));
   }
 
   .composer {
-    border-radius: 999px;
-    padding: 8px 8px 8px 14px;
+    gap: 8px;
+    border-radius: 26px;
+    padding: 8px 8px 8px 16px;
   }
 
   .composer textarea {
     font-size: 16px;
+    line-height: 24px;
+    min-height: 34px;
   }
 
   .composer button {
-    min-width: 54px;
-    height: 34px;
+    min-width: 62px;
+    height: 40px;
+    font-size: 15px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .upvote-button {
+    opacity: 0.45;
+  }
+
+  .upvote-button-active {
+    opacity: 1;
   }
 }
 
