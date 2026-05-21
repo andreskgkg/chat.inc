@@ -332,10 +332,6 @@ export default function Home() {
                 id={messageElementId(message.id)}
                 key={message.id}
               >
-                <p className="message-label">
-                  {message.role === "user" ? "someone" : "chat.inc"}
-                </p>
-                {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
                 {canVote ? (
                   <button
                     aria-pressed={hasVoted}
@@ -346,6 +342,12 @@ export default function Home() {
                     ↑ {voteCount}
                   </button>
                 ) : null}
+                <div className="message-content">
+                  <p className="message-label">
+                    {message.role === "user" ? "someone" : "chat.inc"}
+                  </p>
+                  {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
+                </div>
               </article>
             );
           })}
