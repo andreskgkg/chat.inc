@@ -20,45 +20,32 @@ type VoteRecord = {
   voters?: string[];
 };
 
-type VoteState = {
-  source?: string;
-  version?: number;
-  votes?: Record<string, VoteRecord>;
-};
-
 type NormalizedVoteState = {
   source: string;
   version: number;
   votes: Record<string, Required<VoteRecord>>;
 };
 
-type GitHubIssue = {
+type GitHubIssueComment = {
   body: string | null;
+  created_at: string;
+};
+
+type VoteCommentBody = {
+  source?: string;
+  version?: number;
+  vote?: {
+    active?: boolean;
+    clientId?: string;
+    createdAt?: string;
+    messageId?: string;
+  };
 };
 
 export async function readVotes(clientId?: string): Promise<VotePayload> {
   const [state, messages] = await Promise.all([readVoteState(), readSharedMessages()]);
-  const votes = voteCounts(state);
-  const userVotes = clientId
-    ? Object.entries(state.votes)
-        .filter(([, record]) => record.voters.includes(sanitizeClientId(clientId)))
-        .map(([messageId]) => messageId)
-    : [];
-  const top = messages
-    .filter((message) => message.role === "assistant" && votes[message.id] > 0)
-    .map((message) => ({
-      messageId: message.id,
-      text: message.text,
-      votes: votes[message.id],
-    }))
-    .sort((firstMessage, secondMessage) => secondMessage.votes - firstMessage.votes)
-    .slice(0, maxTopMessages);
 
-  return {
-    top,
-    userVotes,
-    votes,
-  };
+  return votePayloadFromState(state, messages, sanitizeClientId(clientId));
 }
 
 export async function toggleVote(messageId: string, clientId: string) {
@@ -69,14 +56,15 @@ export async function toggleVote(messageId: string, clientId: string) {
     return readVotes(clientId);
   }
 
-  const state = await readVoteState();
+  const [state, messages] = await Promise.all([readVoteState(), readSharedMessages()]);
   const record = state.votes[sanitizedMessageId] || { voters: [] };
   const voterSet = new Set(record.voters);
+  const active = !voterSet.has(sanitizedClientId);
 
-  if (voterSet.has(sanitizedClientId)) {
-    voterSet.delete(sanitizedClientId);
-  } else {
+  if (active) {
     voterSet.add(sanitizedClientId);
+  } else {
+    voterSet.delete(sanitizedClientId);
   }
 
   if (voterSet.size === 0) {
@@ -87,23 +75,43 @@ export async function toggleVote(messageId: string, clientId: string) {
     };
   }
 
-  await writeVoteState(state);
+  await createVoteComment(
+    voteCommentBody({
+      active,
+      clientId: sanitizedClientId,
+      messageId: sanitizedMessageId,
+    }),
+  );
 
-  return readVotes(clientId);
+  return votePayloadFromState(state, messages, sanitizedClientId);
 }
 
 async function readVoteState(): Promise<NormalizedVoteState> {
-  const issue = await githubFetch<GitHubIssue>(votesIssuePath());
+  const comments = await readVoteComments();
 
-  return parseVoteState(issue.body);
+  return stateFromVoteComments(comments);
 }
 
-async function writeVoteState(state: NormalizedVoteState) {
-  await githubFetch(votesIssuePath(), {
-    body: JSON.stringify({
-      body: JSON.stringify(state),
-    }),
-    method: "PATCH",
+async function readVoteComments() {
+  const comments: GitHubIssueComment[] = [];
+
+  for (let page = 1; ; page += 1) {
+    const pageComments = await githubFetch<GitHubIssueComment[]>(
+      `${votesIssuePath()}/comments?per_page=100&page=${page}`,
+    );
+
+    comments.push(...pageComments);
+
+    if (pageComments.length < 100) {
+      return comments;
+    }
+  }
+}
+
+async function createVoteComment(body: string) {
+  await githubFetch(`${votesIssuePath()}/comments`, {
+    body: JSON.stringify({ body }),
+    method: "POST",
   });
 }
 
@@ -132,40 +140,60 @@ async function githubFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-function parseVoteState(body: string | null): NormalizedVoteState {
-  try {
-    const parsed = JSON.parse(body || "{}") as VoteState;
+function stateFromVoteComments(comments: GitHubIssueComment[]): NormalizedVoteState {
+  const state: NormalizedVoteState = {
+    source: "chat.inc",
+    version: 1,
+    votes: {},
+  };
 
-    return {
-      source: parsed.source || "chat.inc",
-      version: 1,
-      votes: normalizeVotes(parsed.votes),
-    };
-  } catch {
-    return {
-      source: "chat.inc",
-      version: 1,
-      votes: {},
-    };
-  }
-}
+  for (const comment of comments) {
+    const vote = commentToVote(comment);
 
-function normalizeVotes(votes: VoteState["votes"]) {
-  const normalizedVotes: NormalizedVoteState["votes"] = {};
-
-  for (const [messageId, record] of Object.entries(votes || {})) {
-    const sanitizedMessageId = sanitizeMessageId(messageId);
-
-    if (!sanitizedMessageId || !Array.isArray(record.voters)) {
+    if (!vote) {
       continue;
     }
 
-    normalizedVotes[sanitizedMessageId] = {
-      voters: [...new Set(record.voters.map(sanitizeClientId).filter(Boolean))],
-    };
+    const record = state.votes[vote.messageId] || { voters: [] };
+    const voterSet = new Set(record.voters);
+
+    if (vote.active) {
+      voterSet.add(vote.clientId);
+    } else {
+      voterSet.delete(vote.clientId);
+    }
+
+    if (voterSet.size === 0) {
+      delete state.votes[vote.messageId];
+    } else {
+      state.votes[vote.messageId] = {
+        voters: [...voterSet],
+      };
+    }
   }
 
-  return normalizedVotes;
+  return state;
+}
+
+function commentToVote(comment: GitHubIssueComment) {
+  try {
+    const parsed = JSON.parse(comment.body || "{}") as VoteCommentBody;
+    const messageId = sanitizeMessageId(parsed.vote?.messageId);
+    const clientId = sanitizeClientId(parsed.vote?.clientId);
+
+    if (!messageId || !clientId || typeof parsed.vote?.active !== "boolean") {
+      return null;
+    }
+
+    return {
+      active: parsed.vote.active,
+      clientId,
+      createdAt: parsed.vote.createdAt || comment.created_at,
+      messageId,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function voteCounts(state: NormalizedVoteState) {
@@ -175,6 +203,43 @@ function voteCounts(state: NormalizedVoteState) {
       record.voters.length,
     ]),
   );
+}
+
+function votePayloadFromState(
+  state: NormalizedVoteState,
+  messages: Awaited<ReturnType<typeof readSharedMessages>>,
+  clientId: string,
+): VotePayload {
+  const votes = voteCounts(state);
+  const userVotes = Object.entries(state.votes)
+    .filter(([, record]) => record.voters.includes(clientId))
+    .map(([messageId]) => messageId);
+  const top = messages
+    .filter((message) => message.role === "assistant" && votes[message.id] > 0)
+    .map((message) => ({
+      messageId: message.id,
+      text: message.text,
+      votes: votes[message.id],
+    }))
+    .sort((firstMessage, secondMessage) => secondMessage.votes - firstMessage.votes)
+    .slice(0, maxTopMessages);
+
+  return {
+    top,
+    userVotes,
+    votes,
+  };
+}
+
+function voteCommentBody(vote: { active: boolean; clientId: string; messageId: string }) {
+  return JSON.stringify({
+    source: "chat.inc",
+    version: 1,
+    vote: {
+      ...vote,
+      createdAt: new Date().toISOString(),
+    },
+  } satisfies VoteCommentBody);
 }
 
 function votesIssuePath() {

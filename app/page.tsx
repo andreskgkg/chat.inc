@@ -172,13 +172,13 @@ export default function Home() {
     async function loadVotes() {
       const nextVotes = await fetchVotes();
 
-      if (!isCancelled) {
+      if (nextVotes && !isCancelled) {
         setVotes(nextVotes);
       }
     }
 
     void loadVotes();
-    const intervalId = window.setInterval(loadVotes, 10_000);
+    const intervalId = window.setInterval(loadVotes, 30_000);
 
     return () => {
       isCancelled = true;
@@ -321,7 +321,9 @@ export default function Home() {
 
     const nextVotes = await toggleVote(message.id);
 
-    setVotes(nextVotes);
+    if (nextVotes) {
+      setVotes(nextVotes);
+    }
   }
 
   function scrollToMessage(messageId: string) {
@@ -618,24 +620,18 @@ async function updateConnectionStatus(active: boolean) {
 }
 
 async function fetchVotes() {
-  const fallbackVotes = {
-    top: [],
-    userVotes: [],
-    votes: {},
-  };
-
   try {
     const response = await fetch(`/api/votes?clientId=${encodeURIComponent(getClientId())}`, {
       cache: "no-store",
     });
 
     if (!response.ok) {
-      return fallbackVotes;
+      return null;
     }
 
     return (await response.json()) as VotesResponse;
   } catch {
-    return fallbackVotes;
+    return null;
   }
 }
 
@@ -653,12 +649,12 @@ async function toggleVote(messageId: string) {
     });
 
     if (!response.ok) {
-      return fetchVotes();
+      return null;
     }
 
     return (await response.json()) as VotesResponse;
   } catch {
-    return fetchVotes();
+    return null;
   }
 }
 
