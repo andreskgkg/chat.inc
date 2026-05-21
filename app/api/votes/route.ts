@@ -19,6 +19,7 @@ export async function GET(request: Request) {
       headers: {
         "Cache-Control": "no-store",
       },
+      status: 503,
     });
   }
 }
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
       headers: {
         "Cache-Control": "no-store",
       },
+      status: 503,
     });
   }
 }

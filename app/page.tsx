@@ -158,7 +158,7 @@ export default function Home() {
     }
 
     void loadSharedMessages();
-    const intervalId = window.setInterval(loadSharedMessages, 5000);
+    const intervalId = window.setInterval(loadSharedMessages, 10_000);
 
     return () => {
       isCancelled = true;
@@ -208,7 +208,7 @@ export default function Home() {
     }
 
     void loadTypingStatus();
-    const intervalId = window.setInterval(loadTypingStatus, 2000);
+    const intervalId = window.setInterval(loadTypingStatus, 5000);
 
     return () => {
       isCancelled = true;
@@ -228,7 +228,7 @@ export default function Home() {
     }
 
     void updateStats();
-    const intervalId = window.setInterval(updateStats, 5000);
+    const intervalId = window.setInterval(updateStats, 60_000);
 
     function handleBeforeUnload() {
       void updateConnectionStatus(false);
