@@ -18,7 +18,9 @@ export async function setSharedTypingStatus(clientId: string, active: boolean) {
   }
 
   if (!active) {
-    await del(typingPath(sanitizedClientId)).catch(() => undefined);
+    await del(typingPath(sanitizedClientId), {
+      token: getBlobToken(),
+    }).catch(() => undefined);
     return;
   }
 
@@ -30,10 +32,11 @@ export async function setSharedTypingStatus(clientId: string, active: boolean) {
       updatedAt: new Date().toISOString(),
     } satisfies SharedTypingStatus),
     {
-      access: "private",
+      access: "public",
       allowOverwrite: true,
       cacheControlMaxAge: 60,
       contentType: "application/json",
+      token: getBlobToken(),
     },
   );
 }
@@ -43,21 +46,27 @@ export async function isSomeoneElseTyping(clientId: string) {
   const blobs = await list({
     limit: maxTypingStatuses,
     prefix: typingPrefix,
+    token: getBlobToken(),
   });
   const statuses = await Promise.all(
     blobs.blobs.map(async (blob) => {
-      const storedStatus = await get(blob.pathname, {
-        access: "private",
-        useCache: false,
-      });
+      try {
+        const storedStatus = await get(blob.pathname, {
+          access: "public",
+          token: getBlobToken(),
+          useCache: false,
+        });
 
-      if (!storedStatus || storedStatus.statusCode !== 200) {
+        if (!storedStatus || storedStatus.statusCode !== 200) {
+          return null;
+        }
+
+        const text = await new Response(storedStatus.stream).text();
+
+        return sanitizeTypingStatus(JSON.parse(text) as Partial<SharedTypingStatus>);
+      } catch {
         return null;
       }
-
-      const text = await new Response(storedStatus.stream).text();
-
-      return sanitizeTypingStatus(JSON.parse(text) as Partial<SharedTypingStatus>);
     }),
   );
   const activeAfter = Date.now() - typingWindowMs;
@@ -97,4 +106,8 @@ function sanitizeClientId(clientId: unknown) {
   return typeof clientId === "string"
     ? clientId.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 120)
     : "";
+}
+
+function getBlobToken() {
+  return process.env.BLOB_READ_WRITE_TOKEN;
 }

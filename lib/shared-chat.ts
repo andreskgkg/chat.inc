@@ -17,21 +17,27 @@ export async function readSharedMessages() {
   const blobs = await list({
     limit: maxStoredMessages,
     prefix: sharedMessagesPrefix,
+    token: getBlobToken(),
   });
   const messages = await Promise.all(
     blobs.blobs.map(async (blob) => {
-      const storedMessage = await get(blob.pathname, {
-        access: "private",
-        useCache: false,
-      });
+      try {
+        const storedMessage = await get(blob.pathname, {
+          access: "public",
+          token: getBlobToken(),
+          useCache: false,
+        });
 
-      if (!storedMessage || storedMessage.statusCode !== 200) {
+        if (!storedMessage || storedMessage.statusCode !== 200) {
+          return null;
+        }
+
+        const text = await new Response(storedMessage.stream).text();
+
+        return sanitizeMessage(JSON.parse(text) as Partial<SharedChatMessage>);
+      } catch {
         return null;
       }
-
-      const text = await new Response(storedMessage.stream).text();
-
-      return sanitizeMessage(JSON.parse(text) as Partial<SharedChatMessage>);
     }),
   );
 
@@ -53,10 +59,11 @@ export async function appendSharedMessages(messagesToAppend: SharedChatMessage[]
   await Promise.all(
     sanitizedMessages.map((message) =>
       put(messagePath(message), JSON.stringify(message), {
-        access: "private",
+        access: "public",
         allowOverwrite: true,
         cacheControlMaxAge: 60,
         contentType: "application/json",
+        token: getBlobToken(),
       }),
     ),
   );
@@ -102,6 +109,10 @@ function messagePath(message: SharedChatMessage) {
 
 function safePathSegment(value: string) {
   return value.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 120);
+}
+
+function getBlobToken() {
+  return process.env.BLOB_READ_WRITE_TOKEN;
 }
 
 function isSharedChatMessage(
