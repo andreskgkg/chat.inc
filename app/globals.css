@@ -131,9 +131,6 @@ button {
 }
 
 .message {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 6px;
   width: 100%;
 }
 
@@ -144,7 +141,19 @@ button {
 .message-content {
   display: grid;
   gap: 6px;
+  margin-left: 34px;
+}
+
+.message-text-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 6px;
+  margin-left: -34px;
+}
+
+.message-text {
   grid-column: 2;
+  min-width: 0;
 }
 
 .message p {
@@ -165,7 +174,6 @@ button {
   align-self: start;
   justify-self: end;
   width: 24px;
-  margin-top: 24px;
   border: 0;
   background: transparent;
   color: var(--soft);

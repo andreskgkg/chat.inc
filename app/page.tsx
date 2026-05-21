@@ -355,21 +355,25 @@ export default function Home() {
                 id={messageElementId(message.id)}
                 key={message.id}
               >
-                {canVote ? (
-                  <button
-                    aria-pressed={hasVoted}
-                    className={`upvote-button ${hasVoted ? "upvote-button-active" : ""}`}
-                    onClick={() => void handleVote(message.id)}
-                    type="button"
-                  >
-                    ↑{voteCount > 0 ? ` ${voteCount}` : ""}
-                  </button>
-                ) : null}
                 <div className="message-content">
                   <p className="message-label">
                     {message.role === "user" ? "someone" : "chat.inc"}
                   </p>
-                  {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
+                  <div className="message-text-row">
+                    {canVote ? (
+                      <button
+                        aria-pressed={hasVoted}
+                        className={`upvote-button ${hasVoted ? "upvote-button-active" : ""}`}
+                        onClick={() => void handleVote(message.id)}
+                        type="button"
+                      >
+                        ↑{voteCount > 0 ? ` ${voteCount}` : ""}
+                      </button>
+                    ) : null}
+                    <div className="message-text">
+                      {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
+                    </div>
+                  </div>
                 </div>
               </article>
             );
