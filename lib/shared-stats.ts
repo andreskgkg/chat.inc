@@ -102,7 +102,7 @@ function countActiveClients(state: Required<PresenceState>) {
 function daysSinceLaunch() {
   const elapsedMs = Date.now() - launchDate.getTime();
 
-  return Math.max(0, Math.floor(elapsedMs / 86_400_000));
+  return Math.max(1, Math.floor(elapsedMs / 86_400_000) + 1);
 }
 
 async function githubFetch<T>(path: string, init?: RequestInit): Promise<T> {

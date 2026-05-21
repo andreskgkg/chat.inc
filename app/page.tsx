@@ -27,7 +27,7 @@ export default function Home() {
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const [someoneTyping, setSomeoneTyping] = useState(false);
   const [stats, setStats] = useState<ChatStatsResponse>({
-    daysRunning: 0,
+    daysRunning: 1,
     messagesSent: 0,
     peopleConnected: 1,
   });
@@ -185,7 +185,7 @@ export default function Home() {
     }
 
     void updateStats();
-    const intervalId = window.setInterval(updateStats, 15_000);
+    const intervalId = window.setInterval(updateStats, 5000);
 
     function handleBeforeUnload() {
       void updateConnectionStatus(false);
@@ -200,6 +200,17 @@ export default function Home() {
       void updateConnectionStatus(false);
     };
   }, []);
+
+  useEffect(() => {
+    const visibleMessageCount = visibleMessages.filter(
+      (message) => message.id !== "welcome" && getMessageText(message).trim().length > 0,
+    ).length;
+
+    setStats((currentStats) => ({
+      ...currentStats,
+      messagesSent: Math.max(currentStats.messagesSent, visibleMessageCount),
+    }));
+  }, [visibleMessages]);
 
   useEffect(() => {
     const active = input.trim().length > 0 && isComposerFocused && !isSending;
@@ -508,7 +519,7 @@ async function updateTypingStatus(active: boolean) {
 
 async function updateConnectionStatus(active: boolean) {
   const fallbackStats = {
-    daysRunning: 0,
+    daysRunning: 1,
     messagesSent: 0,
     peopleConnected: 1,
   };
@@ -586,7 +597,7 @@ async function toggleVote(messageId: string) {
 function formatStats(stats: ChatStatsResponse) {
   return `${formatNumber(stats.peopleConnected)} connected · ${formatNumber(
     stats.messagesSent,
-  )} messages · ${formatNumber(stats.daysRunning)} days running`;
+  )} messages · ${formatNumber(stats.daysRunning)} ${stats.daysRunning === 1 ? "day" : "days"} running`;
 }
 
 function formatNumber(value: number) {

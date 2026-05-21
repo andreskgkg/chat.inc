@@ -47,6 +47,6 @@ function fallbackStats() {
   return {
     peopleConnected: 1,
     messagesSent: 0,
-    daysRunning: 0,
+    daysRunning: 1,
   };
 }
