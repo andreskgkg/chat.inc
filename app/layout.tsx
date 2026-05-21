@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://chat.inc"),
   title: "chat.inc",
   description: "A tiny chat interface for concise answers.",
   icons: {
@@ -19,6 +20,27 @@ export const metadata: Metadata = {
         media: "(prefers-color-scheme: dark)",
       },
     ],
+  },
+  openGraph: {
+    title: "chat.inc",
+    description: "A tiny chat interface for concise answers.",
+    url: "https://chat.inc",
+    siteName: "chat.inc",
+    images: [
+      {
+        url: "/social-preview.png",
+        width: 420,
+        height: 232,
+        alt: "chat.inc preview",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "chat.inc",
+    description: "A tiny chat interface for concise answers.",
+    images: ["/social-preview.png"],
   },
 };
 
