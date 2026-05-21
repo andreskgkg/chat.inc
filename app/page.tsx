@@ -339,7 +339,7 @@ export default function Home() {
                     onClick={() => void handleVote(message.id)}
                     type="button"
                   >
-                    ↑ {voteCount}
+                    ↑{voteCount > 0 ? ` ${voteCount}` : ""}
                   </button>
                 ) : null}
                 <div className="message-content">
