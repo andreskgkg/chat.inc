@@ -10,6 +10,7 @@
   --chat-width: 680px;
   --page-gutter: 22px;
   --text-inset: 22px;
+  --header-height: 76px;
 }
 
 * {
@@ -47,11 +48,18 @@ button {
 }
 
 .app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 26px clamp(22px, 5vw, 58px);
+  background: rgba(247, 247, 245, 0.9);
+  backdrop-filter: blur(12px);
 }
 
 .app-header a,
@@ -70,7 +78,7 @@ button {
 .conversation {
   width: min(calc(100% - (var(--page-gutter) * 2)), var(--chat-width));
   margin: 0 auto;
-  padding: clamp(22px, 6vw, 64px) 0 190px;
+  padding: calc(var(--header-height) + clamp(22px, 6vw, 64px)) 0 190px;
 }
 
 .empty-state {
@@ -258,6 +266,7 @@ button {
   :root {
     --page-gutter: 12px;
     --text-inset: 12px;
+    --header-height: 60px;
   }
 
   .app-header {
@@ -270,7 +279,7 @@ button {
   }
 
   .conversation {
-    padding: 30px 0 176px;
+    padding: calc(var(--header-height) + 30px) 0 176px;
   }
 
   .composer-dock {
