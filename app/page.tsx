@@ -38,6 +38,8 @@ export default function Home() {
   });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hasLoadedSharedHistoryRef = useRef(false);
+  const shouldPlayInitialScrollRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
 
   const visibleMessages = useMemo(() => messages, [messages]);
@@ -72,10 +74,20 @@ export default function Home() {
       return;
     }
 
-    bottomRef.current?.scrollIntoView({
-      behavior: status === "streaming" ? "auto" : "smooth",
-      block: "end",
-    });
+    if (shouldPlayInitialScrollRef.current) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToBottom("smooth");
+          shouldPlayInitialScrollRef.current = false;
+        });
+      });
+
+      return;
+    }
+
+    scrollToBottom(status === "streaming" ? "auto" : "smooth");
   }, [status, visibleMessages]);
 
   useEffect(() => {
@@ -99,14 +111,23 @@ export default function Home() {
         setHistoryError("");
 
         if (data.messages.length === 0) {
+          hasLoadedSharedHistoryRef.current = true;
           return;
         }
 
         const sharedMessages = data.messages.map(sharedMessageToUiMessage);
 
-        setMessages((currentMessages) =>
-          haveSameMessages(currentMessages, sharedMessages) ? currentMessages : sharedMessages,
-        );
+        shouldPlayInitialScrollRef.current = !hasLoadedSharedHistoryRef.current;
+        hasLoadedSharedHistoryRef.current = true;
+
+        setMessages((currentMessages) => {
+          if (haveSameMessages(currentMessages, sharedMessages)) {
+            shouldPlayInitialScrollRef.current = false;
+            return currentMessages;
+          }
+
+          return sharedMessages;
+        });
       } catch {
         if (!isCancelled) {
           setHistoryError("could not load shared chat.");
@@ -280,6 +301,13 @@ export default function Home() {
     document.getElementById(messageElementId(messageId))?.scrollIntoView({
       behavior: "smooth",
       block: "center",
+    });
+  }
+
+  function scrollToBottom(behavior: ScrollBehavior) {
+    bottomRef.current?.scrollIntoView({
+      behavior,
+      block: "end",
     });
   }
 
