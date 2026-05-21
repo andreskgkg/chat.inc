@@ -366,7 +366,7 @@ button {
     --page-gutter: 18px;
     --text-inset: 0px;
     --header-height: calc(56px + var(--safe-top));
-    --composer-clearance: calc(134px + var(--safe-bottom));
+    --composer-clearance: calc(112px + var(--safe-bottom));
   }
 
   .app-header {
@@ -387,6 +387,10 @@ button {
     gap: 26px;
   }
 
+  .message {
+    position: relative;
+  }
+
   .message p {
     font-size: 20px;
     letter-spacing: -0.045em;
@@ -398,21 +402,31 @@ button {
   }
 
   .message-votable .message-content {
-    margin-left: 28px;
+    margin-left: 0;
   }
 
   .message-votable .message-text-row {
-    grid-template-columns: 22px minmax(0, 1fr);
-    margin-left: -28px;
+    display: block;
+    margin-left: 0;
+  }
+
+  .message-votable .message-text {
+    grid-column: auto;
   }
 
   .upvote-button {
-    width: 22px;
+    position: absolute;
+    top: 31px;
+    left: -2px;
+    width: 16px;
+    transform: translateX(-100%);
     font-size: 15px;
   }
 
   .composer-dock {
-    padding: 12px var(--page-gutter) calc(12px + var(--safe-bottom));
+    z-index: 20;
+    bottom: var(--safe-bottom);
+    padding: 8px var(--page-gutter) 8px;
   }
 
   .composer {
