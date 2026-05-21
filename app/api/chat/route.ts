@@ -271,7 +271,7 @@ export async function POST(request: Request) {
     const latestUserText = latestUserMessage ? getMessageText(latestUserMessage) : "";
 
     if (latestUserMessage && latestUserText) {
-      await appendSharedMessages([
+      await appendSharedMessagesSafely([
         createSharedMessage("user", latestUserText, latestUserMessage.id),
       ]);
     }
@@ -297,7 +297,7 @@ export async function POST(request: Request) {
           return;
         }
 
-        await appendSharedMessages([createSharedMessage("assistant", text)]);
+        await appendSharedMessagesSafely([createSharedMessage("assistant", text)]);
       },
     });
 
@@ -311,6 +311,14 @@ export async function POST(request: Request) {
       { error: "Something went wrong while generating a reply." },
       { status: 500 },
     );
+  }
+}
+
+async function appendSharedMessagesSafely(messages: ReturnType<typeof createSharedMessage>[]) {
+  try {
+    await appendSharedMessages(messages);
+  } catch (error) {
+    console.warn("Shared chat persistence unavailable", error);
   }
 }
 

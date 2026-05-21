@@ -15,11 +15,15 @@ export async function GET() {
       },
     );
   } catch (error) {
-    console.error("Failed to load shared messages", error);
+    console.warn("Shared messages unavailable", error);
 
     return Response.json(
-      { error: "could not load the shared chat." },
-      { status: 500 },
+      { messages: [] },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
     );
   }
 }
