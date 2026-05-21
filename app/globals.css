@@ -154,6 +154,76 @@ button {
   letter-spacing: -0.02em !important;
 }
 
+.upvote-button {
+  justify-self: start;
+  width: auto;
+  margin-top: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--soft);
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  padding: 0;
+}
+
+.upvote-button-active,
+.upvote-button:hover {
+  color: var(--text);
+}
+
+.vote-rail {
+  position: fixed;
+  top: calc(var(--header-height) + 36px);
+  left: clamp(18px, 4vw, 54px);
+  z-index: 4;
+  display: grid;
+  gap: 12px;
+  width: 124px;
+}
+
+.vote-rail p,
+.vote-empty {
+  margin: 0;
+  color: var(--soft);
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+.vote-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.vote-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0;
+  text-align: left;
+}
+
+.vote-bar span {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--soft);
+}
+
+.vote-bar strong {
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.vote-bar:hover span {
+  background: var(--text);
+}
+
 .composer-dock {
   position: fixed;
   right: 0;
@@ -307,5 +377,11 @@ button {
   .composer button {
     min-width: 54px;
     height: 34px;
+  }
+}
+
+@media (max-width: 1040px) {
+  .vote-rail {
+    display: none;
   }
 }

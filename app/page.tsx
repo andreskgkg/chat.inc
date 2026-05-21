@@ -31,6 +31,11 @@ export default function Home() {
     messagesSent: 0,
     peopleConnected: 1,
   });
+  const [votes, setVotes] = useState<VotesResponse>({
+    top: [],
+    userVotes: [],
+    votes: {},
+  });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const isSending = status === "submitted" || status === "streaming";
@@ -117,6 +122,26 @@ export default function Home() {
       window.clearInterval(intervalId);
     };
   }, [isSending, setMessages]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadVotes() {
+      const nextVotes = await fetchVotes();
+
+      if (!isCancelled) {
+        setVotes(nextVotes);
+      }
+    }
+
+    void loadVotes();
+    const intervalId = window.setInterval(loadVotes, 10_000);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -234,6 +259,19 @@ export default function Home() {
     requestAnimationFrame(() => composer.focus({ preventScroll: true }));
   }
 
+  async function handleVote(messageId: string) {
+    const nextVotes = await toggleVote(messageId);
+
+    setVotes(nextVotes);
+  }
+
+  function scrollToMessage(messageId: string) {
+    document.getElementById(messageElementId(messageId))?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -243,20 +281,60 @@ export default function Home() {
         <span className="app-stats">{formatStats(stats)}</span>
       </header>
 
+      <aside className="vote-rail" aria-label="top upvoted responses">
+        <p>top replies</p>
+        {votes.top.length > 0 ? (
+          <div className="vote-bars">
+            {votes.top.map((message) => (
+              <button
+                aria-label={`jump to response with ${message.votes} upvotes`}
+                className="vote-bar"
+                key={message.messageId}
+                onClick={() => scrollToMessage(message.messageId)}
+                type="button"
+              >
+                <span
+                  style={{
+                    inlineSize: `${Math.max(10, (message.votes / votes.top[0].votes) * 100)}%`,
+                  }}
+                />
+                <strong>{message.votes}</strong>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="vote-empty">no votes yet</span>
+        )}
+      </aside>
+
       <section className="conversation" aria-label="chat.inc conversation">
         <div className="message-list" aria-live="polite">
           {visibleMessages.map((message) => {
             const text = getMessageText(message);
+            const canVote = isVotableMessage(message);
+            const hasVoted = votes.userVotes.includes(message.id);
+            const voteCount = votes.votes[message.id] || 0;
 
             return (
               <article
                 className={`message ${message.role === "user" ? "message-user" : ""}`}
+                id={messageElementId(message.id)}
                 key={message.id}
               >
                 <p className="message-label">
                   {message.role === "user" ? "someone" : "chat.inc"}
                 </p>
                 {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
+                {canVote ? (
+                  <button
+                    aria-pressed={hasVoted}
+                    className={`upvote-button ${hasVoted ? "upvote-button-active" : ""}`}
+                    onClick={() => void handleVote(message.id)}
+                    type="button"
+                  >
+                    ↑ {voteCount}
+                  </button>
+                ) : null}
               </article>
             );
           })}
@@ -336,6 +414,18 @@ type ChatStatsResponse = {
   peopleConnected: number;
 };
 
+type VoteSummary = {
+  messageId: string;
+  text: string;
+  votes: number;
+};
+
+type VotesResponse = {
+  top: VoteSummary[];
+  userVotes: string[];
+  votes: Record<string, number>;
+};
+
 function getMessageText(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
@@ -374,6 +464,19 @@ function haveSameMessages(firstMessages: UIMessage[], secondMessages: UIMessage[
       getMessageText(message) === getMessageText(otherMessage)
     );
   });
+}
+
+function isVotableMessage(message: UIMessage) {
+  return (
+    message.role === "assistant" &&
+    message.id !== "welcome" &&
+    !message.id.startsWith("msg_") &&
+    getMessageText(message).trim().length > 0
+  );
+}
+
+function messageElementId(messageId: string) {
+  return `message-${messageId.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 }
 
 function getClientId() {
@@ -430,6 +533,53 @@ async function updateConnectionStatus(active: boolean) {
     return (await response.json()) as ChatStatsResponse;
   } catch {
     return fallbackStats;
+  }
+}
+
+async function fetchVotes() {
+  const fallbackVotes = {
+    top: [],
+    userVotes: [],
+    votes: {},
+  };
+
+  try {
+    const response = await fetch(`/api/votes?clientId=${encodeURIComponent(getClientId())}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return fallbackVotes;
+    }
+
+    return (await response.json()) as VotesResponse;
+  } catch {
+    return fallbackVotes;
+  }
+}
+
+async function toggleVote(messageId: string) {
+  const fallbackVotes = await fetchVotes();
+
+  try {
+    const response = await fetch("/api/votes", {
+      body: JSON.stringify({
+        clientId: getClientId(),
+        messageId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      return fallbackVotes;
+    }
+
+    return (await response.json()) as VotesResponse;
+  } catch {
+    return fallbackVotes;
   }
 }
 
