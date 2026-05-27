@@ -22,13 +22,6 @@ export default function Home() {
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
-  const [isComposerFocused, setIsComposerFocused] = useState(false);
-  const [someoneTyping, setSomeoneTyping] = useState(false);
-  const [stats, setStats] = useState<ChatStatsResponse>({
-    daysRunning: 1,
-    messagesSent: 0,
-    peopleConnected: 1,
-  });
   const [votes, setVotes] = useState<VotesResponse>({
     top: [],
     userVotes: [],
@@ -38,7 +31,6 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
   const isSending = status === "submitted" || status === "streaming";
-  const isTypingActive = input.trim().length > 0 && isComposerFocused && !isSending;
 
   const visibleMessages = useMemo(() => messages, [messages]);
 
@@ -114,99 +106,6 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadTypingStatus() {
-      try {
-        const clientId = getClientId();
-        const response = await fetch(`/api/typing?clientId=${encodeURIComponent(clientId)}`, {
-          cache: "no-store",
-        });
-        const data = (await response.json()) as TypingStatusResponse;
-
-        if (!isCancelled) {
-          setSomeoneTyping(Boolean(data.someoneTyping));
-        }
-      } catch {
-        if (!isCancelled) {
-          setSomeoneTyping(false);
-        }
-      }
-    }
-
-    void loadTypingStatus();
-    const intervalId = window.setInterval(loadTypingStatus, 5000);
-
-    return () => {
-      isCancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, []);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function updateStats() {
-      const nextStats = await updateConnectionStatus(true);
-
-      if (!isCancelled) {
-        setStats(nextStats);
-      }
-    }
-
-    void updateStats();
-    const intervalId = window.setInterval(updateStats, 60_000);
-
-    function handleBeforeUnload() {
-      void updateConnectionStatus(false);
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      isCancelled = true;
-      window.clearInterval(intervalId);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      void updateConnectionStatus(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    const visibleMessageCount = visibleMessages.filter(
-      (message) => message.id !== "welcome" && getMessageText(message).trim().length > 0,
-    ).length;
-
-    setStats((currentStats) => ({
-      ...currentStats,
-      messagesSent: Math.max(currentStats.messagesSent, visibleMessageCount),
-    }));
-  }, [visibleMessages]);
-
-  useEffect(() => {
-    void updateTypingStatus(isTypingActive);
-
-    if (!isTypingActive) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      void updateTypingStatus(true);
-    }, 8000);
-
-    return () => window.clearInterval(intervalId);
-  }, [isTypingActive]);
-
-  useEffect(() => {
-    function handleBeforeUnload() {
-      void updateTypingStatus(false);
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -219,7 +118,6 @@ export default function Home() {
     setInput("");
     clearError();
     shouldStickToBottomRef.current = true;
-    void updateTypingStatus(false);
     focusComposer();
 
     void sendMessage({ text: trimmedInput })
@@ -354,15 +252,6 @@ export default function Home() {
             </article>
           ) : null}
 
-          {someoneTyping ? (
-            <article className="message">
-              <div className="message-content">
-                <p className="message-label">someone is typing</p>
-                <TypingIndicator />
-              </div>
-            </article>
-          ) : null}
-
           <div className="scroll-anchor" ref={bottomRef} />
         </div>
       </section>
@@ -376,11 +265,6 @@ export default function Home() {
             rows={1}
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            onFocus={() => setIsComposerFocused(true)}
-            onBlur={() => {
-              setIsComposerFocused(false);
-              void updateTypingStatus(false);
-            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
@@ -407,16 +291,6 @@ export default function Home() {
     </main>
   );
 }
-
-type TypingStatusResponse = {
-  someoneTyping?: boolean;
-};
-
-type ChatStatsResponse = {
-  daysRunning: number;
-  messagesSent: number;
-  peopleConnected: number;
-};
 
 type VoteSummary = {
   messageId: string;
@@ -467,49 +341,6 @@ function getClientId() {
   window.localStorage.setItem(storageKey, clientId);
 
   return clientId;
-}
-
-async function updateTypingStatus(active: boolean) {
-  await fetch("/api/typing", {
-    body: JSON.stringify({
-      active,
-      clientId: getClientId(),
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-  }).catch(() => undefined);
-}
-
-async function updateConnectionStatus(active: boolean) {
-  const fallbackStats = {
-    daysRunning: 1,
-    messagesSent: 0,
-    peopleConnected: 1,
-  };
-
-  try {
-    const response = await fetch("/api/stats", {
-      body: JSON.stringify({
-        active,
-        clientId: getClientId(),
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      keepalive: true,
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      return fallbackStats;
-    }
-
-    return (await response.json()) as ChatStatsResponse;
-  } catch {
-    return fallbackStats;
-  }
 }
 
 async function fetchVotes() {
@@ -591,16 +422,6 @@ function optimisticToggleVote(
     userVotes: nextUserVotes,
     votes: nextVotes,
   };
-}
-
-function formatStats(stats: ChatStatsResponse) {
-  return `${formatNumber(stats.peopleConnected)} connected · ${formatNumber(
-    stats.messagesSent,
-  )} messages · ${formatNumber(stats.daysRunning)} ${stats.daysRunning === 1 ? "day" : "days"} running`;
-}
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-US").format(value);
 }
 
 function isEditableTarget(target: EventTarget | null) {
