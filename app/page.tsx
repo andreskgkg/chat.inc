@@ -3,7 +3,6 @@
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import type { SharedChatMessage } from "@/lib/shared-chat";
 
 const starterMessages: UIMessage[] = [
   {
@@ -19,11 +18,10 @@ const starterMessages: UIMessage[] = [
 ];
 
 export default function Home() {
-  const { clearError, error, messages, sendMessage, setMessages, status } = useChat({
+  const { clearError, error, messages, sendMessage, status } = useChat({
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
-  const [historyError, setHistoryError] = useState("");
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const [someoneTyping, setSomeoneTyping] = useState(false);
   const [stats, setStats] = useState<ChatStatsResponse>({
@@ -38,8 +36,6 @@ export default function Home() {
   });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const hasLoadedSharedHistoryRef = useRef(false);
-  const shouldPlayInitialScrollRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
   const isSending = status === "submitted" || status === "streaming";
   const isTypingActive = input.trim().length > 0 && isComposerFocused && !isSending;
@@ -91,80 +87,12 @@ export default function Home() {
       return;
     }
 
-    if (shouldPlayInitialScrollRef.current) {
-      window.scrollTo({ top: 0, behavior: "auto" });
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          shouldStickToBottomRef.current = true;
-          scrollToBottom("smooth");
-          shouldPlayInitialScrollRef.current = false;
-        });
-      });
-
-      return;
-    }
-
     if (!shouldStickToBottomRef.current) {
       return;
     }
 
     scrollToBottom(status === "streaming" ? "auto" : "smooth");
   }, [status, visibleMessages]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadSharedMessages() {
-      if (isSending) {
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/messages", {
-          cache: "no-store",
-        });
-        const data = (await response.json()) as SharedMessagesResponse;
-
-        if (!response.ok || !Array.isArray(data.messages) || isCancelled) {
-          throw new Error(data.error || "could not load shared chat.");
-        }
-
-        setHistoryError("");
-
-        if (data.messages.length === 0) {
-          hasLoadedSharedHistoryRef.current = true;
-          return;
-        }
-
-        const sharedMessages = data.messages.map(sharedMessageToUiMessage);
-
-        shouldPlayInitialScrollRef.current = !hasLoadedSharedHistoryRef.current;
-        hasLoadedSharedHistoryRef.current = true;
-
-        setMessages((currentMessages) => {
-          if (haveSameMessages(currentMessages, sharedMessages)) {
-            shouldPlayInitialScrollRef.current = false;
-            return currentMessages;
-          }
-
-          return sharedMessages;
-        });
-      } catch {
-        if (!isCancelled) {
-          setHistoryError("could not load shared chat.");
-        }
-      }
-    }
-
-    void loadSharedMessages();
-    const intervalId = window.setInterval(loadSharedMessages, 10_000);
-
-    return () => {
-      isCancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, [isSending, setMessages]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -475,16 +403,10 @@ export default function Home() {
         </form>
 
         {error ? <p className="error-message">{error.message}</p> : null}
-        {historyError ? <p className="error-message">{historyError}</p> : null}
       </div>
     </main>
   );
 }
-
-type SharedMessagesResponse = {
-  messages?: SharedChatMessage[];
-  error?: string;
-};
 
 type TypingStatusResponse = {
   someoneTyping?: boolean;
@@ -519,35 +441,6 @@ function getMessageText(message: UIMessage) {
 
 function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
-}
-
-function sharedMessageToUiMessage(message: SharedChatMessage): UIMessage {
-  return {
-    id: message.id,
-    role: message.role,
-    parts: [
-      {
-        type: "text",
-        text: message.text,
-      },
-    ],
-  };
-}
-
-function haveSameMessages(firstMessages: UIMessage[], secondMessages: UIMessage[]) {
-  if (firstMessages.length !== secondMessages.length) {
-    return false;
-  }
-
-  return firstMessages.every((message, index) => {
-    const otherMessage = secondMessages[index];
-
-    return (
-      message.id === otherMessage.id &&
-      message.role === otherMessage.role &&
-      getMessageText(message) === getMessageText(otherMessage)
-    );
-  });
 }
 
 function isVotableMessage(message: UIMessage) {

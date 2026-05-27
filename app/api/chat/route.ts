@@ -1,10 +1,17 @@
 import { openai } from "@ai-sdk/openai";
-import { convertToModelMessages, stepCountIs, streamText, tool, type UIMessage } from "ai";
+import {
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  stepCountIs,
+  streamText,
+  tool,
+  type UIMessage,
+} from "ai";
 import { z } from "zod";
-import { appendSharedMessages, createSharedMessage } from "@/lib/shared-chat";
 
 const systemPrompt =
-  "You are chat.inc: useful, hyper-opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one token or one short phrase. For counts, math, dates, times, yes/no, names, labels, or other direct facts, output only the bare answer with no units, punctuation, sentence wrapper, or explanation when the unit is obvious; for example, 'days until june 5' -> '9'. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. If asked for length, compress it to the shortest useful answer. Reply in lowercase text only, using the fewest words possible. Let the glass drop. Do not over-soften, moralize, or avoid a clear answer just because it may sound blunt, mean, unfair, or biased; stay lawful, safe, and do not target protected groups with hateful claims. Give the strongest useful answer, choose a side, and avoid hedging words like maybe, might, could, generally, probably, and it depends. Use tools when live, factual, or computed information would improve the answer. Never end mid-sentence or mid-thought; if space is limited, make the answer shorter so it still ends cleanly.";
+  "You are chat.inc. Be useful, hyper opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one token. Use a short phrase only when one token fails. Fragments beat sentences. Fewer words beat grammar. Drop articles, filler, units, framing, and polite words. For counts, math, dates, times, yes or no, names, labels, or other direct facts, output only the bare answer with no units, punctuation, sentence wrapper, or explanation when the unit is obvious. If a number answers, use only digits. Example. Asked days until june 5. Answer 9. Never use semicolons, colons, hyphens, dashes, or double dashes in replies. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. If asked for length, compress it to the shortest useful answer. Reply in lowercase text only, using the fewest words possible. Let the glass drop. Do not soften, moralize, or avoid a clear answer just because it may sound blunt, mean, unfair, or biased. Stay lawful, safe, and do not target protected groups with hateful claims. Give the strongest useful answer, choose a side, and avoid hedging words like maybe, might, could, generally, probably, and it depends. Use tools when live, factual, or computed information would improve the answer. Never end mid sentence or mid thought. If space is limited, make the answer shorter so it still ends cleanly.";
 
 export const maxDuration = 30;
 
@@ -270,14 +277,13 @@ export async function POST(request: Request) {
     const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
     const latestUserText = latestUserMessage ? getMessageText(latestUserMessage) : "";
 
-    if (latestUserMessage && latestUserText) {
-      await appendSharedMessagesSafely([
-        createSharedMessage("user", latestUserText, latestUserMessage.id),
-      ]);
+    const directAnswer = getDirectAnswer(latestUserText);
+    if (directAnswer) {
+      return createDirectTextResponse(directAnswer);
     }
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-mini"),
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
       tools,
@@ -285,13 +291,6 @@ export async function POST(request: Request) {
       maxOutputTokens: 512,
       onError: ({ error }) => {
         console.error("OpenAI stream failed", error);
-      },
-      onFinish: async ({ text }) => {
-        if (!text.trim()) {
-          return;
-        }
-
-        await appendSharedMessagesSafely([createSharedMessage("assistant", text)]);
       },
     });
 
@@ -308,19 +307,71 @@ export async function POST(request: Request) {
   }
 }
 
-async function appendSharedMessagesSafely(messages: ReturnType<typeof createSharedMessage>[]) {
-  try {
-    await appendSharedMessages(messages);
-  } catch (error) {
-    console.warn("Shared chat persistence unavailable", error);
-  }
-}
-
 function getMessageText(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
     .map((part) => part.text.trim())
     .join("");
+}
+
+function getDirectAnswer(text: string) {
+  const daysUntil = getDaysUntil(text);
+
+  return typeof daysUntil === "number" ? String(daysUntil) : null;
+}
+
+function getDaysUntil(text: string) {
+  const normalized = text.toLowerCase().replace(/[?!.]/g, " ").replace(/\s+/g, " ").trim();
+  const match = normalized.match(
+    /(?:how many )?days? until (jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|sept|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{1,2})(?:st|nd|rd|th)?/,
+  );
+
+  if (!match) {
+    return null;
+  }
+
+  const monthIndex = monthNameToIndex(match[1]);
+  const day = Number(match[2]);
+
+  if (monthIndex === null || !Number.isInteger(day) || day < 1 || day > 31) {
+    return null;
+  }
+
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  let target = new Date(Date.UTC(today.getUTCFullYear(), monthIndex, day));
+
+  if (target < today) {
+    target = new Date(Date.UTC(today.getUTCFullYear() + 1, monthIndex, day));
+  }
+
+  if (target.getUTCMonth() !== monthIndex || target.getUTCDate() !== day) {
+    return null;
+  }
+
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
+function monthNameToIndex(monthName: string) {
+  const shortMonth = monthName.slice(0, 3);
+  const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const monthIndex = months.indexOf(shortMonth);
+
+  return monthIndex === -1 ? null : monthIndex;
+}
+
+function createDirectTextResponse(text: string) {
+  return createUIMessageStreamResponse({
+    stream: createUIMessageStream({
+      execute: ({ writer }) => {
+        const id = "direct-answer";
+
+        writer.write({ type: "text-start", id });
+        writer.write({ type: "text-delta", id, delta: text });
+        writer.write({ type: "text-end", id });
+      },
+    }),
+  });
 }
 
 type GeocodeResult =
