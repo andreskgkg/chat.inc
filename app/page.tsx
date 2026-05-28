@@ -18,15 +18,12 @@ const starterMessages: UIMessage[] = [
 ];
 
 export default function Home() {
+  const [chatSessionId] = useState(() => `chat-${crypto.randomUUID()}`);
   const { clearError, error, messages, sendMessage, status } = useChat({
+    id: chatSessionId,
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
-  const [votes, setVotes] = useState<VotesResponse>({
-    top: [],
-    userVotes: [],
-    votes: {},
-  });
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
@@ -86,26 +83,6 @@ export default function Home() {
     scrollToBottom(status === "streaming" ? "auto" : "smooth");
   }, [status, visibleMessages]);
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadVotes() {
-      const nextVotes = await fetchVotes();
-
-      if (nextVotes && !isCancelled) {
-        setVotes(nextVotes);
-      }
-    }
-
-    void loadVotes();
-    const intervalId = window.setInterval(loadVotes, 30_000);
-
-    return () => {
-      isCancelled = true;
-      window.clearInterval(intervalId);
-    };
-  }, []);
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -138,27 +115,6 @@ export default function Home() {
     requestAnimationFrame(() => composer.focus({ preventScroll: true }));
   }
 
-  async function handleVote(message: UIMessage) {
-    const messageId = message.id;
-
-    setVotes((currentVotes) =>
-      optimisticToggleVote(currentVotes, messageId, getMessageText(message)),
-    );
-
-    const nextVotes = await toggleVote(message.id);
-
-    if (nextVotes) {
-      setVotes(nextVotes);
-    }
-  }
-
-  function scrollToMessage(messageId: string) {
-    document.getElementById(messageElementId(messageId))?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  }
-
   function scrollToBottom(behavior: ScrollBehavior) {
     bottomRef.current?.scrollIntoView({
       behavior,
@@ -181,41 +137,14 @@ export default function Home() {
         </a>
       </header>
 
-      <aside className="vote-rail" aria-label="top upvoted responses">
-        {votes.top.length > 0 ? (
-          <div className="vote-bars">
-            {votes.top.map((message) => (
-              <button
-                aria-label={`jump to response with ${message.votes} upvotes`}
-                className="vote-bar"
-                key={message.messageId}
-                onClick={() => scrollToMessage(message.messageId)}
-                type="button"
-              >
-                <span
-                  style={{
-                    inlineSize: `${Math.max(10, (message.votes / votes.top[0].votes) * 100)}%`,
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-        ) : null}
-      </aside>
-
       <section className="conversation" aria-label="chat.inc conversation">
         <div className="message-list" aria-live="polite">
           {visibleMessages.map((message) => {
             const text = getMessageText(message);
-            const canVote = isVotableMessage(message);
-            const hasVoted = votes.userVotes.includes(message.id);
-            const voteCount = votes.votes[message.id] || 0;
 
             return (
               <article
-                className={`message ${message.role === "user" ? "message-user" : ""} ${
-                  canVote ? "message-votable" : ""
-                }`}
+                className={`message ${message.role === "user" ? "message-user" : ""}`}
                 id={messageElementId(message.id)}
                 key={message.id}
               >
@@ -224,16 +153,6 @@ export default function Home() {
                     {message.role === "user" ? "someone" : "chat.inc"}
                   </p>
                   <div className="message-text-row">
-                    {canVote ? (
-                      <button
-                        aria-pressed={hasVoted}
-                        className={`upvote-button ${hasVoted ? "upvote-button-active" : ""}`}
-                        onClick={() => void handleVote(message)}
-                        type="button"
-                      >
-                        ↑{voteCount > 0 ? ` ${voteCount}` : ""}
-                      </button>
-                    ) : null}
                     <div className="message-text">
                       {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
                     </div>
@@ -292,20 +211,6 @@ export default function Home() {
   );
 }
 
-type VoteSummary = {
-  messageId: string;
-  text: string;
-  votes: number;
-};
-
-type VotesResponse = {
-  top: VoteSummary[];
-  userVotes: string[];
-  votes: Record<string, number>;
-};
-
-const maxTopVotedMessages = 8;
-
 function getMessageText(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
@@ -317,111 +222,8 @@ function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
 }
 
-function isVotableMessage(message: UIMessage) {
-  return (
-    message.role === "assistant" &&
-    message.id !== "welcome" &&
-    getMessageText(message).trim().length > 0
-  );
-}
-
 function messageElementId(messageId: string) {
   return `message-${messageId.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
-}
-
-function getClientId() {
-  const storageKey = "chat.inc.clientId";
-  const existingClientId = window.localStorage.getItem(storageKey);
-
-  if (existingClientId) {
-    return existingClientId;
-  }
-
-  const clientId = crypto.randomUUID();
-  window.localStorage.setItem(storageKey, clientId);
-
-  return clientId;
-}
-
-async function fetchVotes() {
-  try {
-    const response = await fetch(`/api/votes?clientId=${encodeURIComponent(getClientId())}`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return (await response.json()) as VotesResponse;
-  } catch {
-    return null;
-  }
-}
-
-async function toggleVote(messageId: string) {
-  try {
-    const response = await fetch("/api/votes", {
-      body: JSON.stringify({
-        clientId: getClientId(),
-        messageId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return (await response.json()) as VotesResponse;
-  } catch {
-    return null;
-  }
-}
-
-function optimisticToggleVote(
-  currentVotes: VotesResponse,
-  messageId: string,
-  messageText: string,
-): VotesResponse {
-  const hasVoted = currentVotes.userVotes.includes(messageId);
-  const nextVoteCount = Math.max(0, (currentVotes.votes[messageId] || 0) + (hasVoted ? -1 : 1));
-  const nextVotes = {
-    ...currentVotes.votes,
-    [messageId]: nextVoteCount,
-  };
-
-  if (nextVoteCount === 0) {
-    delete nextVotes[messageId];
-  }
-
-  const nextUserVotes = hasVoted
-    ? currentVotes.userVotes.filter((votedMessageId) => votedMessageId !== messageId)
-    : [...currentVotes.userVotes, messageId];
-  const topByMessageId = new Map(
-    currentVotes.top.map((message) => [message.messageId, message] as const),
-  );
-
-  if (nextVoteCount > 0) {
-    topByMessageId.set(messageId, {
-      messageId,
-      text: messageText,
-      votes: nextVoteCount,
-    });
-  } else {
-    topByMessageId.delete(messageId);
-  }
-
-  return {
-    top: Array.from(topByMessageId.values())
-      .sort((firstMessage, secondMessage) => secondMessage.votes - firstMessage.votes)
-      .slice(0, maxTopVotedMessages),
-    userVotes: nextUserVotes,
-    votes: nextVotes,
-  };
 }
 
 function isEditableTarget(target: EventTarget | null) {

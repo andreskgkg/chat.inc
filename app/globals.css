@@ -161,70 +161,6 @@ button {
   letter-spacing: -0.02em !important;
 }
 
-.upvote-button {
-  position: absolute;
-  top: 31px;
-  left: -8px;
-  width: 18px;
-  transform: translateX(-100%);
-  border: 0;
-  background: transparent;
-  color: var(--soft);
-  font-size: 13px;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  opacity: 0;
-  padding: 0;
-  text-align: center;
-  transition: opacity 140ms ease;
-}
-
-.message:hover .upvote-button,
-.message:focus-within .upvote-button,
-.upvote-button:hover {
-  opacity: 1;
-}
-
-.upvote-button-active,
-.upvote-button:hover {
-  color: var(--text);
-}
-
-.vote-rail {
-  position: fixed;
-  top: calc(var(--header-height) + 36px);
-  left: clamp(18px, 4vw, 54px);
-  z-index: 4;
-  display: grid;
-  width: 124px;
-}
-
-.vote-bars {
-  display: grid;
-  gap: 8px;
-}
-
-.vote-bar {
-  display: block;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  padding: 0;
-  text-align: left;
-  width: 100%;
-}
-
-.vote-bar span {
-  display: block;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--soft);
-}
-
-.vote-bar:hover span {
-  background: var(--text);
-}
-
 .composer-dock {
   position: fixed;
   right: 0;
@@ -377,13 +313,6 @@ button {
     font-size: 14px !important;
   }
 
-  .upvote-button {
-    top: 31px;
-    left: -2px;
-    width: 16px;
-    font-size: 15px;
-  }
-
   .composer-dock {
     z-index: 20;
     bottom: var(--safe-bottom);
@@ -409,18 +338,3 @@ button {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .upvote-button {
-    opacity: 0.45;
-  }
-
-  .upvote-button-active {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 1040px) {
-  .vote-rail {
-    display: none;
-  }
-}
