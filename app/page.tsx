@@ -24,12 +24,17 @@ export default function Home() {
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
+  const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
+  const isSendingQueuedMessageRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
 
-  const visibleMessages = useMemo(() => messages, [messages]);
+  const visibleMessages = useMemo(
+    () => [...messages, ...queuedMessages.map(queuedMessageToUiMessage)],
+    [messages, queuedMessages],
+  );
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -83,12 +88,36 @@ export default function Home() {
     scrollToBottom(status === "streaming" ? "auto" : "smooth");
   }, [status, visibleMessages]);
 
+  useEffect(() => {
+    if (isSending) {
+      isSendingQueuedMessageRef.current = false;
+      return;
+    }
+
+    if (isSendingQueuedMessageRef.current || queuedMessages.length === 0) {
+      return;
+    }
+
+    const [nextMessage, ...remainingMessages] = queuedMessages;
+
+    isSendingQueuedMessageRef.current = true;
+    setQueuedMessages(remainingMessages);
+    clearError();
+    shouldStickToBottomRef.current = true;
+
+    void sendMessage({ text: nextMessage.text })
+      .catch(() => {
+        // useChat exposes request failures through its error state.
+      })
+      .finally(focusComposer);
+  }, [clearError, isSending, queuedMessages, sendMessage]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedInput = input.trim();
 
-    if (!trimmedInput || isSending) {
+    if (!trimmedInput) {
       return;
     }
 
@@ -96,6 +125,17 @@ export default function Home() {
     clearError();
     shouldStickToBottomRef.current = true;
     focusComposer();
+
+    if (isSending) {
+      setQueuedMessages((currentMessages) => [
+        ...currentMessages,
+        {
+          id: `queued-${crypto.randomUUID()}`,
+          text: trimmedInput,
+        },
+      ]);
+      return;
+    }
 
     void sendMessage({ text: trimmedInput })
       .catch(() => {
@@ -194,14 +234,14 @@ export default function Home() {
 
           <button
             type="submit"
-            disabled={isSending || input.trim().length === 0}
+            disabled={input.trim().length === 0}
             onMouseDown={(event) => event.preventDefault()}
             onTouchStart={(event) => {
               event.preventDefault();
               event.currentTarget.form?.requestSubmit();
             }}
           >
-            {isSending ? "Sending" : "Send"}
+            Send
           </button>
         </form>
 
@@ -220,6 +260,24 @@ function getMessageText(message: UIMessage) {
 
 function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
+}
+
+type QueuedMessage = {
+  id: string;
+  text: string;
+};
+
+function queuedMessageToUiMessage(message: QueuedMessage): UIMessage {
+  return {
+    id: message.id,
+    role: "user",
+    parts: [
+      {
+        type: "text",
+        text: message.text,
+      },
+    ],
+  };
 }
 
 function messageElementId(messageId: string) {
