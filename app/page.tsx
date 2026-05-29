@@ -48,13 +48,27 @@ export default function Home() {
       }
     }
 
+    function updateMobileKeyboardOffset() {
+      const viewport = window.visualViewport;
+
+      if (!viewport || !isMobileViewport()) {
+        document.documentElement.style.setProperty("--keyboard-offset", "0px");
+        return;
+      }
+
+      const keyboardOffset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      document.documentElement.style.setProperty("--keyboard-offset", `${keyboardOffset}px`);
+    }
+
     function handlePageShow() {
       focusComposerSoon();
+      updateMobileKeyboardOffset();
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
         focusComposerSoon();
+        updateMobileKeyboardOffset();
       }
     }
 
@@ -76,9 +90,13 @@ export default function Home() {
     }
 
     focusComposerSoon();
+    updateMobileKeyboardOffset();
     window.addEventListener("keydown", handlePageKeyDown);
     window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("orientationchange", updateMobileKeyboardOffset);
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.visualViewport?.addEventListener("resize", updateMobileKeyboardOffset);
+    window.visualViewport?.addEventListener("scroll", updateMobileKeyboardOffset);
 
     return () => {
       for (const timer of focusTimers) {
@@ -87,7 +105,11 @@ export default function Home() {
 
       window.removeEventListener("keydown", handlePageKeyDown);
       window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("orientationchange", updateMobileKeyboardOffset);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.visualViewport?.removeEventListener("resize", updateMobileKeyboardOffset);
+      window.visualViewport?.removeEventListener("scroll", updateMobileKeyboardOffset);
+      document.documentElement.style.removeProperty("--keyboard-offset");
     };
   }, []);
 
@@ -253,7 +275,6 @@ export default function Home() {
             autoCapitalize="none"
             autoComplete="off"
             autoCorrect="off"
-            autoFocus
             enterKeyHint="send"
             inputMode="text"
             name="chat-message"
