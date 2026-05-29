@@ -276,17 +276,16 @@ export default function Home() {
       </section>
 
       <div className="composer-dock">
-        <form className="composer" onSubmit={handleSubmit}>
+        <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
           <textarea
             ref={inputRef}
-            aria-label="Message chat.inc"
+            aria-label="Message"
             autoCapitalize="none"
-            autoComplete="off"
+            autoComplete="new-password"
             autoCorrect="off"
             enterKeyHint="send"
             inputMode="text"
-            name="chat-message"
-            placeholder="Message chat.inc"
+            placeholder="Message"
             rows={1}
             spellCheck={false}
             value={input}
