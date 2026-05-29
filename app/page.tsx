@@ -220,9 +220,21 @@ export default function Home() {
           <textarea
             ref={inputRef}
             aria-label="Message chat.inc"
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect="off"
+            enterKeyHint="send"
+            inputMode="text"
+            name="chat-message"
             placeholder="Message chat.inc"
             rows={1}
+            spellCheck={false}
             value={input}
+            onBlur={() => {
+              if (isMobileViewport()) {
+                window.setTimeout(focusComposer, 0);
+              }
+            }}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
@@ -293,6 +305,10 @@ function isEditableTarget(target: EventTarget | null) {
     target.isContentEditable ||
     ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName)
   );
+}
+
+function isMobileViewport() {
+  return window.matchMedia("(pointer: coarse), (max-width: 640px)").matches;
 }
 
 function TypingIndicator() {
