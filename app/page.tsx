@@ -38,11 +38,32 @@ export default function Home() {
   );
 
   useEffect(() => {
-    inputRef.current?.focus();
+    const focusTimers: number[] = [];
+
+    function focusComposerSoon() {
+      focusComposer();
+      requestAnimationFrame(focusComposer);
+
+      for (const delay of [120, 350, 700]) {
+        focusTimers.push(window.setTimeout(focusComposer, delay));
+      }
+    }
 
     function updateVisualViewportHeight() {
       const viewportHeight = window.visualViewport?.height || window.innerHeight;
       document.documentElement.style.setProperty("--visual-viewport-height", `${viewportHeight}px`);
+    }
+
+    function handlePageShow() {
+      focusComposerSoon();
+      updateVisualViewportHeight();
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        focusComposerSoon();
+        updateVisualViewportHeight();
+      }
     }
 
     function handlePageKeyDown(event: KeyboardEvent) {
@@ -62,15 +83,24 @@ export default function Home() {
       inputRef.current?.focus();
     }
 
+    focusComposerSoon();
     updateVisualViewportHeight();
     window.addEventListener("keydown", handlePageKeyDown);
+    window.addEventListener("pageshow", handlePageShow);
     window.addEventListener("orientationchange", updateVisualViewportHeight);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     window.visualViewport?.addEventListener("resize", updateVisualViewportHeight);
     window.visualViewport?.addEventListener("scroll", updateVisualViewportHeight);
 
     return () => {
+      for (const timer of focusTimers) {
+        window.clearTimeout(timer);
+      }
+
       window.removeEventListener("keydown", handlePageKeyDown);
+      window.removeEventListener("pageshow", handlePageShow);
       window.removeEventListener("orientationchange", updateVisualViewportHeight);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.visualViewport?.removeEventListener("resize", updateVisualViewportHeight);
       window.visualViewport?.removeEventListener("scroll", updateVisualViewportHeight);
       document.documentElement.style.removeProperty("--visual-viewport-height");
@@ -262,6 +292,7 @@ export default function Home() {
             autoCapitalize="none"
             autoComplete="off"
             autoCorrect="off"
+            autoFocus
             enterKeyHint="send"
             inputMode="text"
             name="chat-message"
