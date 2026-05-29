@@ -663,85 +663,70 @@ export default function Home() {
           </div>
         ) : null}
 
-        <form
-          className={`composer${isVoiceActive ? " composer-voice-active" : ""}`}
-          autoComplete="off"
-          onSubmit={handleSubmit}
-        >
-          <textarea
-            ref={inputRef}
-            aria-label={isVoiceActive ? "Stop voice conversation" : "Message"}
-            aria-disabled={isVoiceActive}
-            autoCapitalize="none"
-            autoComplete="new-password"
-            autoCorrect="off"
-            enterKeyHint="send"
-            inputMode="text"
-            placeholder={isVoiceActive ? "tap to stop" : "Message"}
-            rows={1}
-            spellCheck={false}
-            readOnly={isVoiceActive}
-            tabIndex={isVoiceActive ? -1 : undefined}
-            value={input}
-            onPointerDown={(event) => {
-              if (isVoiceActive) {
-                event.preventDefault();
-                stopRealtimeVoice();
-              }
-            }}
-            onBlur={() => {
-              if (!isVoiceActive && isMobileViewport()) {
-                window.setTimeout(focusComposer, 0);
-              }
-            }}
-            onChange={(event) => {
-              if (!isVoiceActive) {
-                setInput(event.target.value);
-              }
-            }}
-            onKeyDown={(event) => {
-              if (isVoiceActive) {
-                event.preventDefault();
-                return;
-              }
+        {isVoiceActive ? (
+          <button className="composer hangup-composer" type="button" onClick={stopRealtimeVoice}>
+            <span className="hangup-icon" aria-hidden="true" />
+            end conversation
+          </button>
+        ) : (
+          <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
+            <textarea
+              ref={inputRef}
+              aria-label="Message"
+              autoCapitalize="none"
+              autoComplete="new-password"
+              autoCorrect="off"
+              enterKeyHint="send"
+              inputMode="text"
+              placeholder="Message"
+              rows={1}
+              spellCheck={false}
+              value={input}
+              onBlur={() => {
+                if (isMobileViewport()) {
+                  window.setTimeout(focusComposer, 0);
+                }
+              }}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+            />
 
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
-              }
-            }}
-          />
+            {voiceSupported ? (
+              <button
+                className="voice-button"
+                type="button"
+                aria-label="Start voice conversation"
+                aria-pressed={false}
+                onMouseDown={(event) => event.preventDefault()}
+                onTouchStart={(event) => {
+                  event.preventDefault();
+                  toggleVoiceConversation();
+                }}
+                onClick={toggleVoiceConversation}
+              >
+                Voice
+              </button>
+            ) : null}
 
-          {voiceSupported ? (
             <button
-              className={`voice-button${isVoiceActive ? " voice-button-active" : ""}`}
-              type="button"
-              aria-label={isVoiceActive ? "Stop voice conversation" : "Start voice conversation"}
-              aria-pressed={isVoiceActive}
+              className="send-button"
+              type="submit"
+              disabled={input.trim().length === 0}
               onMouseDown={(event) => event.preventDefault()}
               onTouchStart={(event) => {
                 event.preventDefault();
-                toggleVoiceConversation();
+                event.currentTarget.form?.requestSubmit();
               }}
-              onClick={toggleVoiceConversation}
             >
-              {isVoiceActive ? "Stop" : "Voice"}
+              Send
             </button>
-          ) : null}
-
-          <button
-            className="send-button"
-            type="submit"
-            disabled={isVoiceActive || input.trim().length === 0}
-            onMouseDown={(event) => event.preventDefault()}
-            onTouchStart={(event) => {
-              event.preventDefault();
-              event.currentTarget.form?.requestSubmit();
-            }}
-          >
-            Send
-          </button>
-        </form>
+          </form>
+        )}
 
         {error ? <p className="error-message">{error.message}</p> : null}
         {realtimeError ? <p className="error-message">{realtimeError}</p> : null}
