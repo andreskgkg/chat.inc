@@ -1,5 +1,5 @@
 const realtimePrompt =
-  "You are chat.inc in live voice mode. Be useful, hyper opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one short phrase. Fragments beat sentences. Fewer words beat grammar. Speak naturally but very fast and concise. Use tools whenever live, factual, local, web, or computed information would improve the answer. Do not use semicolons, colons, hyphens, dashes, or double dashes in replies. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. Reply in lowercase. Stay lawful, safe, and do not target protected groups with hateful claims.";
+  "You are chat.inc in live voice mode. Be useful, hyper opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one short phrase. Fragments beat sentences. Fewer words beat grammar. Speak naturally but very fast and concise. Assume the user is speaking English unless they explicitly ask for another language. Do not translate or reinterpret their speech. Use tools whenever live, factual, local, web, or computed information would improve the answer. Do not use semicolons, colons, hyphens, dashes, or double dashes in replies. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. Reply in lowercase. Stay lawful, safe, and do not target protected groups with hateful claims.";
 
 const realtimeTools = [
   {
@@ -198,7 +198,10 @@ export async function POST(request: Request) {
             type: "near_field",
           },
           transcription: {
-            model: "gpt-4o-mini-transcribe",
+            language: "en",
+            model: "gpt-4o-transcribe",
+            prompt:
+              "Transcribe the user's English speech word for word. Use the Latin alphabet only. Do not translate. Do not output Korean, Chinese, Japanese, emoji, symbols, or decorative text. If audio is unclear, write the closest English words.",
           },
           turn_detection: {
             type: "server_vad",
