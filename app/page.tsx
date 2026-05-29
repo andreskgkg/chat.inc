@@ -25,13 +25,21 @@ export default function Home() {
   });
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const finalVoiceTranscriptRef = useRef("");
+  const isListeningRef = useRef(false);
+  const isSendingRef = useRef(false);
+  const isSpeakingRef = useRef(false);
+  const startListeningRef = useRef<() => void>(() => {});
+  const spokenAssistantMessageIdRef = useRef(starterMessages[0].id);
   const submitTextRef = useRef<(text: string) => void>(() => {});
+  const voiceModeRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
@@ -127,13 +135,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    isListeningRef.current = isListening;
+    isSendingRef.current = isSending;
+    isSpeakingRef.current = isSpeaking;
+    startListeningRef.current = startListening;
     submitTextRef.current = submitText;
+    voiceModeRef.current = voiceMode;
   });
 
   useEffect(() => {
     const SpeechRecognition = getSpeechRecognition();
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognition || !("speechSynthesis" in window)) {
       return;
     }
 
@@ -157,15 +170,29 @@ export default function Home() {
 
       if (voiceText) {
         submitTextRef.current(voiceText);
+      } else if (voiceModeRef.current) {
+        startListeningSoon();
       } else {
         focusComposer();
       }
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
       setIsListening(false);
       finalVoiceTranscriptRef.current = "";
-      focusComposer();
+
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setVoiceMode(false);
+        voiceModeRef.current = false;
+        focusComposer();
+        return;
+      }
+
+      if (voiceModeRef.current) {
+        startListeningSoon();
+      } else {
+        focusComposer();
+      }
     };
 
     recognition.onresult = (event) => {
@@ -193,6 +220,7 @@ export default function Home() {
 
     return () => {
       recognition.abort();
+      window.speechSynthesis.cancel();
       recognitionRef.current = null;
     };
   }, []);
@@ -248,6 +276,26 @@ export default function Home() {
       .finally(focusComposer);
   }, [clearError, isSending, queuedMessages, sendMessage]);
 
+  useEffect(() => {
+    if (!voiceMode || isSending || isSpeaking) {
+      return;
+    }
+
+    const latestAssistantMessage = getLatestAssistantMessage(messages);
+    const assistantText = latestAssistantMessage ? getMessageText(latestAssistantMessage).trim() : "";
+
+    if (
+      !latestAssistantMessage ||
+      !assistantText ||
+      spokenAssistantMessageIdRef.current === latestAssistantMessage.id
+    ) {
+      return;
+    }
+
+    spokenAssistantMessageIdRef.current = latestAssistantMessage.id;
+    speakAssistantResponse(assistantText);
+  }, [isSending, isSpeaking, messages, voiceMode]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     submitText(input);
@@ -283,24 +331,85 @@ export default function Home() {
       .finally(focusComposer);
   }
 
-  function toggleVoiceInput() {
-    const recognition = recognitionRef.current;
-
-    if (!recognition) {
+  function toggleVoiceConversation() {
+    if (voiceMode) {
+      stopVoiceConversation();
       return;
     }
 
-    if (isListening) {
-      recognition.stop();
+    const latestAssistantMessage = getLatestAssistantMessage(messages);
+
+    spokenAssistantMessageIdRef.current = latestAssistantMessage?.id ?? starterMessages[0].id;
+    setInput("");
+    setVoiceMode(true);
+    voiceModeRef.current = true;
+    window.speechSynthesis.cancel();
+    startListeningSoon();
+  }
+
+  function stopVoiceConversation() {
+    setVoiceMode(false);
+    voiceModeRef.current = false;
+    finalVoiceTranscriptRef.current = "";
+    recognitionRef.current?.abort();
+    window.speechSynthesis.cancel();
+    setIsListening(false);
+    setIsSpeaking(false);
+    focusComposer();
+  }
+
+  function startListening() {
+    const recognition = recognitionRef.current;
+
+    if (!recognition || isListeningRef.current || isSendingRef.current || isSpeakingRef.current) {
       return;
     }
 
     try {
       finalVoiceTranscriptRef.current = "";
+      setInput("");
       recognition.start();
     } catch {
       setIsListening(false);
     }
+  }
+
+  function startListeningSoon() {
+    window.setTimeout(() => startListeningRef.current(), 250);
+  }
+
+  function speakAssistantResponse(text: string) {
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+
+      if (voiceModeRef.current) {
+        startListeningSoon();
+      } else {
+        focusComposer();
+      }
+    };
+
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+
+      if (voiceModeRef.current) {
+        startListeningSoon();
+      } else {
+        focusComposer();
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
   }
 
   function focusComposer() {
@@ -404,18 +513,18 @@ export default function Home() {
 
           {voiceSupported ? (
             <button
-              className={`voice-button${isListening ? " voice-button-active" : ""}`}
+              className={`voice-button${voiceMode ? " voice-button-active" : ""}`}
               type="button"
-              aria-label={isListening ? "Stop voice input" : "Start voice input"}
-              aria-pressed={isListening}
+              aria-label={voiceMode ? "Stop voice conversation" : "Start voice conversation"}
+              aria-pressed={voiceMode}
               onMouseDown={(event) => event.preventDefault()}
               onTouchStart={(event) => {
                 event.preventDefault();
-                toggleVoiceInput();
+                toggleVoiceConversation();
               }}
-              onClick={toggleVoiceInput}
+              onClick={toggleVoiceConversation}
             >
-              {isListening ? "Stop" : "Mic"}
+              {voiceMode ? "Stop" : "Voice"}
             </button>
           ) : null}
 
@@ -444,6 +553,16 @@ function getMessageText(message: UIMessage) {
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
+}
+
+function getLatestAssistantMessage(messages: UIMessage[]) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "assistant") {
+      return messages[index];
+    }
+  }
+
+  return null;
 }
 
 function formatMessageText(message: UIMessage, text: string) {
@@ -506,9 +625,13 @@ type BrowserSpeechRecognition = {
   start: () => void;
   stop: () => void;
   onend: (() => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: BrowserSpeechRecognitionErrorEvent) => void) | null;
   onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
   onstart: (() => void) | null;
+};
+
+type BrowserSpeechRecognitionErrorEvent = {
+  error: string;
 };
 
 type BrowserSpeechRecognitionEvent = {
