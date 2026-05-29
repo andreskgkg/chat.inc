@@ -11,7 +11,7 @@ const starterMessages: UIMessage[] = [
     parts: [
       {
         type: "text",
-        text: "ask and get the shortest useful answer.",
+        text: "get the shortest useful answer, fast.",
       },
     ],
   },
