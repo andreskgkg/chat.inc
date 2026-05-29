@@ -53,6 +53,10 @@ export default function Home() {
     const focusTimers: number[] = [];
 
     function focusComposerSoon() {
+      if (isMobileViewport()) {
+        return;
+      }
+
       focusComposer();
       requestAnimationFrame(focusComposer);
 
