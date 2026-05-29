@@ -31,6 +31,7 @@ export default function Home() {
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const processedToolCallIdsRef = useRef<Set<string>>(new Set());
   const realtimeSessionRef = useRef<RealtimeSession | null>(null);
   const voiceActiveRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
@@ -251,6 +252,7 @@ export default function Home() {
 
     setRealtimeError(null);
     voiceActiveRef.current = true;
+    processedToolCallIdsRef.current.clear();
     setRealtimeStatus("connecting");
     setInput("");
     inputRef.current?.blur();
@@ -377,7 +379,11 @@ export default function Home() {
           replaceAssistantTranscript(event);
         }
         break;
+      case "response.function_call_arguments.done":
+        void handleRealtimeToolCall(event);
+        break;
       case "response.done":
+        void handleRealtimeResponseDone(event);
         setRealtimeStatus("listening");
         if (realtimeSessionRef.current) {
           realtimeSessionRef.current.activeAssistantItemId = null;
@@ -390,6 +396,68 @@ export default function Home() {
       default:
         break;
     }
+  }
+
+  async function handleRealtimeResponseDone(event: RealtimeServerEvent) {
+    const toolCalls =
+      event.response?.output?.filter((item) => item.type === "function_call") || [];
+
+    for (const toolCall of toolCalls) {
+      await handleRealtimeToolCall(toolCall);
+    }
+  }
+
+  async function handleRealtimeToolCall(toolCall: RealtimeToolCall) {
+    const dataChannel = realtimeSessionRef.current?.dataChannel;
+    const callId = toolCall.call_id;
+
+    if (!dataChannel || dataChannel.readyState !== "open" || !callId) {
+      return;
+    }
+
+    if (processedToolCallIdsRef.current.has(callId)) {
+      return;
+    }
+
+    processedToolCallIdsRef.current.add(callId);
+    setRealtimeStatus("thinking");
+
+    let output: unknown;
+
+    try {
+      const response = await fetch("/api/realtime/tool", {
+        method: "POST",
+        body: JSON.stringify({
+          arguments: parseToolArguments(toolCall.arguments),
+          name: toolCall.name,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      output = await response.json();
+    } catch (error) {
+      output = {
+        error: error instanceof Error ? error.message : "tool failed",
+      };
+    }
+
+    dataChannel.send(
+      JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "function_call_output",
+          call_id: callId,
+          output: JSON.stringify(output),
+        },
+      }),
+    );
+    dataChannel.send(
+      JSON.stringify({
+        type: "response.create",
+      }),
+    );
   }
 
   function appendRealtimeMessage(role: "assistant" | "user", text: string | undefined, itemId?: string) {
@@ -697,6 +765,20 @@ function closeRealtimeSession(session: RealtimeSession | null) {
   session.audioElement.srcObject = null;
 }
 
+function parseToolArguments(argumentsText: string | undefined) {
+  if (!argumentsText) {
+    return {};
+  }
+
+  try {
+    const parsedArguments = JSON.parse(argumentsText);
+
+    return parsedArguments && typeof parsedArguments === "object" ? parsedArguments : {};
+  } catch {
+    return {};
+  }
+}
+
 type RealtimeSession = {
   activeAssistantItemId: string | null;
   activeAssistantMessageId: string | null;
@@ -715,8 +797,21 @@ type RealtimeServerEvent = {
     message?: string;
   };
   item_id?: string;
+  name?: string;
+  arguments?: string;
+  call_id?: string;
+  response?: {
+    output?: RealtimeToolCall[];
+  };
   response_id?: string;
   transcript?: string;
+};
+
+type RealtimeToolCall = {
+  arguments?: string;
+  call_id?: string;
+  name?: string;
+  type?: string;
 };
 
 function TypingIndicator() {
