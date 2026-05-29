@@ -585,6 +585,7 @@ export default function Home() {
   }
 
   const voiceStatusText = getRealtimeStatusText(realtimeStatus);
+  const voiceStatusDetail = getRealtimeStatusDetail(realtimeStatus);
 
   return (
     <main className="app-shell">
@@ -633,6 +634,20 @@ export default function Home() {
       </section>
 
       <div className="composer-dock">
+        {isVoiceActive ? (
+          <div className={`voice-status voice-status-${realtimeStatus}`} aria-live="polite">
+            <div className="voice-orb" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="voice-status-copy">
+              <p>{voiceStatusText}</p>
+              <span>{voiceStatusDetail}</span>
+            </div>
+          </div>
+        ) : null}
+
         <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
           <textarea
             ref={inputRef}
@@ -757,12 +772,28 @@ function getRealtimeStatusText(status: RealtimeStatus) {
     case "thinking":
       return "thinking";
     case "speaking":
-      return "speaking";
+      return "talking";
     case "listening":
       return "listening";
     case "idle":
     default:
       return "Message";
+  }
+}
+
+function getRealtimeStatusDetail(status: RealtimeStatus) {
+  switch (status) {
+    case "connecting":
+      return "opening mic";
+    case "thinking":
+      return "getting answer";
+    case "speaking":
+      return "interrupt anytime";
+    case "listening":
+      return "speak now";
+    case "idle":
+    default:
+      return "";
   }
 }
 
