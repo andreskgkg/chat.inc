@@ -24,29 +24,27 @@ export default function Home() {
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceMode, setVoiceMode] = useState(false);
+  const [realtimeError, setRealtimeError] = useState<string | null>(null);
+  const [realtimeMessages, setRealtimeMessages] = useState<UIMessage[]>([]);
+  const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>("idle");
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
-  const finalVoiceTranscriptRef = useRef("");
-  const isListeningRef = useRef(false);
-  const isSendingRef = useRef(false);
-  const isSpeakingRef = useRef(false);
-  const startListeningRef = useRef<() => void>(() => {});
-  const spokenAssistantMessageIdRef = useRef(starterMessages[0].id);
-  const submitTextRef = useRef<(text: string) => void>(() => {});
-  const voiceModeRef = useRef(false);
+  const realtimeSessionRef = useRef<RealtimeSession | null>(null);
+  const voiceActiveRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
+  const isVoiceActive = realtimeStatus !== "idle";
 
   const visibleMessages = useMemo(
-    () => [...messages, ...queuedMessages.map(queuedMessageToUiMessage)],
-    [messages, queuedMessages],
+    () => [
+      ...messages,
+      ...realtimeMessages,
+      ...queuedMessages.map(queuedMessageToUiMessage),
+    ],
+    [messages, queuedMessages, realtimeMessages],
   );
 
   useEffect(() => {
@@ -94,6 +92,7 @@ export default function Home() {
 
     function handlePageKeyDown(event: KeyboardEvent) {
       if (
+        voiceActiveRef.current ||
         event.defaultPrevented ||
         event.metaKey ||
         event.ctrlKey ||
@@ -135,93 +134,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    isListeningRef.current = isListening;
-    isSendingRef.current = isSending;
-    isSpeakingRef.current = isSpeaking;
-    startListeningRef.current = startListening;
-    submitTextRef.current = submitText;
-    voiceModeRef.current = voiceMode;
-  });
+    voiceActiveRef.current = isVoiceActive;
+  }, [isVoiceActive]);
 
   useEffect(() => {
-    const SpeechRecognition = getSpeechRecognition();
-
-    if (!SpeechRecognition || !("speechSynthesis" in window)) {
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-    recognitionRef.current = recognition;
-    setVoiceSupported(true);
-
-    recognition.onstart = () => {
-      finalVoiceTranscriptRef.current = "";
-      setIsListening(true);
-    };
-
-    recognition.onend = () => {
-      const voiceText = finalVoiceTranscriptRef.current.trim();
-
-      setIsListening(false);
-      finalVoiceTranscriptRef.current = "";
-
-      if (voiceText) {
-        submitTextRef.current(voiceText);
-      } else if (voiceModeRef.current) {
-        startListeningSoon();
-      } else {
-        focusComposer();
-      }
-    };
-
-    recognition.onerror = (event) => {
-      setIsListening(false);
-      finalVoiceTranscriptRef.current = "";
-
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setVoiceMode(false);
-        voiceModeRef.current = false;
-        focusComposer();
-        return;
-      }
-
-      if (voiceModeRef.current) {
-        startListeningSoon();
-      } else {
-        focusComposer();
-      }
-    };
-
-    recognition.onresult = (event) => {
-      let interimTranscript = "";
-      let finalTranscript = "";
-
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const transcript = event.results[index][0]?.transcript ?? "";
-
-        if (event.results[index].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-
-      finalVoiceTranscriptRef.current = [
-        finalVoiceTranscriptRef.current,
-        finalTranscript.trim(),
-      ]
-        .filter(Boolean)
-        .join(" ");
-      setInput([finalVoiceTranscriptRef.current, interimTranscript.trim()].filter(Boolean).join(" "));
-    };
+    setVoiceSupported(
+      Boolean(window.RTCPeerConnection && navigator.mediaDevices?.getUserMedia),
+    );
 
     return () => {
-      recognition.abort();
-      window.speechSynthesis.cancel();
-      recognitionRef.current = null;
+      const session = realtimeSessionRef.current;
+      realtimeSessionRef.current = null;
+      closeRealtimeSession(session);
     };
   }, []);
 
@@ -276,26 +200,6 @@ export default function Home() {
       .finally(focusComposer);
   }, [clearError, isSending, queuedMessages, sendMessage]);
 
-  useEffect(() => {
-    if (!voiceMode || isSending || isSpeaking) {
-      return;
-    }
-
-    const latestAssistantMessage = getLatestAssistantMessage(messages);
-    const assistantText = latestAssistantMessage ? getMessageText(latestAssistantMessage).trim() : "";
-
-    if (
-      !latestAssistantMessage ||
-      !assistantText ||
-      spokenAssistantMessageIdRef.current === latestAssistantMessage.id
-    ) {
-      return;
-    }
-
-    spokenAssistantMessageIdRef.current = latestAssistantMessage.id;
-    speakAssistantResponse(assistantText);
-  }, [isSending, isSpeaking, messages, voiceMode]);
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     submitText(input);
@@ -332,87 +236,243 @@ export default function Home() {
   }
 
   function toggleVoiceConversation() {
-    if (voiceMode) {
-      stopVoiceConversation();
+    if (isVoiceActive) {
+      stopRealtimeVoice();
       return;
     }
 
-    const latestAssistantMessage = getLatestAssistantMessage(messages);
-
-    spokenAssistantMessageIdRef.current = latestAssistantMessage?.id ?? starterMessages[0].id;
-    setInput("");
-    setVoiceMode(true);
-    voiceModeRef.current = true;
-    window.speechSynthesis.cancel();
-    startListeningSoon();
+    void startRealtimeVoice();
   }
 
-  function stopVoiceConversation() {
-    setVoiceMode(false);
-    voiceModeRef.current = false;
-    finalVoiceTranscriptRef.current = "";
-    recognitionRef.current?.abort();
-    window.speechSynthesis.cancel();
-    setIsListening(false);
-    setIsSpeaking(false);
+  async function startRealtimeVoice() {
+    if (!voiceSupported || realtimeSessionRef.current) {
+      return;
+    }
+
+    setRealtimeError(null);
+    voiceActiveRef.current = true;
+    setRealtimeStatus("connecting");
+    setInput("");
+    inputRef.current?.blur();
+
+    try {
+      const peerConnection = new RTCPeerConnection();
+      const dataChannel = peerConnection.createDataChannel("oai-events");
+      const audioElement = document.createElement("audio");
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          autoGainControl: true,
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+      });
+
+      audioElement.autoplay = true;
+      audioElement.setAttribute("playsinline", "true");
+      peerConnection.ontrack = (event) => {
+        audioElement.srcObject = event.streams[0];
+        void audioElement.play().catch(() => {
+          setRealtimeError("tap voice again to enable audio");
+        });
+      };
+
+      for (const track of mediaStream.getAudioTracks()) {
+        peerConnection.addTrack(track, mediaStream);
+      }
+
+      const session: RealtimeSession = {
+        activeAssistantItemId: null,
+        activeAssistantMessageId: null,
+        audioElement,
+        dataChannel,
+        mediaStream,
+        peerConnection,
+      };
+
+      realtimeSessionRef.current = session;
+
+      dataChannel.addEventListener("open", () => {
+        setRealtimeStatus("listening");
+      });
+      dataChannel.addEventListener("message", (event) => {
+        handleRealtimeEvent(JSON.parse(event.data) as RealtimeServerEvent);
+      });
+      dataChannel.addEventListener("close", () => {
+        if (realtimeSessionRef.current === session) {
+          setRealtimeStatus("idle");
+        }
+      });
+      peerConnection.addEventListener("connectionstatechange", () => {
+        if (
+          realtimeSessionRef.current === session &&
+          ["disconnected", "failed"].includes(peerConnection.connectionState)
+        ) {
+          stopRealtimeVoice();
+        }
+      });
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      const response = await fetch("/api/realtime/call", {
+        method: "POST",
+        body: offer.sdp,
+        headers: {
+          "Content-Type": "application/sdp",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error((await response.text()) || "voice connection failed");
+      }
+
+      await peerConnection.setRemoteDescription({
+        type: "answer",
+        sdp: await response.text(),
+      });
+    } catch (error) {
+      const session = realtimeSessionRef.current;
+      realtimeSessionRef.current = null;
+      closeRealtimeSession(session);
+      voiceActiveRef.current = false;
+      setRealtimeStatus("idle");
+      setRealtimeError(error instanceof Error ? error.message : "voice connection failed");
+      focusComposer();
+    }
+  }
+
+  function stopRealtimeVoice() {
+    const session = realtimeSessionRef.current;
+    realtimeSessionRef.current = null;
+    closeRealtimeSession(session);
+    voiceActiveRef.current = false;
+    setRealtimeStatus("idle");
+    setRealtimeError(null);
     focusComposer();
   }
 
-  function startListening() {
-    const recognition = recognitionRef.current;
+  function handleRealtimeEvent(event: RealtimeServerEvent) {
+    switch (event.type) {
+      case "input_audio_buffer.speech_started":
+        setRealtimeStatus("listening");
+        realtimeSessionRef.current?.dataChannel.send(JSON.stringify({ type: "response.cancel" }));
+        break;
+      case "input_audio_buffer.speech_stopped":
+        setRealtimeStatus("thinking");
+        break;
+      case "conversation.item.input_audio_transcription.completed":
+        appendRealtimeMessage("user", event.transcript, event.item_id);
+        break;
+      case "response.output_audio.delta":
+      case "response.audio.delta":
+        setRealtimeStatus("speaking");
+        break;
+      case "response.output_audio_transcript.delta":
+      case "response.audio_transcript.delta":
+        appendAssistantTranscriptDelta(event);
+        break;
+      case "response.output_audio_transcript.done":
+      case "response.audio_transcript.done":
+        if (event.transcript) {
+          replaceAssistantTranscript(event);
+        }
+        break;
+      case "response.done":
+        setRealtimeStatus("listening");
+        if (realtimeSessionRef.current) {
+          realtimeSessionRef.current.activeAssistantItemId = null;
+          realtimeSessionRef.current.activeAssistantMessageId = null;
+        }
+        break;
+      case "error":
+        setRealtimeError(event.error?.message || "voice error");
+        break;
+      default:
+        break;
+    }
+  }
 
-    if (!recognition || isListeningRef.current || isSendingRef.current || isSpeakingRef.current) {
+  function appendRealtimeMessage(role: "assistant" | "user", text: string | undefined, itemId?: string) {
+    const trimmedText = text?.trim();
+
+    if (!trimmedText) {
       return;
     }
 
-    try {
-      finalVoiceTranscriptRef.current = "";
-      setInput("");
-      recognition.start();
-    } catch {
-      setIsListening(false);
+    const messageId = `realtime-${role}-${itemId || crypto.randomUUID()}`;
+
+    setRealtimeMessages((currentMessages) => [
+      ...currentMessages.filter((message) => message.id !== messageId),
+      textToUiMessage(messageId, role, trimmedText),
+    ]);
+    shouldStickToBottomRef.current = true;
+  }
+
+  function appendAssistantTranscriptDelta(event: RealtimeServerEvent) {
+    const delta = event.delta || "";
+
+    if (!delta) {
+      return;
     }
+
+    const session = realtimeSessionRef.current;
+
+    if (!session) {
+      return;
+    }
+
+    const itemId = event.item_id || event.response_id || "assistant";
+
+    if (session.activeAssistantItemId !== itemId) {
+      session.activeAssistantItemId = itemId;
+      session.activeAssistantMessageId = `realtime-assistant-${itemId}`;
+      setRealtimeMessages((currentMessages) => [
+        ...currentMessages,
+        textToUiMessage(session.activeAssistantMessageId as string, "assistant", delta),
+      ]);
+      shouldStickToBottomRef.current = true;
+      return;
+    }
+
+    const messageId = session.activeAssistantMessageId;
+
+    if (!messageId) {
+      return;
+    }
+
+    setRealtimeMessages((currentMessages) =>
+      currentMessages.map((message) =>
+        message.id === messageId
+          ? textToUiMessage(message.id, "assistant", `${getMessageText(message)}${delta}`)
+          : message,
+      ),
+    );
+    shouldStickToBottomRef.current = true;
   }
 
-  function startListeningSoon() {
-    window.setTimeout(() => startListeningRef.current(), 250);
-  }
+  function replaceAssistantTranscript(event: RealtimeServerEvent) {
+    const session = realtimeSessionRef.current;
+    const messageId = session?.activeAssistantMessageId;
 
-  function speakAssistantResponse(text: string) {
-    window.speechSynthesis.cancel();
+    if (!messageId || !event.transcript?.trim()) {
+      return;
+    }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 1;
-
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-    };
-
-    utterance.onend = () => {
-      setIsSpeaking(false);
-
-      if (voiceModeRef.current) {
-        startListeningSoon();
-      } else {
-        focusComposer();
-      }
-    };
-
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-
-      if (voiceModeRef.current) {
-        startListeningSoon();
-      } else {
-        focusComposer();
-      }
-    };
-
-    window.speechSynthesis.speak(utterance);
+    setRealtimeMessages((currentMessages) =>
+      currentMessages.map((message) =>
+        message.id === messageId
+          ? textToUiMessage(message.id, "assistant", event.transcript as string)
+          : message,
+      ),
+    );
+    shouldStickToBottomRef.current = true;
   }
 
   function focusComposer() {
+    if (voiceActiveRef.current) {
+      return;
+    }
+
     const composer = inputRef.current;
 
     if (!composer) {
@@ -436,6 +496,8 @@ export default function Home() {
 
     return distanceFromBottom < 220;
   }
+
+  const voiceStatusText = getRealtimeStatusText(realtimeStatus);
 
   return (
     <main className="app-shell">
@@ -493,12 +555,12 @@ export default function Home() {
             autoCorrect="off"
             enterKeyHint="send"
             inputMode="text"
-            placeholder="Message"
+            placeholder={isVoiceActive ? voiceStatusText : "Message"}
             rows={1}
             spellCheck={false}
             value={input}
             onBlur={() => {
-              if (isMobileViewport()) {
+              if (!isVoiceActive && isMobileViewport()) {
                 window.setTimeout(focusComposer, 0);
               }
             }}
@@ -513,10 +575,10 @@ export default function Home() {
 
           {voiceSupported ? (
             <button
-              className={`voice-button${voiceMode ? " voice-button-active" : ""}`}
+              className={`voice-button${isVoiceActive ? " voice-button-active" : ""}`}
               type="button"
-              aria-label={voiceMode ? "Stop voice conversation" : "Start voice conversation"}
-              aria-pressed={voiceMode}
+              aria-label={isVoiceActive ? "Stop voice conversation" : "Start voice conversation"}
+              aria-pressed={isVoiceActive}
               onMouseDown={(event) => event.preventDefault()}
               onTouchStart={(event) => {
                 event.preventDefault();
@@ -524,7 +586,7 @@ export default function Home() {
               }}
               onClick={toggleVoiceConversation}
             >
-              {voiceMode ? "Stop" : "Voice"}
+              {isVoiceActive ? "Stop" : "Voice"}
             </button>
           ) : null}
 
@@ -543,6 +605,7 @@ export default function Home() {
         </form>
 
         {error ? <p className="error-message">{error.message}</p> : null}
+        {realtimeError ? <p className="error-message">{realtimeError}</p> : null}
       </div>
     </main>
   );
@@ -555,16 +618,6 @@ function getMessageText(message: UIMessage) {
     .join("");
 }
 
-function getLatestAssistantMessage(messages: UIMessage[]) {
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    if (messages[index].role === "assistant") {
-      return messages[index];
-    }
-  }
-
-  return null;
-}
-
 function formatMessageText(message: UIMessage, text: string) {
   return message.role === "assistant" ? text.toLocaleLowerCase() : text;
 }
@@ -575,13 +628,17 @@ type QueuedMessage = {
 };
 
 function queuedMessageToUiMessage(message: QueuedMessage): UIMessage {
+  return textToUiMessage(message.id, "user", message.text);
+}
+
+function textToUiMessage(id: string, role: "assistant" | "user", text: string): UIMessage {
   return {
-    id: message.id,
-    role: "user",
+    id,
+    role,
     parts: [
       {
         type: "text",
-        text: message.text,
+        text,
       },
     ],
   };
@@ -606,45 +663,60 @@ function isMobileViewport() {
   return window.matchMedia("(pointer: coarse), (max-width: 640px)").matches;
 }
 
-function getSpeechRecognition() {
-  const speechWindow = window as Window & {
-    SpeechRecognition?: BrowserSpeechRecognitionConstructor;
-    webkitSpeechRecognition?: BrowserSpeechRecognitionConstructor;
-  };
-
-  return speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition ?? null;
+function getRealtimeStatusText(status: RealtimeStatus) {
+  switch (status) {
+    case "connecting":
+      return "connecting";
+    case "thinking":
+      return "thinking";
+    case "speaking":
+      return "speaking";
+    case "listening":
+      return "listening";
+    case "idle":
+    default:
+      return "Message";
+  }
 }
 
-type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
+function closeRealtimeSession(session: RealtimeSession | null) {
+  if (!session) {
+    return;
+  }
 
-type BrowserSpeechRecognition = {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  abort: () => void;
-  start: () => void;
-  stop: () => void;
-  onend: (() => void) | null;
-  onerror: ((event: BrowserSpeechRecognitionErrorEvent) => void) | null;
-  onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
-  onstart: (() => void) | null;
+  if (session.dataChannel.readyState !== "closed") {
+    session.dataChannel.close();
+  }
+
+  if (session.peerConnection.connectionState !== "closed") {
+    session.peerConnection.close();
+  }
+
+  session.mediaStream.getTracks().forEach((track) => track.stop());
+  session.audioElement.pause();
+  session.audioElement.srcObject = null;
+}
+
+type RealtimeSession = {
+  activeAssistantItemId: string | null;
+  activeAssistantMessageId: string | null;
+  audioElement: HTMLAudioElement;
+  dataChannel: RTCDataChannel;
+  mediaStream: MediaStream;
+  peerConnection: RTCPeerConnection;
 };
 
-type BrowserSpeechRecognitionErrorEvent = {
-  error: string;
-};
+type RealtimeStatus = "idle" | "connecting" | "listening" | "thinking" | "speaking";
 
-type BrowserSpeechRecognitionEvent = {
-  resultIndex: number;
-  results: {
-    length: number;
-    [index: number]: {
-      isFinal: boolean;
-      [index: number]: {
-        transcript: string;
-      };
-    };
+type RealtimeServerEvent = {
+  type: string;
+  delta?: string;
+  error?: {
+    message?: string;
   };
+  item_id?: string;
+  response_id?: string;
+  transcript?: string;
 };
 
 function TypingIndicator() {
