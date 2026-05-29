@@ -26,7 +26,6 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const composerDockRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
@@ -51,17 +50,21 @@ export default function Home() {
 
     function updateMobileComposerPosition() {
       const viewport = window.visualViewport;
-      const composerDock = composerDockRef.current;
 
-      if (!viewport || !composerDock || !isMobileViewport()) {
-        document.documentElement.style.setProperty("--composer-top", "auto");
-        document.documentElement.style.setProperty("--composer-bottom", "0px");
+      if (!viewport || !isMobileViewport()) {
+        document.documentElement.style.setProperty("--keyboard-offset", "0px");
+        document.body.classList.remove("mobile-keyboard-open");
         return;
       }
 
-      const composerTop = Math.max(0, viewport.offsetTop + viewport.height - composerDock.offsetHeight);
-      document.documentElement.style.setProperty("--composer-top", `${composerTop}px`);
-      document.documentElement.style.setProperty("--composer-bottom", "auto");
+      const keyboardOffset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      document.documentElement.style.setProperty("--keyboard-offset", `${keyboardOffset}px`);
+
+      if (document.activeElement === inputRef.current && keyboardOffset > 0) {
+        document.body.classList.add("mobile-keyboard-open");
+      } else {
+        document.body.classList.remove("mobile-keyboard-open");
+      }
     }
 
     function handlePageShow() {
@@ -113,8 +116,8 @@ export default function Home() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.visualViewport?.removeEventListener("resize", updateMobileComposerPosition);
       window.visualViewport?.removeEventListener("scroll", updateMobileComposerPosition);
-      document.documentElement.style.removeProperty("--composer-top");
-      document.documentElement.style.removeProperty("--composer-bottom");
+      document.documentElement.style.removeProperty("--keyboard-offset");
+      document.body.classList.remove("mobile-keyboard-open");
     };
   }, []);
 
@@ -272,7 +275,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="composer-dock" ref={composerDockRef}>
+      <div className="composer-dock">
         <form className="composer" onSubmit={handleSubmit}>
           <textarea
             ref={inputRef}
