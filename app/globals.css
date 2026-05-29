@@ -239,82 +239,6 @@ button {
   opacity: 0.22;
 }
 
-.voice-status {
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
-  width: min(100%, var(--chat-width));
-  margin: 0 auto 10px;
-  border: 1px solid rgba(29, 29, 31, 0.08);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 12px 34px rgba(29, 29, 31, 0.07);
-  padding: 10px 14px;
-  backdrop-filter: blur(16px);
-}
-
-.voice-orb {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  background: var(--text);
-}
-
-.voice-orb span {
-  width: 4px;
-  height: 8px;
-  border-radius: 999px;
-  animation: voice-wave 820ms infinite ease-in-out;
-  background: var(--surface);
-}
-
-.voice-orb span:nth-child(2) {
-  animation-delay: 110ms;
-}
-
-.voice-orb span:nth-child(3) {
-  animation-delay: 220ms;
-}
-
-.voice-status-listening .voice-orb {
-  animation: voice-pulse 1.25s infinite ease-in-out;
-}
-
-.voice-status-thinking .voice-orb span {
-  height: 4px;
-  animation-name: pulse;
-}
-
-.voice-status-copy {
-  min-width: 0;
-}
-
-.voice-status-copy p,
-.voice-status-copy span {
-  display: block;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  letter-spacing: -0.035em;
-}
-
-.voice-status-copy p {
-  color: var(--text);
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.voice-status-copy span {
-  color: var(--muted);
-  font-size: 13px;
-}
-
 .voice-button {
   min-width: 48px !important;
   background: #f0f0ee !important;
@@ -409,30 +333,6 @@ button {
   }
 }
 
-@keyframes voice-wave {
-  0%,
-  100% {
-    height: 8px;
-    opacity: 0.55;
-  }
-
-  50% {
-    height: 20px;
-    opacity: 1;
-  }
-}
-
-@keyframes voice-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(29, 29, 31, 0.18);
-  }
-
-  50% {
-    box-shadow: 0 0 0 10px rgba(29, 29, 31, 0);
-  }
-}
-
 @media (max-width: 640px) {
   :root {
     --page-gutter: 18px;
@@ -472,18 +372,6 @@ button {
   .composer-dock {
     z-index: 20;
     padding: 8px var(--page-gutter) 8px;
-  }
-
-  .voice-status {
-    grid-template-columns: 40px minmax(0, 1fr);
-    margin-bottom: 8px;
-    border-radius: 22px;
-    padding: 8px 12px;
-  }
-
-  .voice-orb {
-    width: 40px;
-    height: 40px;
   }
 
   .composer {

@@ -44,9 +44,12 @@ export default function Home() {
     () => [
       ...messages,
       ...realtimeMessages,
+      ...(realtimeStatus === "listening"
+        ? [textToUiMessage("realtime-status-listening", "assistant", "listening")]
+        : []),
       ...queuedMessages.map(queuedMessageToUiMessage),
     ],
-    [messages, queuedMessages, realtimeMessages],
+    [messages, queuedMessages, realtimeMessages, realtimeStatus],
   );
 
   useEffect(() => {
@@ -599,9 +602,6 @@ export default function Home() {
     return distanceFromBottom < 220;
   }
 
-  const voiceStatusText = getRealtimeStatusText(realtimeStatus);
-  const voiceStatusDetail = getRealtimeStatusDetail(realtimeStatus);
-
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -649,20 +649,6 @@ export default function Home() {
       </section>
 
       <div className="composer-dock">
-        {isVoiceActive ? (
-          <div className={`voice-status voice-status-${realtimeStatus}`} aria-live="polite">
-            <div className="voice-orb" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-            <div className="voice-status-copy">
-              <p>{voiceStatusText}</p>
-              <span>{voiceStatusDetail}</span>
-            </div>
-          </div>
-        ) : null}
-
         {isVoiceActive ? (
           <button className="composer hangup-composer" type="button" onClick={stopRealtimeVoice}>
             <span className="hangup-icon" aria-hidden="true" />
@@ -800,38 +786,6 @@ function isEditableTarget(target: EventTarget | null) {
 
 function isMobileViewport() {
   return window.matchMedia("(pointer: coarse), (max-width: 640px)").matches;
-}
-
-function getRealtimeStatusText(status: RealtimeStatus) {
-  switch (status) {
-    case "connecting":
-      return "connecting";
-    case "thinking":
-      return "thinking";
-    case "speaking":
-      return "talking";
-    case "listening":
-      return "listening";
-    case "idle":
-    default:
-      return "Message";
-  }
-}
-
-function getRealtimeStatusDetail(status: RealtimeStatus) {
-  switch (status) {
-    case "connecting":
-      return "opening mic";
-    case "thinking":
-      return "getting answer";
-    case "speaking":
-      return "interrupt anytime";
-    case "listening":
-      return "speak now";
-    case "idle":
-    default:
-      return "";
-  }
 }
 
 function closeRealtimeSession(session: RealtimeSession | null) {
