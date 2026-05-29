@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
-
 :root {
   color-scheme: light;
   --background: #f7f7f5;
@@ -155,13 +153,6 @@ button {
   letter-spacing: -0.035em;
   line-height: 1.42;
   overflow-wrap: anywhere;
-}
-
-.message:not(.message-user) .message-text p {
-  font-family: "VT323", "Courier New", monospace;
-  font-size: clamp(20px, 2.3vw, 24px);
-  letter-spacing: -0.01em;
-  line-height: 1.25;
 }
 
 .message-label {
