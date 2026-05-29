@@ -26,6 +26,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const composerDockRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
@@ -48,27 +49,30 @@ export default function Home() {
       }
     }
 
-    function updateMobileKeyboardOffset() {
+    function updateMobileComposerPosition() {
       const viewport = window.visualViewport;
+      const composerDock = composerDockRef.current;
 
-      if (!viewport || !isMobileViewport()) {
-        document.documentElement.style.setProperty("--keyboard-offset", "0px");
+      if (!viewport || !composerDock || !isMobileViewport()) {
+        document.documentElement.style.setProperty("--composer-top", "auto");
+        document.documentElement.style.setProperty("--composer-bottom", "0px");
         return;
       }
 
-      const keyboardOffset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-      document.documentElement.style.setProperty("--keyboard-offset", `${keyboardOffset}px`);
+      const composerTop = Math.max(0, viewport.offsetTop + viewport.height - composerDock.offsetHeight);
+      document.documentElement.style.setProperty("--composer-top", `${composerTop}px`);
+      document.documentElement.style.setProperty("--composer-bottom", "auto");
     }
 
     function handlePageShow() {
       focusComposerSoon();
-      updateMobileKeyboardOffset();
+      updateMobileComposerPosition();
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
         focusComposerSoon();
-        updateMobileKeyboardOffset();
+        updateMobileComposerPosition();
       }
     }
 
@@ -90,13 +94,13 @@ export default function Home() {
     }
 
     focusComposerSoon();
-    updateMobileKeyboardOffset();
+    updateMobileComposerPosition();
     window.addEventListener("keydown", handlePageKeyDown);
     window.addEventListener("pageshow", handlePageShow);
-    window.addEventListener("orientationchange", updateMobileKeyboardOffset);
+    window.addEventListener("orientationchange", updateMobileComposerPosition);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.visualViewport?.addEventListener("resize", updateMobileKeyboardOffset);
-    window.visualViewport?.addEventListener("scroll", updateMobileKeyboardOffset);
+    window.visualViewport?.addEventListener("resize", updateMobileComposerPosition);
+    window.visualViewport?.addEventListener("scroll", updateMobileComposerPosition);
 
     return () => {
       for (const timer of focusTimers) {
@@ -105,11 +109,12 @@ export default function Home() {
 
       window.removeEventListener("keydown", handlePageKeyDown);
       window.removeEventListener("pageshow", handlePageShow);
-      window.removeEventListener("orientationchange", updateMobileKeyboardOffset);
+      window.removeEventListener("orientationchange", updateMobileComposerPosition);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.visualViewport?.removeEventListener("resize", updateMobileKeyboardOffset);
-      window.visualViewport?.removeEventListener("scroll", updateMobileKeyboardOffset);
-      document.documentElement.style.removeProperty("--keyboard-offset");
+      window.visualViewport?.removeEventListener("resize", updateMobileComposerPosition);
+      window.visualViewport?.removeEventListener("scroll", updateMobileComposerPosition);
+      document.documentElement.style.removeProperty("--composer-top");
+      document.documentElement.style.removeProperty("--composer-bottom");
     };
   }, []);
 
@@ -267,7 +272,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="composer-dock">
+      <div className="composer-dock" ref={composerDockRef}>
         <form className="composer" onSubmit={handleSubmit}>
           <textarea
             ref={inputRef}

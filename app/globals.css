@@ -14,7 +14,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --header-height: calc(76px + var(--safe-top));
   --composer-clearance: calc(132px + var(--safe-bottom));
-  --keyboard-offset: 0px;
+  --composer-top: auto;
+  --composer-bottom: 0px;
 }
 
 * {
@@ -165,9 +166,9 @@ button {
 .composer-dock {
   position: fixed;
   right: 0;
-  bottom: 0;
+  top: var(--composer-top);
+  bottom: var(--composer-bottom);
   left: 0;
-  transform: translateY(calc(var(--keyboard-offset) * -1));
   padding: 14px var(--page-gutter) calc(22px + var(--safe-bottom));
   background: linear-gradient(
     180deg,
@@ -318,7 +319,6 @@ button {
 
   .composer-dock {
     z-index: 20;
-    bottom: 0;
     padding: 8px var(--page-gutter) 8px;
   }
 
