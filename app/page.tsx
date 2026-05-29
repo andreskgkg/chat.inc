@@ -670,22 +670,23 @@ export default function Home() {
         >
           <textarea
             ref={inputRef}
-            aria-label="Message"
+            aria-label={isVoiceActive ? "Stop voice conversation" : "Message"}
             aria-disabled={isVoiceActive}
             autoCapitalize="none"
             autoComplete="new-password"
             autoCorrect="off"
             enterKeyHint="send"
             inputMode="text"
-            placeholder={isVoiceActive ? voiceStatusText : "Message"}
+            placeholder={isVoiceActive ? "tap to stop" : "Message"}
             rows={1}
             spellCheck={false}
             readOnly={isVoiceActive}
             tabIndex={isVoiceActive ? -1 : undefined}
             value={input}
-            onClick={(event) => {
+            onPointerDown={(event) => {
               if (isVoiceActive) {
-                event.currentTarget.blur();
+                event.preventDefault();
+                stopRealtimeVoice();
               }
             }}
             onBlur={() => {

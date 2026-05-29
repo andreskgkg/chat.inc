@@ -215,8 +215,7 @@ button {
 }
 
 .composer-voice-active textarea {
-  cursor: default;
-  pointer-events: none;
+  cursor: pointer;
   caret-color: transparent;
 }
 
