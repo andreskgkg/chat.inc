@@ -26,6 +26,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const conversationRef = useRef<HTMLElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
@@ -38,6 +39,11 @@ export default function Home() {
 
   useEffect(() => {
     inputRef.current?.focus();
+
+    function updateVisualViewportHeight() {
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty("--visual-viewport-height", `${viewportHeight}px`);
+    }
 
     function handlePageKeyDown(event: KeyboardEvent) {
       if (
@@ -56,12 +62,24 @@ export default function Home() {
       inputRef.current?.focus();
     }
 
+    updateVisualViewportHeight();
     window.addEventListener("keydown", handlePageKeyDown);
+    window.addEventListener("orientationchange", updateVisualViewportHeight);
+    window.visualViewport?.addEventListener("resize", updateVisualViewportHeight);
+    window.visualViewport?.addEventListener("scroll", updateVisualViewportHeight);
 
-    return () => window.removeEventListener("keydown", handlePageKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handlePageKeyDown);
+      window.removeEventListener("orientationchange", updateVisualViewportHeight);
+      window.visualViewport?.removeEventListener("resize", updateVisualViewportHeight);
+      window.visualViewport?.removeEventListener("scroll", updateVisualViewportHeight);
+      document.documentElement.style.removeProperty("--visual-viewport-height");
+    };
   }, []);
 
   useEffect(() => {
+    const conversation = conversationRef.current;
+
     function updateStickToBottom() {
       shouldStickToBottomRef.current = isNearPageBottom();
     }
@@ -69,10 +87,12 @@ export default function Home() {
     updateStickToBottom();
     window.addEventListener("resize", updateStickToBottom);
     window.addEventListener("scroll", updateStickToBottom, { passive: true });
+    conversation?.addEventListener("scroll", updateStickToBottom, { passive: true });
 
     return () => {
       window.removeEventListener("resize", updateStickToBottom);
       window.removeEventListener("scroll", updateStickToBottom);
+      conversation?.removeEventListener("scroll", updateStickToBottom);
     };
   }, []);
 
@@ -156,6 +176,16 @@ export default function Home() {
   }
 
   function scrollToBottom(behavior: ScrollBehavior) {
+    const conversation = conversationRef.current;
+
+    if (conversation && isMobileViewport()) {
+      conversation.scrollTo({
+        top: conversation.scrollHeight,
+        behavior,
+      });
+      return;
+    }
+
     bottomRef.current?.scrollIntoView({
       behavior,
       block: "end",
@@ -163,6 +193,15 @@ export default function Home() {
   }
 
   function isNearPageBottom() {
+    const conversation = conversationRef.current;
+
+    if (conversation && isMobileViewport()) {
+      const distanceFromBottom =
+        conversation.scrollHeight - conversation.scrollTop - conversation.clientHeight;
+
+      return distanceFromBottom < 120;
+    }
+
     const pageHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     const distanceFromBottom = pageHeight - window.scrollY - window.innerHeight;
 
@@ -177,7 +216,7 @@ export default function Home() {
         </a>
       </header>
 
-      <section className="conversation" aria-label="chat.inc conversation">
+      <section className="conversation" ref={conversationRef} aria-label="chat.inc conversation">
         <div className="message-list" aria-live="polite">
           {visibleMessages.map((message) => {
             const text = getMessageText(message);
