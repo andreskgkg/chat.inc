@@ -44,12 +44,9 @@ export default function Home() {
     () => [
       ...messages,
       ...realtimeMessages,
-      ...(realtimeStatus === "listening"
-        ? [textToUiMessage("realtime-status-listening", "assistant", "listening")]
-        : []),
       ...queuedMessages.map(queuedMessageToUiMessage),
     ],
-    [messages, queuedMessages, realtimeMessages, realtimeStatus],
+    [messages, queuedMessages, realtimeMessages],
   );
 
   useEffect(() => {
