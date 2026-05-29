@@ -651,7 +651,6 @@ export default function Home() {
       <div className="composer-dock">
         {isVoiceActive ? (
           <button className="composer hangup-composer" type="button" onClick={stopRealtimeVoice}>
-            <span className="hangup-icon" aria-hidden="true" />
             end conversation
           </button>
         ) : (
