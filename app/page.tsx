@@ -24,9 +24,14 @@ export default function Home() {
     messages: starterMessages,
   });
   const [input, setInput] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
+  const finalVoiceTranscriptRef = useRef("");
+  const submitTextRef = useRef<(text: string) => void>(() => {});
   const shouldStickToBottomRef = useRef(true);
   const isSendingQueuedMessageRef = useRef(false);
   const isSending = status === "submitted" || status === "streaming";
@@ -122,6 +127,77 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    submitTextRef.current = submitText;
+  });
+
+  useEffect(() => {
+    const SpeechRecognition = getSpeechRecognition();
+
+    if (!SpeechRecognition) {
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognitionRef.current = recognition;
+    setVoiceSupported(true);
+
+    recognition.onstart = () => {
+      finalVoiceTranscriptRef.current = "";
+      setIsListening(true);
+    };
+
+    recognition.onend = () => {
+      const voiceText = finalVoiceTranscriptRef.current.trim();
+
+      setIsListening(false);
+      finalVoiceTranscriptRef.current = "";
+
+      if (voiceText) {
+        submitTextRef.current(voiceText);
+      } else {
+        focusComposer();
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      finalVoiceTranscriptRef.current = "";
+      focusComposer();
+    };
+
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      let finalTranscript = "";
+
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const transcript = event.results[index][0]?.transcript ?? "";
+
+        if (event.results[index].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      finalVoiceTranscriptRef.current = [
+        finalVoiceTranscriptRef.current,
+        finalTranscript.trim(),
+      ]
+        .filter(Boolean)
+        .join(" ");
+      setInput([finalVoiceTranscriptRef.current, interimTranscript.trim()].filter(Boolean).join(" "));
+    };
+
+    return () => {
+      recognition.abort();
+      recognitionRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     function updateStickToBottom() {
       shouldStickToBottomRef.current = isNearPageBottom();
     }
@@ -174,8 +250,11 @@ export default function Home() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    submitText(input);
+  }
 
-    const trimmedInput = input.trim();
+  function submitText(text: string) {
+    const trimmedInput = text.trim();
 
     if (!trimmedInput) {
       return;
@@ -202,6 +281,26 @@ export default function Home() {
         // useChat exposes request failures through its error state.
       })
       .finally(focusComposer);
+  }
+
+  function toggleVoiceInput() {
+    const recognition = recognitionRef.current;
+
+    if (!recognition) {
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    try {
+      finalVoiceTranscriptRef.current = "";
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
   }
 
   function focusComposer() {
@@ -303,7 +402,25 @@ export default function Home() {
             }}
           />
 
+          {voiceSupported ? (
+            <button
+              className={`voice-button${isListening ? " voice-button-active" : ""}`}
+              type="button"
+              aria-label={isListening ? "Stop voice input" : "Start voice input"}
+              aria-pressed={isListening}
+              onMouseDown={(event) => event.preventDefault()}
+              onTouchStart={(event) => {
+                event.preventDefault();
+                toggleVoiceInput();
+              }}
+              onClick={toggleVoiceInput}
+            >
+              {isListening ? "Stop" : "Mic"}
+            </button>
+          ) : null}
+
           <button
+            className="send-button"
             type="submit"
             disabled={input.trim().length === 0}
             onMouseDown={(event) => event.preventDefault()}
@@ -369,6 +486,43 @@ function isEditableTarget(target: EventTarget | null) {
 function isMobileViewport() {
   return window.matchMedia("(pointer: coarse), (max-width: 640px)").matches;
 }
+
+function getSpeechRecognition() {
+  const speechWindow = window as Window & {
+    SpeechRecognition?: BrowserSpeechRecognitionConstructor;
+    webkitSpeechRecognition?: BrowserSpeechRecognitionConstructor;
+  };
+
+  return speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition ?? null;
+}
+
+type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
+
+type BrowserSpeechRecognition = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  abort: () => void;
+  start: () => void;
+  stop: () => void;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
+  onstart: (() => void) | null;
+};
+
+type BrowserSpeechRecognitionEvent = {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: {
+      isFinal: boolean;
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+};
 
 function TypingIndicator() {
   return (
