@@ -375,6 +375,9 @@ export default function Home() {
       case "conversation.item.input_audio_transcription.completed":
         appendRealtimeMessage("user", event.transcript, event.item_id);
         break;
+      case "conversation.item.input_audio_transcription.delta":
+        appendUserTranscriptDelta(event);
+        break;
       case "response.created":
         realtimeResponseActiveRef.current = true;
         break;
@@ -488,10 +491,22 @@ export default function Home() {
 
     const messageId = `realtime-${role}-${itemId || crypto.randomUUID()}`;
 
-    setRealtimeMessages((currentMessages) => [
-      ...currentMessages.filter((message) => message.id !== messageId),
-      textToUiMessage(messageId, role, trimmedText),
-    ]);
+    setRealtimeMessages((currentMessages) => upsertMessage(currentMessages, messageId, role, trimmedText));
+    shouldStickToBottomRef.current = true;
+  }
+
+  function appendUserTranscriptDelta(event: RealtimeServerEvent) {
+    const delta = event.delta || "";
+
+    if (!delta) {
+      return;
+    }
+
+    const messageId = `realtime-user-${event.item_id || "active"}`;
+
+    setRealtimeMessages((currentMessages) =>
+      upsertMessage(currentMessages, messageId, "user", `${getMessageTextById(currentMessages, messageId)}${delta}`),
+    );
     shouldStickToBottomRef.current = true;
   }
 
@@ -648,10 +663,15 @@ export default function Home() {
           </div>
         ) : null}
 
-        <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
+        <form
+          className={`composer${isVoiceActive ? " composer-voice-active" : ""}`}
+          autoComplete="off"
+          onSubmit={handleSubmit}
+        >
           <textarea
             ref={inputRef}
             aria-label="Message"
+            aria-disabled={isVoiceActive}
             autoCapitalize="none"
             autoComplete="new-password"
             autoCorrect="off"
@@ -660,14 +680,30 @@ export default function Home() {
             placeholder={isVoiceActive ? voiceStatusText : "Message"}
             rows={1}
             spellCheck={false}
+            readOnly={isVoiceActive}
+            tabIndex={isVoiceActive ? -1 : undefined}
             value={input}
+            onClick={(event) => {
+              if (isVoiceActive) {
+                event.currentTarget.blur();
+              }
+            }}
             onBlur={() => {
               if (!isVoiceActive && isMobileViewport()) {
                 window.setTimeout(focusComposer, 0);
               }
             }}
-            onChange={(event) => setInput(event.target.value)}
+            onChange={(event) => {
+              if (!isVoiceActive) {
+                setInput(event.target.value);
+              }
+            }}
             onKeyDown={(event) => {
+              if (isVoiceActive) {
+                event.preventDefault();
+                return;
+              }
+
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 event.currentTarget.form?.requestSubmit();
@@ -695,7 +731,7 @@ export default function Home() {
           <button
             className="send-button"
             type="submit"
-            disabled={input.trim().length === 0}
+            disabled={isVoiceActive || input.trim().length === 0}
             onMouseDown={(event) => event.preventDefault()}
             onTouchStart={(event) => {
               event.preventDefault();
@@ -744,6 +780,21 @@ function textToUiMessage(id: string, role: "assistant" | "user", text: string): 
       },
     ],
   };
+}
+
+function upsertMessage(messages: UIMessage[], id: string, role: "assistant" | "user", text: string) {
+  const nextMessage = textToUiMessage(id, role, text);
+  const existingMessageIndex = messages.findIndex((message) => message.id === id);
+
+  if (existingMessageIndex === -1) {
+    return [...messages, nextMessage];
+  }
+
+  return messages.map((message) => (message.id === id ? nextMessage : message));
+}
+
+function getMessageTextById(messages: UIMessage[], id: string) {
+  return getMessageText(messages.find((message) => message.id === id) || textToUiMessage(id, "user", ""));
 }
 
 function messageElementId(messageId: string) {

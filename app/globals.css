@@ -214,6 +214,16 @@ button {
   opacity: 1;
 }
 
+.composer-voice-active textarea {
+  cursor: default;
+  pointer-events: none;
+  caret-color: transparent;
+}
+
+.composer-voice-active .send-button {
+  display: none;
+}
+
 .composer button {
   min-width: 56px;
   height: 32px;
