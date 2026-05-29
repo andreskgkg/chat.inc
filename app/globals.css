@@ -13,7 +13,7 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --header-height: calc(76px + var(--safe-top));
-  --composer-clearance: calc(184px + var(--safe-bottom));
+  --composer-clearance: calc(132px + var(--safe-bottom));
 }
 
 * {
@@ -120,7 +120,7 @@ button {
 }
 
 .scroll-anchor {
-  height: 88px;
+  height: 0;
   margin-left: calc(var(--text-inset) * -1);
 }
 
@@ -282,7 +282,7 @@ button {
     --page-gutter: 18px;
     --text-inset: 0px;
     --header-height: calc(56px + var(--safe-top));
-    --composer-clearance: calc(150px + var(--safe-bottom));
+    --composer-clearance: calc(112px + var(--safe-bottom));
   }
 
   .app-header {
