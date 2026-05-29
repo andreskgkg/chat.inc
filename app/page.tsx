@@ -32,6 +32,7 @@ export default function Home() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const processedToolCallIdsRef = useRef<Set<string>>(new Set());
+  const realtimeResponseActiveRef = useRef(false);
   const realtimeSessionRef = useRef<RealtimeSession | null>(null);
   const voiceActiveRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
@@ -253,6 +254,7 @@ export default function Home() {
     setRealtimeError(null);
     voiceActiveRef.current = true;
     processedToolCallIdsRef.current.clear();
+    realtimeResponseActiveRef.current = false;
     setRealtimeStatus("connecting");
     setInput("");
     inputRef.current?.blur();
@@ -337,6 +339,7 @@ export default function Home() {
       realtimeSessionRef.current = null;
       closeRealtimeSession(session);
       voiceActiveRef.current = false;
+      realtimeResponseActiveRef.current = false;
       setRealtimeStatus("idle");
       setRealtimeError(error instanceof Error ? error.message : "voice connection failed");
       focusComposer();
@@ -348,6 +351,7 @@ export default function Home() {
     realtimeSessionRef.current = null;
     closeRealtimeSession(session);
     voiceActiveRef.current = false;
+    realtimeResponseActiveRef.current = false;
     setRealtimeStatus("idle");
     setRealtimeError(null);
     focusComposer();
@@ -357,7 +361,13 @@ export default function Home() {
     switch (event.type) {
       case "input_audio_buffer.speech_started":
         setRealtimeStatus("listening");
-        realtimeSessionRef.current?.dataChannel.send(JSON.stringify({ type: "response.cancel" }));
+        if (
+          realtimeResponseActiveRef.current &&
+          realtimeSessionRef.current?.dataChannel.readyState === "open"
+        ) {
+          realtimeSessionRef.current.dataChannel.send(JSON.stringify({ type: "response.cancel" }));
+          realtimeResponseActiveRef.current = false;
+        }
         break;
       case "input_audio_buffer.speech_stopped":
         setRealtimeStatus("thinking");
@@ -365,8 +375,12 @@ export default function Home() {
       case "conversation.item.input_audio_transcription.completed":
         appendRealtimeMessage("user", event.transcript, event.item_id);
         break;
+      case "response.created":
+        realtimeResponseActiveRef.current = true;
+        break;
       case "response.output_audio.delta":
       case "response.audio.delta":
+        realtimeResponseActiveRef.current = true;
         setRealtimeStatus("speaking");
         break;
       case "response.output_audio_transcript.delta":
@@ -384,6 +398,7 @@ export default function Home() {
         break;
       case "response.done":
         void handleRealtimeResponseDone(event);
+        realtimeResponseActiveRef.current = false;
         setRealtimeStatus("listening");
         if (realtimeSessionRef.current) {
           realtimeSessionRef.current.activeAssistantItemId = null;
@@ -391,6 +406,9 @@ export default function Home() {
         }
         break;
       case "error":
+        if (isNoActiveResponseCancellationError(event.error?.message)) {
+          break;
+        }
         setRealtimeError(event.error?.message || "voice error");
         break;
       default:
@@ -458,6 +476,7 @@ export default function Home() {
         type: "response.create",
       }),
     );
+    realtimeResponseActiveRef.current = true;
   }
 
   function appendRealtimeMessage(role: "assistant" | "user", text: string | undefined, itemId?: string) {
@@ -777,6 +796,13 @@ function parseToolArguments(argumentsText: string | undefined) {
   } catch {
     return {};
   }
+}
+
+function isNoActiveResponseCancellationError(message: string | undefined) {
+  return Boolean(
+    message?.toLowerCase().includes("cancellation failed") &&
+      message.toLowerCase().includes("no active response"),
+  );
 }
 
 type RealtimeSession = {
