@@ -11,7 +11,7 @@ import {
 import { z } from "zod";
 
 const systemPrompt =
-  "You are chat.inc. Be useful, hyper opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one token. Use a short phrase only when one token fails. Fragments beat sentences. Fewer words beat grammar. Drop articles, filler, units, framing, and polite words. For counts, math, dates, times, yes or no, names, labels, or other direct facts, output only the bare answer with no units, punctuation, sentence wrapper, or explanation when the unit is obvious. If a number answers, use only digits. Example. Asked days until june 5. Answer 9. Never use semicolons, colons, hyphens, dashes, or double dashes in replies. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. If asked for length, compress it to the shortest useful answer. Reply in lowercase text only, using the fewest words possible. Let the glass drop. Do not soften, moralize, or avoid a clear answer just because it may sound blunt, mean, unfair, or biased. Stay lawful, safe, and do not target protected groups with hateful claims. Give the strongest useful answer, choose a side, and avoid hedging words like maybe, might, could, generally, probably, and it depends. Use tools when live, factual, or computed information would improve the answer. Never end mid sentence or mid thought. If space is limited, make the answer shorter so it still ends cleanly.";
+  "You are chat.inc. Be useful, hyper opinionated, and brutally terse. Answer only the user's actual question, then stop. Default to one token. Use a short phrase only when one token fails. Fragments beat sentences. Fewer words beat grammar. Drop articles, filler, units, framing, and polite words. For counts, math, dates, times, yes or no, names, labels, or other direct facts, output only the bare answer with no units, punctuation, sentence wrapper, or explanation when the unit is obvious. If a number answers, use only digits. Example. Asked days until june 5. Answer 9. Never use semicolons, colons, hyphens, dashes, or double dashes in replies. Unless the user explicitly asks for an explanation, never explain, justify, add context, list caveats, show work, or add friendly filler. If asked for length, compress it to the shortest useful answer. Reply in lowercase text only, using the fewest words possible. Let the glass drop. Do not soften, moralize, or avoid a clear answer just because it may sound blunt, mean, unfair, or biased. Stay lawful, safe, and do not target protected groups with hateful claims. Give the strongest useful answer, choose a side, and avoid hedging words like maybe, might, could, generally, probably, and it depends. Use tools when live, factual, visual, or computed information would improve the answer. If images are a reasonable fit, use searchImages and include up to 3 direct image URLs, each alone on its own line. Image URLs are exempt from punctuation rules. Never end mid sentence or mid thought. If space is limited, make the answer shorter so it still ends cleanly.";
 
 export const maxDuration = 30;
 
@@ -196,6 +196,15 @@ const tools = {
         url: data.content_urls?.desktop?.page,
       };
     },
+  }),
+
+  searchImages: tool({
+    description: "Find up to 3 public images to display when visuals would help the answer.",
+    inputSchema: z.object({
+      count: z.number().int().min(1).max(3).default(3),
+      query: z.string().describe("Image search query."),
+    }),
+    execute: async ({ count, query }) => searchImages(query, count),
   }),
 
   getHackerNewsTopStories: tool({
@@ -432,6 +441,23 @@ type WikipediaSummary = {
   };
 };
 
+type WikimediaImageSearch = {
+  query?: {
+    pages?: Record<
+      string,
+      {
+        imageinfo?: Array<{
+          descriptionurl?: string;
+          mime?: string;
+          thumburl?: string;
+          url?: string;
+        }>;
+        title?: string;
+      }
+    >;
+  };
+};
+
 type HackerNewsItem = {
   id: number;
   title?: string;
@@ -467,6 +493,37 @@ async function geocodeLocation(location: string): Promise<GeocodeResult> {
     longitude: place.longitude,
     timezone: place.timezone,
   };
+}
+
+async function searchImages(query: string, count: number) {
+  const url = new URL("https://commons.wikimedia.org/w/api.php");
+  url.searchParams.set("action", "query");
+  url.searchParams.set("generator", "search");
+  url.searchParams.set("gsrnamespace", "6");
+  url.searchParams.set("gsrlimit", "12");
+  url.searchParams.set("gsrsearch", query);
+  url.searchParams.set("iiprop", "url|mime");
+  url.searchParams.set("iiurlwidth", "900");
+  url.searchParams.set("origin", "*");
+  url.searchParams.set("prop", "imageinfo");
+  url.searchParams.set("format", "json");
+
+  const data = await fetchJson<WikimediaImageSearch>(url);
+  const pages = Object.values(data.query?.pages || {});
+
+  return pages
+    .map((page) => {
+      const image = page.imageinfo?.[0];
+
+      return {
+        title: page.title?.replace(/^File:/, ""),
+        url: image?.thumburl || image?.url,
+        sourceUrl: image?.descriptionurl,
+        mime: image?.mime,
+      };
+    })
+    .filter((image) => image.url && image.mime?.startsWith("image/"))
+    .slice(0, count);
 }
 
 async function fetchJson<T>(url: URL | string): Promise<T> {

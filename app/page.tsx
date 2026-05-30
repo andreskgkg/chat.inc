@@ -631,7 +631,7 @@ export default function Home() {
                   </p>
                   <div className="message-text-row">
                     <div className="message-text">
-                      {text ? <p>{formatMessageText(message, text)}</p> : <TypingIndicator />}
+                      {text ? renderMessageContent(message, text) : <TypingIndicator />}
                     </div>
                   </div>
                 </div>
@@ -731,14 +731,83 @@ function getMessageText(message: UIMessage) {
     .join("");
 }
 
-function formatMessageText(message: UIMessage, text: string) {
-  return message.role === "assistant" ? text.toLocaleLowerCase() : text;
+function renderMessageContent(message: UIMessage, text: string) {
+  const blocks = getMessageBlocks(text);
+
+  return blocks.map((block, index) => {
+    if (block.type === "image") {
+      return (
+        <a
+          className="message-image-link"
+          href={block.url}
+          key={`${block.url}-${index}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img alt={block.alt || "image"} src={block.url} loading="lazy" />
+        </a>
+      );
+    }
+
+    const visibleText = message.role === "assistant" ? block.text.toLocaleLowerCase() : block.text;
+
+    return <p key={`${block.text}-${index}`}>{visibleText}</p>;
+  });
+}
+
+function getMessageBlocks(text: string): MessageBlock[] {
+  return text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line): MessageBlock[] => {
+      const markdownImage = line.match(/^!\[([^\]]*)]\((https?:\/\/[^)]+)\)$/i);
+
+      if (markdownImage && isImageUrl(markdownImage[2])) {
+        return [{ type: "image", alt: markdownImage[1], url: markdownImage[2] }];
+      }
+
+      if (isImageUrl(line)) {
+        return [{ type: "image", url: line }];
+      }
+
+      return [{ type: "text", text: line }];
+    });
+}
+
+function isImageUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const pathname = url.pathname.toLowerCase();
+
+    return (
+      url.protocol === "https:" &&
+      (pathname.endsWith(".jpg") ||
+        pathname.endsWith(".jpeg") ||
+        pathname.endsWith(".png") ||
+        pathname.endsWith(".gif") ||
+        pathname.endsWith(".webp"))
+    );
+  } catch {
+    return false;
+  }
 }
 
 type QueuedMessage = {
   id: string;
   text: string;
 };
+
+type MessageBlock =
+  | {
+      text: string;
+      type: "text";
+    }
+  | {
+      alt?: string;
+      type: "image";
+      url: string;
+    };
 
 function queuedMessageToUiMessage(message: QueuedMessage): UIMessage {
   return textToUiMessage(message.id, "user", message.text);
