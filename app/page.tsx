@@ -44,9 +44,12 @@ export default function Home() {
     () => [
       ...messages,
       ...realtimeMessages,
+      ...(realtimeStatus === "connecting"
+        ? [textToUiMessage("realtime-status-calling", "assistant", "calling")]
+        : []),
       ...queuedMessages.map(queuedMessageToUiMessage),
     ],
-    [messages, queuedMessages, realtimeMessages],
+    [messages, queuedMessages, realtimeMessages, realtimeStatus],
   );
 
   useEffect(() => {
