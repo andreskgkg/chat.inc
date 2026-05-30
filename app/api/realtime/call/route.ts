@@ -211,7 +211,7 @@ export async function POST(request: Request) {
           },
         },
         output: {
-          voice: "onyx",
+          voice: "echo",
           speed: 1.08,
         },
       },

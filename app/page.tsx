@@ -331,7 +331,7 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error((await response.text()) || "voice connection failed");
+        throw new Error(getRealtimeConnectionErrorMessage(await response.text()));
       }
 
       await peerConnection.setRemoteDescription({
@@ -825,6 +825,25 @@ function isNoActiveResponseCancellationError(message: string | undefined) {
     message?.toLowerCase().includes("cancellation failed") &&
       message.toLowerCase().includes("no active response"),
   );
+}
+
+function getRealtimeConnectionErrorMessage(rawError: string) {
+  try {
+    const errorBody = JSON.parse(rawError) as {
+      error?: {
+        message?: string;
+        param?: string;
+      };
+    };
+
+    if (errorBody.error?.param === "session.audio.output.voice") {
+      return "voice unavailable";
+    }
+
+    return errorBody.error?.message || "voice connection failed";
+  } catch {
+    return rawError || "voice connection failed";
+  }
 }
 
 type RealtimeSession = {
