@@ -45,7 +45,7 @@ export default function Home() {
       ...messages,
       ...realtimeMessages,
       ...(realtimeStatus === "connecting"
-        ? [textToUiMessage("realtime-status-calling", "assistant", "calling")]
+        ? [textToUiMessage("realtime-status-ringing", "assistant", "ringing")]
         : []),
       ...queuedMessages.map(queuedMessageToUiMessage),
     ],
@@ -655,7 +655,7 @@ export default function Home() {
       <div className="composer-dock">
         {isVoiceActive ? (
           <button className="composer hangup-composer" type="button" onClick={stopRealtimeVoice}>
-            end conversation
+            {realtimeStatus === "connecting" ? "cancel" : "end conversation"}
           </button>
         ) : (
           <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
