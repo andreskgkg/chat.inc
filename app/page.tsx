@@ -733,26 +733,34 @@ function getMessageText(message: UIMessage) {
 
 function renderMessageContent(message: UIMessage, text: string) {
   const blocks = getMessageBlocks(text);
+  const imageBlocks = blocks.filter((block) => block.type === "image");
+  const textBlocks = blocks.filter((block) => block.type === "text");
 
-  return blocks.map((block, index) => {
-    if (block.type === "image") {
-      return (
-        <a
-          className="message-image-link"
-          href={block.url}
-          key={`${block.url}-${index}`}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <img alt={block.alt || "image"} src={block.url} loading="lazy" />
-        </a>
-      );
-    }
+  return (
+    <>
+      {textBlocks.map((block, index) => {
+        const visibleText = message.role === "assistant" ? block.text.toLocaleLowerCase() : block.text;
 
-    const visibleText = message.role === "assistant" ? block.text.toLocaleLowerCase() : block.text;
+        return <p key={`${block.text}-${index}`}>{visibleText}</p>;
+      })}
 
-    return <p key={`${block.text}-${index}`}>{visibleText}</p>;
-  });
+      {imageBlocks.length > 0 ? (
+        <div className="message-image-grid">
+          {imageBlocks.map((block, index) => (
+            <a
+              className="message-image-link"
+              href={block.url}
+              key={`${block.url}-${index}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <img alt={block.alt || "image"} src={block.url} loading="lazy" />
+            </a>
+          ))}
+        </div>
+      ) : null}
+    </>
+  );
 }
 
 function getMessageBlocks(text: string): MessageBlock[] {
