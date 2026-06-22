@@ -31,7 +31,6 @@ export default function Home() {
   const [queuedMessages, setQueuedMessages] = useState<QueuedMessage[]>([]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const processedToolCallIdsRef = useRef<Set<string>>(new Set());
   const realtimeResponseActiveRef = useRef(false);
   const realtimeSessionRef = useRef<RealtimeSession | null>(null);
   const voiceActiveRef = useRef(false);
@@ -260,7 +259,6 @@ export default function Home() {
 
     setRealtimeError(null);
     voiceActiveRef.current = true;
-    processedToolCallIdsRef.current.clear();
     realtimeResponseActiveRef.current = false;
     setRealtimeStatus("connecting");
     setInput("");
@@ -403,11 +401,7 @@ export default function Home() {
           replaceAssistantTranscript(event);
         }
         break;
-      case "response.function_call_arguments.done":
-        void handleRealtimeToolCall(event);
-        break;
       case "response.done":
-        void handleRealtimeResponseDone(event);
         realtimeResponseActiveRef.current = false;
         setRealtimeStatus("listening");
         if (realtimeSessionRef.current) {
@@ -424,69 +418,6 @@ export default function Home() {
       default:
         break;
     }
-  }
-
-  async function handleRealtimeResponseDone(event: RealtimeServerEvent) {
-    const toolCalls =
-      event.response?.output?.filter((item) => item.type === "function_call") || [];
-
-    for (const toolCall of toolCalls) {
-      await handleRealtimeToolCall(toolCall);
-    }
-  }
-
-  async function handleRealtimeToolCall(toolCall: RealtimeToolCall) {
-    const dataChannel = realtimeSessionRef.current?.dataChannel;
-    const callId = toolCall.call_id;
-
-    if (!dataChannel || dataChannel.readyState !== "open" || !callId) {
-      return;
-    }
-
-    if (processedToolCallIdsRef.current.has(callId)) {
-      return;
-    }
-
-    processedToolCallIdsRef.current.add(callId);
-    setRealtimeStatus("thinking");
-
-    let output: unknown;
-
-    try {
-      const response = await fetch("/api/realtime/tool", {
-        method: "POST",
-        body: JSON.stringify({
-          arguments: parseToolArguments(toolCall.arguments),
-          name: toolCall.name,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      output = await response.json();
-    } catch (error) {
-      output = {
-        error: error instanceof Error ? error.message : "tool failed",
-      };
-    }
-
-    dataChannel.send(
-      JSON.stringify({
-        type: "conversation.item.create",
-        item: {
-          type: "function_call_output",
-          call_id: callId,
-          output: JSON.stringify(output),
-        },
-      }),
-    );
-    dataChannel.send(
-      JSON.stringify({
-        type: "response.create",
-      }),
-    );
-    realtimeResponseActiveRef.current = true;
   }
 
   function appendRealtimeMessage(role: "assistant" | "user", text: string | undefined, itemId?: string) {
@@ -685,23 +616,6 @@ export default function Home() {
               }}
             />
 
-            {voiceSupported ? (
-              <button
-                className="voice-button"
-                type="button"
-                aria-label="Start voice conversation"
-                aria-pressed={false}
-                onMouseDown={(event) => event.preventDefault()}
-                onTouchStart={(event) => {
-                  event.preventDefault();
-                  toggleVoiceConversation();
-                }}
-                onClick={toggleVoiceConversation}
-              >
-                Voice
-              </button>
-            ) : null}
-
             <button
               className="send-button"
               type="submit"
@@ -886,20 +800,6 @@ function closeRealtimeSession(session: RealtimeSession | null) {
   session.audioElement.srcObject = null;
 }
 
-function parseToolArguments(argumentsText: string | undefined) {
-  if (!argumentsText) {
-    return {};
-  }
-
-  try {
-    const parsedArguments = JSON.parse(argumentsText);
-
-    return parsedArguments && typeof parsedArguments === "object" ? parsedArguments : {};
-  } catch {
-    return {};
-  }
-}
-
 function isNoActiveResponseCancellationError(message: string | undefined) {
   return Boolean(
     message?.toLowerCase().includes("cancellation failed") &&
@@ -944,21 +844,8 @@ type RealtimeServerEvent = {
     message?: string;
   };
   item_id?: string;
-  name?: string;
-  arguments?: string;
-  call_id?: string;
-  response?: {
-    output?: RealtimeToolCall[];
-  };
   response_id?: string;
   transcript?: string;
-};
-
-type RealtimeToolCall = {
-  arguments?: string;
-  call_id?: string;
-  name?: string;
-  type?: string;
 };
 
 function TypingIndicator() {
