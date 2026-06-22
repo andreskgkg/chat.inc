@@ -15,6 +15,10 @@ const systemPrompt =
 
 export const maxDuration = 30;
 
+const chatModel = process.env.OPENAI_CHAT_MODEL || "gpt-5-mini";
+const maxChatHistoryMessages = 8;
+const maxChatOutputTokens = 96;
+
 const tools = {
   getCurrentDateTime: tool({
     description: "Get the current date and time for a timezone.",
@@ -276,7 +280,9 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { messages?: UIMessage[] };
     const messages = Array.isArray(body.messages)
-      ? body.messages.slice(-12).filter((message) => getMessageText(message).length > 0)
+      ? body.messages
+          .slice(-maxChatHistoryMessages)
+          .filter((message) => getMessageText(message).length > 0)
       : [];
 
     if (messages.length === 0) {
@@ -291,13 +297,18 @@ export async function POST(request: Request) {
       return createDirectTextResponse(directAnswer);
     }
 
+    const selectedTools = selectTools(latestUserText);
     const result = streamText({
-      model: openai("gpt-5.5"),
+      model: openai(chatModel),
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
-      tools,
-      stopWhen: stepCountIs(5),
-      maxOutputTokens: 512,
+      ...(selectedTools
+        ? {
+            stopWhen: stepCountIs(3),
+            tools: selectedTools,
+          }
+        : {}),
+      maxOutputTokens: maxChatOutputTokens,
       onError: ({ error }) => {
         console.error("OpenAI stream failed", error);
       },
@@ -326,7 +337,102 @@ function getMessageText(message: UIMessage) {
 function getDirectAnswer(text: string) {
   const daysUntil = getDaysUntil(text);
 
-  return typeof daysUntil === "number" ? String(daysUntil) : null;
+  if (typeof daysUntil === "number") {
+    return String(daysUntil);
+  }
+
+  return getArithmeticAnswer(text);
+}
+
+function selectTools(text: string) {
+  const normalized = text.toLowerCase();
+  const selectedToolNames = new Set<keyof typeof tools>();
+
+  if (/\b(time|date|today|tomorrow|yesterday|timezone|now)\b/.test(normalized)) {
+    selectedToolNames.add("getCurrentDateTime");
+  }
+
+  if (
+    /\b(calculate|math|plus|minus|times|divided|percent|percentage)\b/.test(normalized) ||
+    /(?:\d\s*[-+*/%]\s*)+\d/.test(normalized)
+  ) {
+    selectedToolNames.add("calculate");
+  }
+
+  if (/\b(weather|forecast|temperature|rain|snow|wind|humidity)\b/.test(normalized)) {
+    selectedToolNames.add("geocodeLocation");
+    selectedToolNames.add("getWeather");
+  }
+
+  if (/https?:\/\//.test(text)) {
+    selectedToolNames.add("fetchUrl");
+  }
+
+  if (/\b(wikipedia|wiki)\b/.test(normalized)) {
+    selectedToolNames.add("searchWikipedia");
+    selectedToolNames.add("getWikipediaSummary");
+  }
+
+  if (/\b(image|images|photo|photos|picture|pictures)\b/.test(normalized)) {
+    selectedToolNames.add("searchImages");
+  }
+
+  if (/\b(hacker news|hn|top stories|tech news)\b/.test(normalized)) {
+    selectedToolNames.add("getHackerNewsTopStories");
+  }
+
+  if (/\b(crypto|bitcoin|ethereum|solana|coin price)\b/.test(normalized)) {
+    selectedToolNames.add("getCryptoPrice");
+  }
+
+  if (/\b(exchange rate|currency|usd|eur|gbp|jpy|cad|aud)\b/.test(normalized)) {
+    selectedToolNames.add("getExchangeRate");
+  }
+
+  if (selectedToolNames.size === 0) {
+    return null;
+  }
+
+  return Object.fromEntries(
+    [...selectedToolNames].map((name) => [name, tools[name]]),
+  ) as Partial<typeof tools>;
+}
+
+function getArithmeticAnswer(text: string) {
+  const expression = extractArithmeticExpression(text);
+
+  if (!expression) {
+    return null;
+  }
+
+  const normalized = expression.replace(/\s+/g, "");
+
+  if (!/^[\d+\-*/().%]+$/.test(normalized) || !/[+\-*/%]/.test(normalized)) {
+    return null;
+  }
+
+  try {
+    const value = Function(`"use strict"; return (${normalized});`)();
+
+    if (!Number.isFinite(value)) {
+      return null;
+    }
+
+    return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(8)));
+  } catch {
+    return null;
+  }
+}
+
+function extractArithmeticExpression(text: string) {
+  const trimmedText = text.trim().replace(/[?=]+$/g, "").trim();
+  const directExpression = trimmedText.match(/^[\d\s+\-*/().%]+$/);
+
+  if (directExpression) {
+    return directExpression[0];
+  }
+
+  return trimmedText.match(/(?:what(?:'s| is)|calculate|compute)\s+([\d\s+\-*/().%]+)/i)?.[1] || null;
 }
 
 function getDaysUntil(text: string) {
