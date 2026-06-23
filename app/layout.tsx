@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "chat.inc",
-  description: "short answers, fast.",
+  description: "short chatgpt answers",
 };
 
 export const viewport: Viewport = {

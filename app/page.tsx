@@ -4,17 +4,17 @@ import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-const hello: UIMessage = {
-  id: "hello",
+const welcome: UIMessage = {
+  id: "welcome",
   role: "assistant",
-  parts: [{ type: "text", text: "get the shortest useful answer, fast." }],
+  parts: [{ type: "text", text: "short answers" }],
 };
 
 export default function Home() {
-  const { messages, sendMessage, status } = useChat({ messages: [hello] });
+  const { messages, sendMessage, status } = useChat({ messages: [welcome] });
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
-  const busy = status === "submitted" || status === "streaming";
+  const pending = status === "submitted" || status === "streaming";
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -24,7 +24,7 @@ export default function Home() {
     event.preventDefault();
     const text = input.trim();
 
-    if (!text || busy) return;
+    if (!text || pending) return;
 
     setInput("");
     void sendMessage({ text });
@@ -34,33 +34,20 @@ export default function Home() {
     <main>
       <section className="chat" aria-label="chat">
         {messages.map((message) => {
-          const content = text(message);
+          const content = getText(message);
 
           return (
-            <article className={`message ${message.role}`} key={message.id}>
-              <p className="label">{message.role === "user" ? "You" : "chat.inc"}</p>
-              <div>
-                {content.trim() ? (
-                  content
-                    .split(/\n+/)
-                    .filter(Boolean)
-                    .map((line, index) => (
-                      <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
-                    ))
-                ) : message.role === "assistant" && busy ? (
-                  <p>...</p>
-                ) : null}
-              </div>
+            <article className="message" key={message.id}>
+              <span>{message.role === "user" ? "you" : "chatgpt"}</span>
+              <div>{content || (message.role === "assistant" && pending ? "..." : "")}</div>
             </article>
           );
         })}
 
-        {busy && !messages.some((message) => message.role === "assistant" && !text(message).trim()) ? (
+        {pending && !messages.some((message) => message.role === "assistant" && !getText(message)) ? (
           <article className="message">
-            <p className="label">chat.inc</p>
-            <div>
-              <p>...</p>
-            </div>
+            <span>chatgpt</span>
+            <div>...</div>
           </article>
         ) : null}
 
@@ -69,14 +56,14 @@ export default function Home() {
 
       <form className="composer" onSubmit={submit}>
         <input
-          aria-label="Message"
+          aria-label="message"
           autoComplete="off"
           autoFocus
-          placeholder="Ask anything"
+          placeholder="ask anything"
           value={input}
           onChange={(event) => setInput(event.target.value)}
         />
-        <button aria-label="Send message" disabled={!input.trim() || busy}>
+        <button aria-label="send" disabled={!input.trim() || pending}>
           ↑
         </button>
       </form>
@@ -84,7 +71,7 @@ export default function Home() {
   );
 }
 
-function text(message: UIMessage) {
+function getText(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
     .map((part) => part.text)
