@@ -33,21 +33,29 @@ export default function Home() {
   return (
     <main>
       <section className="chat" aria-label="chat">
-        {messages.map((message) => (
-          <article className={`message ${message.role}`} key={message.id}>
-            <p className="label">{message.role === "user" ? "You" : "chat.inc"}</p>
-            <div>
-              {text(message)
-                .split(/\n+/)
-                .filter(Boolean)
-                .map((line, index) => (
-                  <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
-                ))}
-            </div>
-          </article>
-        ))}
+        {messages.map((message) => {
+          const content = text(message);
 
-        {busy ? (
+          return (
+            <article className={`message ${message.role}`} key={message.id}>
+              <p className="label">{message.role === "user" ? "You" : "chat.inc"}</p>
+              <div>
+                {content.trim() ? (
+                  content
+                    .split(/\n+/)
+                    .filter(Boolean)
+                    .map((line, index) => (
+                      <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
+                    ))
+                ) : message.role === "assistant" && busy ? (
+                  <p>...</p>
+                ) : null}
+              </div>
+            </article>
+          );
+        })}
+
+        {busy && !messages.some((message) => message.role === "assistant" && !text(message).trim()) ? (
           <article className="message">
             <p className="label">chat.inc</p>
             <div>
@@ -64,11 +72,13 @@ export default function Home() {
           aria-label="Message"
           autoComplete="off"
           autoFocus
-          placeholder="Reply"
+          placeholder="Ask anything"
           value={input}
           onChange={(event) => setInput(event.target.value)}
         />
-        <button disabled={!input.trim() || busy}>Send</button>
+        <button aria-label="Send message" disabled={!input.trim() || busy}>
+          ↑
+        </button>
       </form>
     </main>
   );

@@ -35,7 +35,7 @@ body {
   display: grid;
   grid-template-columns: 64px 1fr;
   gap: 12px;
-  margin: 0 0 22px;
+  margin: 0 0 10px;
 }
 
 .label {
@@ -46,10 +46,14 @@ body {
 }
 
 .message p {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: 13px;
   letter-spacing: -0.02em;
   line-height: 1.42;
+}
+
+.message div p + p {
+  margin-top: 8px;
 }
 
 .message.user {
@@ -63,14 +67,15 @@ body {
   left: max(20px, env(safe-area-inset-left));
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px;
-  width: min(430px, calc(100vw - 40px));
+  gap: 10px;
+  align-items: center;
+  width: min(700px, calc(100vw - 40px));
   margin: 0 auto;
-  padding: 6px;
+  padding: 8px 8px 8px 20px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 999px;
   background: #fff;
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.035);
+  box-shadow: 0 18px 80px rgba(0, 0, 0, 0.06);
 }
 
 input,
@@ -81,12 +86,12 @@ button {
 
 input {
   min-width: 0;
-  height: 30px;
-  padding: 0 8px;
+  height: 38px;
+  padding: 0;
   outline: 0;
   background: transparent;
   color: var(--text);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: -0.02em;
 }
 
@@ -95,12 +100,15 @@ input::placeholder {
 }
 
 button {
-  height: 30px;
-  min-width: 54px;
-  border-radius: 6px;
-  background: #1d1d1f;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #111;
   color: white;
-  font-size: 12px;
+  font-size: 19px;
   letter-spacing: -0.02em;
   cursor: pointer;
 }
@@ -112,12 +120,39 @@ button:disabled {
 
 @media (max-width: 640px) {
   .chat {
-    padding-top: 76px;
+    width: calc(100vw - 28px);
+    padding: 48px 0 104px;
+  }
+
+  .message {
+    grid-template-columns: 58px 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .label,
+  .message p {
+    font-size: 14px !important;
+    line-height: 1.35;
   }
 
   .composer {
     right: 14px;
+    bottom: max(12px, env(safe-area-inset-bottom));
     left: 14px;
     width: auto;
+    padding: 7px 7px 7px 16px;
+  }
+
+  input {
+    height: 40px;
+    font-size: 16px;
+  }
+
+  button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    font-size: 19px;
   }
 }
