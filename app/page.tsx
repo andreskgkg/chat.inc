@@ -38,16 +38,18 @@ export default function Home() {
 
           return (
             <article className="message" key={message.id}>
-              <span>{message.role === "user" ? "you" : "chat.inc"}</span>
-              <div>{content || (message.role === "assistant" && pending ? "..." : "")}</div>
+              <span>{message.role === "user" ? "you" : "inc"}</span>
+              <div>{content || (message.role === "assistant" && pending ? <TypingBubble /> : "")}</div>
             </article>
           );
         })}
 
         {pending && !messages.some((message) => message.role === "assistant" && !getText(message)) ? (
           <article className="message">
-            <span>chat.inc</span>
-            <div>...</div>
+            <span>inc</span>
+            <div>
+              <TypingBubble />
+            </div>
           </article>
         ) : null}
 
@@ -76,4 +78,14 @@ function getText(message: UIMessage) {
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
+}
+
+function TypingBubble() {
+  return (
+    <span className="typing-bubble" aria-label="inc is typing">
+      <i />
+      <i />
+      <i />
+    </span>
+  );
 }
