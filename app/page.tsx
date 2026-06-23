@@ -38,7 +38,7 @@ export default function Home() {
 
           return (
             <article className="message" key={message.id}>
-              <span>{message.role === "user" ? "you" : "inc"}</span>
+              <span>{message.role === "user" ? "someone" : "chat.inc"}</span>
               <div>{content || (message.role === "assistant" && pending ? <TypingBubble /> : "")}</div>
             </article>
           );
@@ -46,7 +46,7 @@ export default function Home() {
 
         {pending && !messages.some((message) => message.role === "assistant" && !getText(message)) ? (
           <article className="message">
-            <span>inc</span>
+            <span>chat.inc</span>
             <div>
               <TypingBubble />
             </div>
@@ -82,7 +82,7 @@ function getText(message: UIMessage) {
 
 function TypingBubble() {
   return (
-    <span className="typing-bubble" aria-label="inc is typing">
+    <span className="typing-bubble" aria-label="chat.inc is typing">
       <i />
       <i />
       <i />
