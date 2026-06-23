@@ -1,9 +1,10 @@
 :root {
   color-scheme: light;
-  --bg: #f7f7f5;
-  --text: #1d1d1f;
-  --soft: #b9b9bd;
-  --line: #ececea;
+  --bg: #fbfbfb;
+  --text: #111;
+  --muted: #777;
+  --soft: #999;
+  --line: #ededed;
 }
 
 * {
@@ -24,55 +25,52 @@ body {
     sans-serif;
 }
 
-.brand {
-  position: fixed;
-  top: 34px;
-  left: 20px;
-  color: var(--text);
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.05em;
-  text-decoration: none;
-}
-
 .chat {
-  width: min(680px, calc(100vw - 44px));
+  width: min(430px, calc(100vw - 40px));
   margin: 0 auto;
-  padding: 170px 0 130px;
+  padding: 96px 0 120px;
 }
 
 .message {
-  margin: 0 0 28px;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  margin: 0 0 22px;
 }
 
 .label {
-  margin: 0 0 12px !important;
+  margin: 0 !important;
   color: var(--soft) !important;
-  font-size: 16px !important;
+  font-size: 12px !important;
+  text-align: right;
 }
 
 .message p {
-  margin: 0;
-  font-size: clamp(21px, 2.2vw, 28px);
-  letter-spacing: -0.06em;
-  line-height: 1.25;
+  margin: 0 0 18px;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  line-height: 1.42;
+}
+
+.message.user {
+  color: #555;
 }
 
 .composer {
   position: fixed;
-  right: max(22px, env(safe-area-inset-right));
-  bottom: max(14px, env(safe-area-inset-bottom));
-  left: max(22px, env(safe-area-inset-left));
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: max(20px, env(safe-area-inset-left));
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 10px;
-  width: min(860px, calc(100vw - 44px));
+  gap: 8px;
+  width: min(430px, calc(100vw - 40px));
   margin: 0 auto;
-  padding: 10px;
+  padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 8px;
   background: #fff;
-  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.035);
 }
 
 input,
@@ -83,13 +81,13 @@ button {
 
 input {
   min-width: 0;
-  height: 44px;
-  padding: 0 12px;
+  height: 30px;
+  padding: 0 8px;
   outline: 0;
   background: transparent;
   color: var(--text);
-  font-size: 22px;
-  letter-spacing: -0.05em;
+  font-size: 13px;
+  letter-spacing: -0.02em;
 }
 
 input::placeholder {
@@ -97,14 +95,13 @@ input::placeholder {
 }
 
 button {
-  height: 44px;
-  min-width: 74px;
-  border-radius: 999px;
+  height: 30px;
+  min-width: 54px;
+  border-radius: 6px;
   background: #1d1d1f;
   color: white;
-  font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -0.05em;
+  font-size: 12px;
+  letter-spacing: -0.02em;
   cursor: pointer;
 }
 
@@ -114,18 +111,13 @@ button:disabled {
 }
 
 @media (max-width: 640px) {
-  .brand {
-    top: 30px;
-    left: 14px;
-  }
-
   .chat {
-    padding-top: 170px;
+    padding-top: 76px;
   }
 
   .composer {
-    right: 12px;
-    left: 12px;
+    right: 14px;
+    left: 14px;
     width: auto;
   }
 }

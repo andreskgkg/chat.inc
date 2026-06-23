@@ -32,27 +32,27 @@ export default function Home() {
 
   return (
     <main>
-      <a className="brand" href="/">
-        chat.inc
-      </a>
-
       <section className="chat" aria-label="chat">
         {messages.map((message) => (
-          <article className="message" key={message.id}>
-            <p className="label">{message.role === "user" ? "someone" : "chat.inc"}</p>
-            {text(message)
-              .split(/\n+/)
-              .filter(Boolean)
-              .map((line, index) => (
-                <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
-              ))}
+          <article className={`message ${message.role}`} key={message.id}>
+            <p className="label">{message.role === "user" ? "You" : "chat.inc"}</p>
+            <div>
+              {text(message)
+                .split(/\n+/)
+                .filter(Boolean)
+                .map((line, index) => (
+                  <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
+                ))}
+            </div>
           </article>
         ))}
 
         {busy ? (
           <article className="message">
             <p className="label">chat.inc</p>
-            <p>...</p>
+            <div>
+              <p>...</p>
+            </div>
           </article>
         ) : null}
 
@@ -64,7 +64,7 @@ export default function Home() {
           aria-label="Message"
           autoComplete="off"
           autoFocus
-          placeholder="Message"
+          placeholder="Reply"
           value={input}
           onChange={(event) => setInput(event.target.value)}
         />
