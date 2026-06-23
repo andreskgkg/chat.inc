@@ -1,6 +1,6 @@
 # chat.inc
 
-A minimal ChatGPT wrapper using `gpt-5.4-mini`, Next.js, `@ai-sdk/react`, and the Vercel AI SDK.
+A minimal ChatGPT wrapper using `gpt-5-mini`, Next.js, `@ai-sdk/react`, and the Vercel AI SDK.
 
 System prompt:
 
