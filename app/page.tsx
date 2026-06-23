@@ -4,148 +4,79 @@ import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-const starterMessages: UIMessage[] = [
-  {
-    id: "welcome",
-    role: "assistant",
-    parts: [{ type: "text", text: "get the shortest useful answer, fast." }],
-  },
-];
+const hello: UIMessage = {
+  id: "hello",
+  role: "assistant",
+  parts: [{ type: "text", text: "get the shortest useful answer, fast." }],
+};
 
 export default function Home() {
-  const { clearError, error, messages, sendMessage, status } = useChat({
-    messages: starterMessages,
-  });
+  const { messages, sendMessage, status } = useChat({ messages: [hello] });
   const [input, setInput] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const isSending = status === "submitted" || status === "streaming";
+  const endRef = useRef<HTMLDivElement>(null);
+  const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
-    inputRef.current?.focus({ preventScroll: true });
-  }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: status === "streaming" ? "auto" : "smooth",
-      block: "end",
-    });
+    endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, status]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = input.trim();
 
-    if (!text || isSending) {
-      return;
-    }
+    if (!text || busy) return;
 
     setInput("");
-    clearError();
-    void sendMessage({ text }).finally(() => inputRef.current?.focus({ preventScroll: true }));
+    void sendMessage({ text });
   }
 
   return (
-    <main className="app-shell">
-      <header className="app-header">
-        <a href="/" aria-label="chat.inc home">
-          chat.inc
-        </a>
-      </header>
+    <main>
+      <a className="brand" href="/">
+        chat.inc
+      </a>
 
-      <section className="conversation" aria-label="chat.inc conversation">
-        <div className="message-list" aria-live="polite">
-          {messages.map((message) => {
-            const text = getMessageText(message);
+      <section className="chat" aria-label="chat">
+        {messages.map((message) => (
+          <article className="message" key={message.id}>
+            <p className="label">{message.role === "user" ? "someone" : "chat.inc"}</p>
+            {text(message)
+              .split(/\n+/)
+              .filter(Boolean)
+              .map((line, index) => (
+                <p key={index}>{message.role === "assistant" ? line.toLowerCase() : line}</p>
+              ))}
+          </article>
+        ))}
 
-            return (
-              <article
-                className={`message ${message.role === "user" ? "message-user" : ""}`}
-                id={`message-${message.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`}
-                key={message.id}
-              >
-                <div className="message-content">
-                  <p className="message-label">
-                    {message.role === "user" ? "someone" : "chat.inc"}
-                  </p>
-                  <div className="message-text">
-                    {text ? renderText(message, text) : <TypingIndicator />}
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+        {busy ? (
+          <article className="message">
+            <p className="label">chat.inc</p>
+            <p>...</p>
+          </article>
+        ) : null}
 
-          {status === "submitted" ? (
-            <article className="message">
-              <div className="message-content">
-                <p className="message-label">chat.inc</p>
-                <TypingIndicator />
-              </div>
-            </article>
-          ) : null}
-
-          <div className="scroll-anchor" ref={bottomRef} />
-        </div>
+        <div ref={endRef} />
       </section>
 
-      <div className="composer-dock">
-        <form className="composer" autoComplete="off" onSubmit={handleSubmit}>
-          <textarea
-            ref={inputRef}
-            aria-label="Message"
-            autoCapitalize="none"
-            autoComplete="new-password"
-            autoCorrect="off"
-            enterKeyHint="send"
-            placeholder="Message"
-            rows={1}
-            spellCheck={false}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                event.currentTarget.form?.requestSubmit();
-              }
-            }}
-          />
-          <button className="send-button" type="submit" disabled={!input.trim() || isSending}>
-            Send
-          </button>
-        </form>
-
-        {error ? <p className="error-message">{error.message}</p> : null}
-      </div>
+      <form className="composer" onSubmit={submit}>
+        <input
+          aria-label="Message"
+          autoComplete="off"
+          autoFocus
+          placeholder="Message"
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+        />
+        <button disabled={!input.trim() || busy}>Send</button>
+      </form>
     </main>
   );
 }
 
-function getMessageText(message: UIMessage) {
+function text(message: UIMessage) {
   return message.parts
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
-}
-
-function renderText(message: UIMessage, text: string) {
-  return text
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, index) => (
-      <p key={`${line}-${index}`}>
-        {message.role === "assistant" ? line.toLocaleLowerCase() : line}
-      </p>
-    ));
-}
-
-function TypingIndicator() {
-  return (
-    <p className="typing-indicator">
-      <span />
-      <span />
-      <span />
-    </p>
-  );
 }
