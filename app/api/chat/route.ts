@@ -16,7 +16,13 @@ export async function POST(request: Request) {
     model: openai("gpt-5-mini"),
     system,
     messages: await convertToModelMessages(messages.slice(-8)),
-    maxOutputTokens: 32,
+    maxOutputTokens: 128,
+    providerOptions: {
+      openai: {
+        reasoningEffort: "minimal",
+        textVerbosity: "low",
+      },
+    },
   });
 
   return result.toUIMessageStreamResponse();

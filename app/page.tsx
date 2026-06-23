@@ -7,7 +7,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 const welcome: UIMessage = {
   id: "welcome",
   role: "assistant",
-  parts: [{ type: "text", text: "short answers" }],
+  parts: [{ type: "text", text: "short answers, quickly." }],
 };
 
 export default function Home() {
@@ -38,7 +38,7 @@ export default function Home() {
 
           return (
             <article className="message" key={message.id}>
-              <span>{message.role === "user" ? "you" : "chatgpt"}</span>
+              <span>{message.role === "user" ? "you" : "chat.inc"}</span>
               <div>{content || (message.role === "assistant" && pending ? "..." : "")}</div>
             </article>
           );
@@ -46,7 +46,7 @@ export default function Home() {
 
         {pending && !messages.some((message) => message.role === "assistant" && !getText(message)) ? (
           <article className="message">
-            <span>chatgpt</span>
+            <span>chat.inc</span>
             <div>...</div>
           </article>
         ) : null}
