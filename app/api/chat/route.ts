@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const modelMessages = await convertToModelMessages(messages.slice(-8));
 
   try {
-    const result = await answerWithModel("gpt-5.5-mini", modelMessages);
+    const result = await answerWithModel("gpt-5.4-mini", modelMessages);
 
     return textResponse(result);
   } catch (error) {
