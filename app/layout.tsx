@@ -5,6 +5,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "chat.inc",
   description: "short chatgpt answers",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export const viewport: Viewport = {
