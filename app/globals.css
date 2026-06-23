@@ -14,7 +14,6 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --header-height: calc(76px + var(--safe-top));
   --composer-clearance: calc(132px + var(--safe-bottom));
-  --keyboard-offset: 0px;
 }
 
 * {
@@ -37,10 +36,6 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-}
-
-body.mobile-keyboard-open {
-  overscroll-behavior: none;
 }
 
 button,
@@ -160,34 +155,6 @@ button {
   overflow-wrap: anywhere;
 }
 
-.message-image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: 10px;
-  width: min(100%, 620px);
-  margin-top: 10px;
-}
-
-.message-image-grid:first-child {
-  margin-top: 0;
-}
-
-.message-image-link {
-  display: block;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--surface);
-}
-
-.message-image-link img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .message-label {
   color: var(--soft) !important;
   font-size: 13px !important;
@@ -197,7 +164,7 @@ button {
 .composer-dock {
   position: fixed;
   right: 0;
-  bottom: var(--keyboard-offset);
+  bottom: 0;
   left: 0;
   padding: 14px var(--page-gutter) calc(22px + var(--safe-bottom));
   background: linear-gradient(
@@ -265,38 +232,6 @@ button {
 .composer button:disabled {
   cursor: not-allowed;
   opacity: 0.22;
-}
-
-.voice-button {
-  min-width: 48px !important;
-  background: #f0f0ee !important;
-  color: var(--text) !important;
-}
-
-.voice-button-active {
-  background: var(--danger) !important;
-  color: var(--surface) !important;
-}
-
-.hangup-composer {
-  display: flex;
-  grid-template-columns: none;
-  justify-content: center;
-  gap: 9px;
-  min-height: 52px;
-  border-color: transparent;
-  background: #ff3b30;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 12px 28px rgba(255, 59, 48, 0.24);
-}
-
-.hangup-composer:hover {
-  transform: translateY(-1px);
 }
 
 .typing-indicator {
