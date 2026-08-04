@@ -59,13 +59,6 @@ button:disabled {
   padding: calc(48px + var(--safe-top)) 0 calc(110px + var(--safe-bottom));
 }
 
-.brand {
-  margin: 0 0 40px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-}
-
 .feed {
   display: grid;
   gap: 28px;
@@ -288,10 +281,6 @@ button:disabled {
     width: calc(100% - 28px);
     padding-top: calc(28px + var(--safe-top));
     padding-bottom: calc(100px + var(--safe-bottom));
-  }
-
-  .brand {
-    margin-bottom: 32px;
   }
 
   .prediction-text {

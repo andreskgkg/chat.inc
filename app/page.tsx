@@ -96,8 +96,6 @@ export default function Home() {
 
   return (
     <main className="page">
-      <h1 className="brand">chat.inc</h1>
-
       {error ? <p className="error">{error}</p> : null}
       {loading ? <p className="muted">…</p> : null}
       {!loading && predictions.length === 0 ? <p className="muted">nothing yet</p> : null}
