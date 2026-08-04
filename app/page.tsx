@@ -149,20 +149,20 @@ function VoteRail({
     <div className="vote-rail">
       <button
         type="button"
-        className={`vote-btn ${value === 1 ? "active-up" : ""}`}
+        className={`vote-btn ${value === 1 ? "active" : ""}`}
         aria-label="Upvote"
         onClick={() => onVote(1)}
       >
-        ▲
+        +
       </button>
-      <div className="score">{total}</div>
+      <div className={`score ${value ? "voted" : ""}`}>{total}</div>
       <button
         type="button"
-        className={`vote-btn ${value === -1 ? "active-down" : ""}`}
+        className={`vote-btn ${value === -1 ? "active" : ""}`}
         aria-label="Downvote"
         onClick={() => onVote(-1)}
       >
-        ▼
+        −
       </button>
     </div>
   );

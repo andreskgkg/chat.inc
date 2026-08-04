@@ -66,49 +66,49 @@ button:disabled {
 
 .prediction {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 12px;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
   align-items: start;
 }
 
 .vote-rail {
   display: grid;
   justify-items: center;
+  gap: 0;
 }
 
 .vote-btn {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 36px;
-  color: var(--muted);
-  font-size: 12px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  color: #ccc;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1;
 }
 
-.vote-btn:active {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.vote-btn.active-up {
-  color: var(--up);
-}
-
-.vote-btn.active-down {
-  color: var(--down);
+.vote-btn.active {
+  color: var(--ink);
 }
 
 .score {
   min-width: 1.5ch;
-  font-size: 13px;
-  font-weight: 500;
+  color: #bbb;
+  font-size: 12px;
+  font-weight: 400;
   letter-spacing: -0.02em;
   text-align: center;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.score.voted {
+  color: var(--ink);
 }
 
 .prediction-text {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   font-size: 1.15rem;
   font-weight: 500;
   letter-spacing: -0.03em;
