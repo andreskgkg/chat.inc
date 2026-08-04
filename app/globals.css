@@ -68,7 +68,7 @@ button:disabled {
   display: grid;
   grid-template-columns: 28px 1fr;
   gap: 10px;
-  align-items: start;
+  align-items: center;
 }
 
 .vote-rail {
@@ -108,7 +108,7 @@ button:disabled {
 }
 
 .prediction-text {
-  margin: 2px 0 0;
+  margin: 0;
   font-size: 1.15rem;
   font-weight: 500;
   letter-spacing: -0.03em;
