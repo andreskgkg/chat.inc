@@ -105,11 +105,7 @@ export async function votePrediction(
   return prediction;
 }
 
-export async function addComment(
-  predictionId: string,
-  author: string,
-  body: string,
-) {
+export async function addComment(predictionId: string, body: string) {
   const store = await readStore();
   const prediction = store.predictions.find((item) => item.id === predictionId);
 
@@ -120,7 +116,7 @@ export async function addComment(
   const comment: Comment = {
     id: randomUUID(),
     predictionId,
-    author: author.trim() || "anon",
+    author: "",
     body: body.trim(),
     createdAt: new Date().toISOString(),
     votes: {},

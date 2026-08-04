@@ -227,34 +227,19 @@ button:disabled {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
 }
 
-.comment-name,
 .comment-body {
   width: 100%;
+  min-height: 72px;
+  padding: 0;
   background: transparent;
   color: var(--ink);
   outline: none;
   resize: none;
-}
-
-.comment-name {
-  height: 36px;
-  padding: 0 0 10px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.comment-body {
-  min-height: 72px;
-  margin-top: 12px;
-  padding: 0;
   font-size: 16px;
   line-height: 1.45;
   letter-spacing: -0.015em;
 }
 
-.comment-name::placeholder,
 .comment-body::placeholder {
   color: #b0b0b0;
 }
@@ -476,15 +461,10 @@ button:disabled {
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
   }
 
-  .comment-name,
   .comment-body,
   .field,
   .field-area {
     font-size: 15px;
-  }
-
-  .comment-name {
-    height: 32px;
   }
 
   .comments {

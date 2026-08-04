@@ -112,11 +112,11 @@ export default function Home() {
     );
   }
 
-  async function addComment(predictionId: string, author: string, body: string) {
+  async function addComment(predictionId: string, body: string) {
     const response = await fetch(`/api/predictions/${predictionId}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ author, body }),
+      body: JSON.stringify({ body }),
     });
 
     const data = await readJson<{ comment?: Comment; error?: string }>(response);
@@ -217,9 +217,7 @@ export default function Home() {
                               }}
                             />
                             <div className="comment-copy">
-                              <div className="who">
-                                {comment.author} · {formatDate(comment.createdAt)}
-                              </div>
+                              <div className="who">{formatDate(comment.createdAt)}</div>
                               <p>{comment.body}</p>
                             </div>
                           </li>
@@ -228,8 +226,8 @@ export default function Home() {
                   ) : null}
 
                   <CommentForm
-                    onSubmit={async (author, body) => {
-                      await addComment(prediction.id, author, body);
+                    onSubmit={async (body) => {
+                      await addComment(prediction.id, body);
                     }}
                   />
                 </div>
@@ -291,9 +289,8 @@ function VoteRail({
 function CommentForm({
   onSubmit,
 }: {
-  onSubmit: (author: string, body: string) => Promise<void>;
+  onSubmit: (body: string) => Promise<void>;
 }) {
-  const [author, setAuthor] = useState("");
   const [body, setBody] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -306,7 +303,7 @@ function CommentForm({
     setError("");
 
     try {
-      await onSubmit(author, body);
+      await onSubmit(body);
       setBody("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not post comment.");
@@ -318,14 +315,6 @@ function CommentForm({
   return (
     <form className="comment-form" onSubmit={submit}>
       <div className="comment-composer">
-        <input
-          className="comment-name"
-          placeholder="Your name"
-          value={author}
-          onChange={(event) => setAuthor(event.target.value)}
-          maxLength={40}
-          aria-label="Name"
-        />
         <textarea
           className="comment-body"
           placeholder="Add a comment…"
