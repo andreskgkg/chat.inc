@@ -1,91 +1,435 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import type { UIMessage } from "ai";
-import { FormEvent, useEffect, useRef, useState } from "react";
-
-const welcome: UIMessage = {
-  id: "welcome",
-  role: "assistant",
-  parts: [{ type: "text", text: "short answers, quickly." }],
-};
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import type { Comment, Prediction, VoteValue } from "@/lib/types";
+import { score } from "@/lib/types";
+import { getVisitorId } from "@/lib/visitor";
 
 export default function Home() {
-  const { messages, sendMessage, status } = useChat({ messages: [welcome] });
-  const [input, setInput] = useState("");
-  const endRef = useRef<HTMLDivElement>(null);
-  const pending = status === "submitted" || status === "streaming";
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [voterId, setVoterId] = useState("");
+  const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+  const [composerOpen, setComposerOpen] = useState(false);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, status]);
+    setVoterId(getVisitorId());
+    void loadPredictions();
+  }, []);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const text = input.trim();
+  async function loadPredictions() {
+    setLoading(true);
+    setError("");
 
-    if (!text || pending) return;
+    try {
+      const response = await fetch("/api/predictions");
+      const data = (await response.json()) as { predictions?: Prediction[]; error?: string };
 
-    setInput("");
-    void sendMessage({ text });
+      if (!response.ok) {
+        throw new Error(data.error || "Could not load predictions.");
+      }
+
+      setPredictions(data.predictions ?? []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load predictions.");
+    } finally {
+      setLoading(false);
+    }
   }
 
+  async function votePrediction(predictionId: string, next: VoteValue | 0) {
+    if (!voterId) return;
+
+    const response = await fetch(`/api/predictions/${predictionId}/vote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId, value: next }),
+    });
+
+    const data = (await response.json()) as { prediction?: Prediction; error?: string };
+
+    if (!response.ok || !data.prediction) {
+      setError(data.error || "Vote failed.");
+      return;
+    }
+
+    setPredictions((current) =>
+      current.map((item) => (item.id === predictionId ? data.prediction! : item)),
+    );
+  }
+
+  async function voteComment(commentId: string, next: VoteValue | 0) {
+    if (!voterId) return;
+
+    const response = await fetch(`/api/comments/${commentId}/vote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voterId, value: next }),
+    });
+
+    const data = (await response.json()) as {
+      comment?: Comment;
+      predictionId?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !data.comment || !data.predictionId) {
+      setError(data.error || "Vote failed.");
+      return;
+    }
+
+    setPredictions((current) =>
+      current.map((prediction) => {
+        if (prediction.id !== data.predictionId) return prediction;
+
+        return {
+          ...prediction,
+          comments: prediction.comments.map((comment) =>
+            comment.id === commentId ? data.comment! : comment,
+          ),
+        };
+      }),
+    );
+  }
+
+  async function addComment(predictionId: string, author: string, body: string) {
+    const response = await fetch(`/api/predictions/${predictionId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ author, body }),
+    });
+
+    const data = (await response.json()) as { comment?: Comment; error?: string };
+
+    if (!response.ok || !data.comment) {
+      throw new Error(data.error || "Could not post comment.");
+    }
+
+    setPredictions((current) =>
+      current.map((prediction) =>
+        prediction.id === predictionId
+          ? { ...prediction, comments: [...prediction.comments, data.comment!] }
+          : prediction,
+      ),
+    );
+    setOpenComments((current) => ({ ...current, [predictionId]: true }));
+  }
+
+  async function createPrediction(password: string, text: string) {
+    const response = await fetch("/api/predictions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, text }),
+    });
+
+    const data = (await response.json()) as { prediction?: Prediction; error?: string };
+
+    if (!response.ok || !data.prediction) {
+      throw new Error(data.error || "Could not create prediction.");
+    }
+
+    setPredictions((current) => [data.prediction!, ...current]);
+    setComposerOpen(false);
+  }
+
+  const countLabel = useMemo(() => {
+    const n = predictions.length;
+    return n === 1 ? "1 prediction" : `${n} predictions`;
+  }, [predictions.length]);
+
   return (
-    <main>
-      <section className="chat" aria-label="chat">
-        {messages.map((message) => {
-          const content = getText(message);
+    <main className="page">
+      <header className="hero">
+        <h1 className="brand">chat.inc</h1>
+        <p className="lede">Andres writes predictions. Everyone else argues in the replies.</p>
+        <div className="byline">
+          <strong>by andres</strong>
+          <span>·</span>
+          <span>{countLabel}</span>
+        </div>
+      </header>
+
+      {error ? <p className="error">{error}</p> : null}
+
+      {loading ? <div className="loading">Loading predictions…</div> : null}
+
+      {!loading && predictions.length === 0 ? (
+        <div className="empty">No predictions yet. Andres, hit the button below.</div>
+      ) : null}
+
+      <section className="feed" aria-label="predictions">
+        {predictions.map((prediction) => {
+          const commentsOpen = openComments[prediction.id] ?? false;
+          const myVote = voterId ? prediction.votes[voterId] : undefined;
 
           return (
-            <article className="message" key={message.id}>
-              <span>{message.role === "user" ? "someone" : "chat.inc"}</span>
-              <div>{content || (message.role === "assistant" && pending ? <TypingBubble /> : "")}</div>
+            <article className="prediction" key={prediction.id}>
+              <div className="prediction-top">
+                <VoteRail
+                  value={myVote}
+                  total={score(prediction.votes)}
+                  onVote={(next) => {
+                    const current = prediction.votes[voterId];
+                    void votePrediction(prediction.id, current === next ? 0 : next);
+                  }}
+                />
+
+                <div className="prediction-body">
+                  <h2>{prediction.text}</h2>
+                  <div className="meta">
+                    <span>andres</span>
+                    <span>{formatDate(prediction.createdAt)}</span>
+                    <button
+                      type="button"
+                      className="linkish"
+                      onClick={() =>
+                        setOpenComments((current) => ({
+                          ...current,
+                          [prediction.id]: !commentsOpen,
+                        }))
+                      }
+                    >
+                      {prediction.comments.length}{" "}
+                      {prediction.comments.length === 1 ? "comment" : "comments"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {commentsOpen ? (
+                <div className="comments">
+                  {prediction.comments.length > 0 ? (
+                    <ul className="comment-list">
+                      {prediction.comments
+                        .slice()
+                        .sort((a, b) => score(b.votes) - score(a.votes))
+                        .map((comment) => (
+                          <li className="comment" key={comment.id}>
+                            <VoteRail
+                              compact
+                              value={voterId ? comment.votes[voterId] : undefined}
+                              total={score(comment.votes)}
+                              onVote={(next) => {
+                                const current = comment.votes[voterId];
+                                void voteComment(comment.id, current === next ? 0 : next);
+                              }}
+                            />
+                            <div className="comment-copy">
+                              <div className="who">
+                                {comment.author} · {formatDate(comment.createdAt)}
+                              </div>
+                              <p>{comment.body}</p>
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <p className="error" style={{ color: "var(--muted)", marginBottom: 12 }}>
+                      No comments yet. Be first.
+                    </p>
+                  )}
+
+                  <CommentForm
+                    onSubmit={async (author, body) => {
+                      await addComment(prediction.id, author, body);
+                    }}
+                  />
+                </div>
+              ) : null}
             </article>
           );
         })}
-
-        {pending && !messages.some((message) => message.role === "assistant" && !getText(message)) ? (
-          <article className="message">
-            <span>chat.inc</span>
-            <div>
-              <TypingBubble />
-            </div>
-          </article>
-        ) : null}
-
-        <div ref={endRef} />
       </section>
 
-      <form className="composer" onSubmit={submit}>
-        <input
-          aria-label="message"
-          autoComplete="off"
-          autoFocus
-          placeholder="ask anything"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-        />
-        <button aria-label="send" disabled={!input.trim() || pending}>
-          ↑
+      <div className="fab-wrap">
+        <button type="button" className="fab" onClick={() => setComposerOpen(true)}>
+          New prediction
         </button>
-      </form>
+      </div>
+
+      {composerOpen ? (
+        <ComposerModal
+          onClose={() => setComposerOpen(false)}
+          onCreate={createPrediction}
+        />
+      ) : null}
     </main>
   );
 }
 
-function getText(message: UIMessage) {
-  return message.parts
-    .filter((part) => part.type === "text")
-    .map((part) => part.text)
-    .join("");
+function VoteRail({
+  value,
+  total,
+  onVote,
+  compact = false,
+}: {
+  value?: VoteValue;
+  total: number;
+  onVote: (value: VoteValue) => void;
+  compact?: boolean;
+}) {
+  return (
+    <div className="vote-rail" style={compact ? { minWidth: 36 } : undefined}>
+      <button
+        type="button"
+        className={`vote-btn ${value === 1 ? "active-up" : ""}`}
+        aria-label="Upvote"
+        onClick={() => onVote(1)}
+      >
+        ▲
+      </button>
+      <div className="score">{total}</div>
+      <button
+        type="button"
+        className={`vote-btn ${value === -1 ? "active-down" : ""}`}
+        aria-label="Downvote"
+        onClick={() => onVote(-1)}
+      >
+        ▼
+      </button>
+    </div>
+  );
 }
 
-function TypingBubble() {
+function CommentForm({
+  onSubmit,
+}: {
+  onSubmit: (author: string, body: string) => Promise<void>;
+}) {
+  const [author, setAuthor] = useState("");
+  const [body, setBody] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (!body.trim() || pending) return;
+
+    setPending(true);
+    setError("");
+
+    try {
+      await onSubmit(author, body);
+      setBody("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not post comment.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
-    <span className="typing-bubble" aria-label="chat.inc is typing">
-      <i />
-      <i />
-      <i />
-    </span>
+    <form className="comment-form" onSubmit={submit}>
+      <div className="field-row">
+        <input
+          className="field"
+          placeholder="name"
+          value={author}
+          onChange={(event) => setAuthor(event.target.value)}
+          maxLength={40}
+        />
+        <input
+          className="field"
+          placeholder="write a comment"
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          maxLength={500}
+          required
+        />
+      </div>
+      {error ? <p className="error">{error}</p> : null}
+      <div className="form-actions">
+        <button className="primary" type="submit" disabled={!body.trim() || pending}>
+          {pending ? "Posting…" : "Comment"}
+        </button>
+      </div>
+    </form>
   );
+}
+
+function ComposerModal({
+  onClose,
+  onCreate,
+}: {
+  onClose: () => void;
+  onCreate: (password: string, text: string) => Promise<void>;
+}) {
+  const [password, setPassword] = useState("");
+  const [text, setText] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (!password || !text.trim() || pending) return;
+
+    setPending(true);
+    setError("");
+
+    try {
+      await onCreate(password, text.trim());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not create prediction.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div
+      className="overlay"
+      role="presentation"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="sheet" role="dialog" aria-modal="true" aria-label="New prediction">
+        <h3>New prediction</h3>
+        <p>Enter your password, then write the call.</p>
+
+        <form className="composer-form" onSubmit={submit}>
+          <input
+            className="field"
+            type="password"
+            placeholder="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoFocus
+            autoComplete="current-password"
+            required
+          />
+          <textarea
+            className="field-area"
+            placeholder="SpaceX will acquire Robinhood"
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            maxLength={280}
+            required
+          />
+          {error ? <p className="error">{error}</p> : null}
+          <div className="form-actions">
+            <button className="ghost" type="button" onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className="primary"
+              type="submit"
+              disabled={!password || !text.trim() || pending}
+            >
+              {pending ? "Posting…" : "Post prediction"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
 }

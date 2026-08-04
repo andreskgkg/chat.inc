@@ -1,17 +1,29 @@
 # chat.inc
 
-A minimal ChatGPT wrapper using `gpt-5-mini`, OpenAI web search, Next.js, `@ai-sdk/react`, and the Vercel AI SDK.
+Andres posts predictions. Visitors comment and upvote/downvote.
 
-System prompt:
-
-```text
-You are a terse ChatGPT wrapper. Answer in 1 or 2 words whenever possible. Use lowercase. No punctuation. No explanations. If 1 or 2 words cannot answer safely or usefully, use the shortest possible phrase.
-```
-
-Run locally:
+## Setup
 
 ```bash
 npm install
 cp .env.example .env.local
+```
+
+Set `ADMIN_PASSWORD` in `.env.local` — that password unlocks the **New prediction** button.
+
+```bash
 npm run dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## How it works
+
+- Predictions are authored only by Andres (password-gated).
+- Anyone can comment and vote on predictions or comments.
+- Votes are tied to a browser id in `localStorage`.
+- Data is stored in `data/store.json`.
+
+## Deploy
+
+Works with `next start` on a host with a writable filesystem. On Vercel serverless, file writes do not persist across instances — use a database or KV store before relying on production votes/comments there.
