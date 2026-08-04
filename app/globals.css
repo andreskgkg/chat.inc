@@ -1,15 +1,20 @@
 :root {
   color-scheme: light;
   --ink: #111;
-  --muted: #999;
-  --line: #eee;
+  --muted: #8a8a8a;
+  --line: #ececec;
   --bg: #fbfbfb;
   --up: #0f8f7b;
   --down: #c44b3c;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -22,6 +27,13 @@ body {
   color: var(--ink);
   background: var(--bg);
   font-family: var(--font-body), "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.modal-open {
+  overflow: hidden;
+  touch-action: none;
 }
 
 button,
@@ -35,6 +47,7 @@ button {
   cursor: pointer;
   background: none;
   color: inherit;
+  touch-action: manipulation;
 }
 
 button:disabled {
@@ -45,11 +58,11 @@ button:disabled {
 .page {
   width: min(560px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 56px 0 120px;
+  padding: calc(56px + var(--safe-top)) 0 calc(120px + var(--safe-bottom));
 }
 
 .brand {
-  margin: 0 0 40px;
+  margin: 0 0 36px;
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -57,34 +70,40 @@ button:disabled {
 
 .feed {
   display: grid;
-  gap: 28px;
+  gap: 32px;
 }
 
 .prediction-top {
   display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 14px;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
   align-items: start;
 }
 
 .vote-rail {
   display: grid;
   justify-items: center;
-  gap: 2px;
-  padding-top: 2px;
+  gap: 0;
+  padding-top: 0;
 }
 
 .vote-btn {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 24px;
+  width: 44px;
+  height: 40px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
+  border-radius: 12px;
+  transition: background 140ms ease, color 140ms ease;
 }
 
 .vote-btn:hover {
   color: var(--ink);
+}
+
+.vote-btn:active {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .vote-btn.active-up {
@@ -97,46 +116,55 @@ button:disabled {
 
 .score {
   min-width: 1.5ch;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   letter-spacing: -0.02em;
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .prediction-body h2 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 500;
   letter-spacing: -0.03em;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .meta {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 10px;
   color: var(--muted);
   font-size: 13px;
 }
 
 .meta button {
-  color: var(--muted);
-  padding: 0;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f1f1f1;
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.meta button:hover {
-  color: var(--ink);
+.meta button:active {
+  background: #e8e8e8;
 }
 
 .comments {
   margin-top: 16px;
+  margin-left: 56px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
 
 .comment-list {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   margin: 0 0 14px;
   padding: 0;
   list-style: none;
@@ -144,19 +172,26 @@ button:disabled {
 
 .comment {
   display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 10px;
+  grid-template-columns: 40px 1fr;
+  gap: 8px;
   align-items: start;
+}
+
+.comment .vote-btn {
+  width: 40px;
+  height: 36px;
+  font-size: 12px;
 }
 
 .comment-copy {
   min-width: 0;
+  padding-top: 4px;
 }
 
 .comment-copy p {
-  margin: 2px 0 0;
-  font-size: 14px;
-  line-height: 1.4;
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
@@ -177,9 +212,9 @@ button:disabled {
 .comment-composer {
   display: grid;
   gap: 0;
-  padding: 12px 14px 10px;
+  padding: 14px;
   border: 1px solid #e6e6e6;
-  border-radius: 16px;
+  border-radius: 18px;
   background: #fff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
   transition:
@@ -202,19 +237,19 @@ button:disabled {
 }
 
 .comment-name {
-  height: 28px;
-  padding: 0 0 8px;
+  height: 36px;
+  padding: 0 0 10px;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.01em;
 }
 
 .comment-body {
-  min-height: 56px;
-  margin-top: 10px;
+  min-height: 72px;
+  margin-top: 12px;
   padding: 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.45;
   letter-spacing: -0.015em;
 }
@@ -229,7 +264,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .comment-hint {
@@ -239,12 +274,13 @@ button:disabled {
 }
 
 .comment-submit {
-  height: 34px;
-  padding: 0 14px;
+  min-width: 84px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: 999px;
   background: var(--ink);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
   transition:
@@ -263,39 +299,36 @@ button:disabled {
 
 .composer-form {
   display: grid;
-  gap: 8px;
-}
-
-.field-row {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .field,
 .field-area {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
+  border-radius: 14px;
+  background: #f7f7f7;
   color: var(--ink);
   outline: none;
+  font-size: 16px;
 }
 
 .field {
-  height: 40px;
-  padding: 0 12px;
+  height: 48px;
+  padding: 0 14px;
 }
 
 .field-area {
-  min-height: 88px;
-  padding: 10px 12px;
+  min-height: 120px;
+  padding: 14px;
   resize: vertical;
+  line-height: 1.4;
 }
 
 .field:focus,
 .field-area:focus {
   border-color: #ccc;
+  background: #fff;
 }
 
 .primary,
@@ -303,10 +336,10 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  padding: 0 14px;
+  min-height: 48px;
+  padding: 0 18px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
 }
 
@@ -320,9 +353,15 @@ button:disabled {
 }
 
 .form-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.form-actions .primary,
+.form-actions .ghost {
+  width: 100%;
 }
 
 .error {
@@ -339,9 +378,9 @@ button:disabled {
 
 .fab-wrap {
   position: fixed;
-  right: max(16px, env(safe-area-inset-right));
-  bottom: max(16px, env(safe-area-inset-bottom));
-  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, var(--safe-right));
+  bottom: max(16px, var(--safe-bottom));
+  left: max(16px, var(--safe-left));
   z-index: 30;
   display: flex;
   justify-content: center;
@@ -350,13 +389,19 @@ button:disabled {
 
 .fab {
   pointer-events: auto;
-  height: 44px;
+  width: min(560px, 100%);
+  height: 52px;
   padding: 0 18px;
   border-radius: 999px;
   background: var(--ink);
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.fab:active {
+  transform: scale(0.99);
 }
 
 .overlay {
@@ -364,42 +409,118 @@ button:disabled {
   inset: 0;
   z-index: 40;
   display: grid;
-  place-items: end center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.28);
+  align-items: end;
+  justify-items: center;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.34);
+  overscroll-behavior: contain;
 }
 
 .sheet {
-  width: min(440px, 100%);
-  margin-bottom: max(8px, env(safe-area-inset-bottom));
-  padding: 18px;
-  border-radius: 18px;
+  width: min(520px, 100%);
+  max-height: min(92dvh, 920px);
+  overflow: auto;
+  margin: 0;
+  padding: 10px 18px calc(18px + var(--safe-bottom));
+  border-radius: 22px 22px 0 0;
   background: #fff;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  margin: 4px auto 14px;
+  border-radius: 999px;
+  background: #ddd;
 }
 
 .sheet h3 {
   margin: 0 0 14px;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+@media (min-width: 641px) {
+  .overlay {
+    place-items: end center;
+    padding: 16px;
+  }
+
+  .sheet {
+    margin-bottom: max(8px, var(--safe-bottom));
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .sheet-handle {
+    display: none;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .form-actions .primary,
+  .form-actions .ghost {
+    width: auto;
+  }
+
+  .fab {
+    width: auto;
+    min-width: 180px;
+    height: 48px;
+    font-size: 15px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+  }
+
+  .comment-name,
+  .comment-body,
+  .field,
+  .field-area {
+    font-size: 15px;
+  }
+
+  .comment-name {
+    height: 32px;
+  }
+
+  .comments {
+    margin-left: 56px;
+  }
 }
 
 @media (max-width: 640px) {
   .page {
     width: calc(100% - 28px);
-    padding-top: 40px;
+    padding-top: calc(28px + var(--safe-top));
+    padding-bottom: calc(108px + var(--safe-bottom));
   }
 
-  .field-row {
-    grid-template-columns: 1fr;
+  .brand {
+    margin-bottom: 28px;
+  }
+
+  .feed {
+    gap: 28px;
+  }
+
+  .prediction-body h2 {
+    font-size: 1.15rem;
+  }
+
+  .comments {
+    margin-left: 0;
   }
 
   .comment-composer {
-    padding: 12px;
-    border-radius: 14px;
+    padding: 14px;
+    border-radius: 16px;
   }
 
-  .fab {
-    width: 100%;
+  .meta {
+    gap: 8px;
   }
 }

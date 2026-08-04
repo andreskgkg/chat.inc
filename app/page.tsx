@@ -32,6 +32,11 @@ export default function Home() {
     void loadPredictions();
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle("modal-open", composerOpen);
+    return () => document.body.classList.remove("modal-open");
+  }, [composerOpen]);
+
   async function loadPredictions() {
     setLoading(true);
     setError("");
@@ -379,16 +384,19 @@ function ComposerModal({
       }}
     >
       <div className="sheet" role="dialog" aria-modal="true" aria-label="New prediction">
-        <h3>new prediction</h3>
+        <div className="sheet-handle" aria-hidden="true" />
+        <h3>New prediction</h3>
 
         <form className="composer-form" onSubmit={submit}>
           <input
             className="field"
-            placeholder="name"
+            placeholder="Your name"
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
             maxLength={40}
             autoFocus
+            autoComplete="nickname"
+            enterKeyHint="next"
           />
           <textarea
             className="field-area"
@@ -397,14 +405,15 @@ function ComposerModal({
             onChange={(event) => setText(event.target.value)}
             maxLength={280}
             required
+            enterKeyHint="done"
           />
           {error ? <p className="error">{error}</p> : null}
           <div className="form-actions">
             <button className="ghost" type="button" onClick={onClose}>
-              cancel
+              Cancel
             </button>
             <button className="primary" type="submit" disabled={!text.trim() || pending}>
-              {pending ? "…" : "post"}
+              {pending ? "Posting…" : "Post"}
             </button>
           </div>
         </form>
