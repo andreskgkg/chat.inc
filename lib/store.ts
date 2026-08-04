@@ -67,12 +67,12 @@ export async function listPredictions() {
   );
 }
 
-export async function createPrediction(text: string) {
+export async function createPrediction(text: string, author = "") {
   const store = await readStore();
   const prediction: Prediction = {
     id: randomUUID(),
     text: text.trim(),
-    author: "chat.inc",
+    author: author.trim() || "anon",
     createdAt: new Date().toISOString(),
     votes: {},
     comments: [],
@@ -154,10 +154,4 @@ export async function voteComment(
   }
 
   return null;
-}
-
-export function checkAdminPassword(password: string) {
-  const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) return false;
-  return password === expected;
 }

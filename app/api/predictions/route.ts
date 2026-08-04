@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkAdminPassword, createPrediction, listPredictions } from "@/lib/store";
+import { createPrediction, listPredictions } from "@/lib/store";
 
 export const runtime = "nodejs";
 
@@ -11,11 +11,11 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = (await request.json()) as {
     text?: string;
-    password?: string;
+    author?: string;
   };
 
   const text = body.text?.trim() ?? "";
-  const password = body.password ?? "";
+  const author = body.author?.trim() ?? "";
 
   if (!text) {
     return NextResponse.json({ error: "Prediction text is required." }, { status: 400 });
@@ -25,10 +25,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Keep predictions under 280 characters." }, { status: 400 });
   }
 
-  if (!checkAdminPassword(password)) {
-    return NextResponse.json({ error: "Wrong password." }, { status: 401 });
+  if (author.length > 40) {
+    return NextResponse.json({ error: "Name is too long." }, { status: 400 });
   }
 
-  const prediction = await createPrediction(text);
+  const prediction = await createPrediction(text, author);
   return NextResponse.json({ prediction }, { status: 201 });
 }

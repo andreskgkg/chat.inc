@@ -130,11 +130,11 @@ export default function Home() {
     setOpenComments((current) => ({ ...current, [predictionId]: true }));
   }
 
-  async function createPrediction(password: string, text: string) {
+  async function createPrediction(author: string, text: string) {
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password, text }),
+      body: JSON.stringify({ author, text }),
     });
 
     const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
@@ -175,6 +175,7 @@ export default function Home() {
                 <div className="prediction-body">
                   <h2>{prediction.text}</h2>
                   <div className="meta">
+                    <span>{prediction.author}</span>
                     <span>{formatDate(prediction.createdAt)}</span>
                     <button
                       type="button"
@@ -343,22 +344,22 @@ function ComposerModal({
   onCreate,
 }: {
   onClose: () => void;
-  onCreate: (password: string, text: string) => Promise<void>;
+  onCreate: (author: string, text: string) => Promise<void>;
 }) {
-  const [password, setPassword] = useState("");
+  const [author, setAuthor] = useState("");
   const [text, setText] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!password || !text.trim() || pending) return;
+    if (!text.trim() || pending) return;
 
     setPending(true);
     setError("");
 
     try {
-      await onCreate(password, text.trim());
+      await onCreate(author, text.trim());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create prediction.");
     } finally {
@@ -380,13 +381,11 @@ function ComposerModal({
         <form className="composer-form" onSubmit={submit}>
           <input
             className="field"
-            type="password"
-            placeholder="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            placeholder="name"
+            value={author}
+            onChange={(event) => setAuthor(event.target.value)}
+            maxLength={40}
             autoFocus
-            autoComplete="current-password"
-            required
           />
           <textarea
             className="field-area"
@@ -401,11 +400,7 @@ function ComposerModal({
             <button className="ghost" type="button" onClick={onClose}>
               cancel
             </button>
-            <button
-              className="primary"
-              type="submit"
-              disabled={!password || !text.trim() || pending}
-            >
+            <button className="primary" type="submit" disabled={!text.trim() || pending}>
               {pending ? "…" : "post"}
             </button>
           </div>
