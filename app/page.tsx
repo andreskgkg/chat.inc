@@ -312,29 +312,32 @@ function CommentForm({
 
   return (
     <form className="comment-form" onSubmit={submit}>
-      <div className="field-row">
+      <div className="comment-composer">
         <input
-          className="field"
-          placeholder="name"
+          className="comment-name"
+          placeholder="Your name"
           value={author}
           onChange={(event) => setAuthor(event.target.value)}
           maxLength={40}
+          aria-label="Name"
         />
-        <input
-          className="field"
-          placeholder="comment"
+        <textarea
+          className="comment-body"
+          placeholder="Add a comment…"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           maxLength={500}
+          rows={2}
           required
         />
+        <div className="comment-footer">
+          <span className="comment-hint">{body.length}/500</span>
+          <button className="comment-submit" type="submit" disabled={!body.trim() || pending}>
+            {pending ? "Posting…" : "Post"}
+          </button>
+        </div>
       </div>
       {error ? <p className="error">{error}</p> : null}
-      <div className="form-actions">
-        <button className="primary" type="submit" disabled={!body.trim() || pending}>
-          {pending ? "…" : "post"}
-        </button>
-      </div>
     </form>
   );
 }
