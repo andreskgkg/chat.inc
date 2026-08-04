@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
-import type { Comment, Prediction, StoreData, VoteValue } from "./types";
+import type { Prediction, StoreData, VoteValue } from "./types";
 
 const dataDir = path.join(process.cwd(), "data");
 const storePath = path.join(dataDir, "store.json");
@@ -11,10 +11,8 @@ const seed: StoreData = {
     {
       id: "seed-spacex-robinhood",
       text: "SpaceX will acquire Robinhood",
-      author: "chat.inc",
       createdAt: "2026-08-04T16:00:00.000Z",
       votes: {},
-      comments: [],
     },
   ],
 };
@@ -27,13 +25,24 @@ function memory(): GlobalStore {
   return globalThis as GlobalStore;
 }
 
+function normalize(data: StoreData): StoreData {
+  return {
+    predictions: (data.predictions ?? []).map((prediction) => ({
+      id: prediction.id,
+      text: prediction.text,
+      createdAt: prediction.createdAt,
+      votes: prediction.votes ?? {},
+    })),
+  };
+}
+
 async function readStore(): Promise<StoreData> {
   const cached = memory().__chatIncStore;
   if (cached) return cached;
 
   try {
     const raw = await fs.readFile(storePath, "utf8");
-    const parsed = JSON.parse(raw) as StoreData;
+    const parsed = normalize(JSON.parse(raw) as StoreData);
 
     if (!Array.isArray(parsed.predictions)) {
       throw new Error("invalid store");
@@ -67,15 +76,13 @@ export async function listPredictions() {
   );
 }
 
-export async function createPrediction(text: string, author = "") {
+export async function createPrediction(text: string) {
   const store = await readStore();
   const prediction: Prediction = {
     id: randomUUID(),
     text: text.trim(),
-    author: author.trim() || "anon",
     createdAt: new Date().toISOString(),
     votes: {},
-    comments: [],
   };
 
   store.predictions.unshift(prediction);
@@ -103,51 +110,4 @@ export async function votePrediction(
 
   await writeStore(store);
   return prediction;
-}
-
-export async function addComment(predictionId: string, body: string) {
-  const store = await readStore();
-  const prediction = store.predictions.find((item) => item.id === predictionId);
-
-  if (!prediction) {
-    return null;
-  }
-
-  const comment: Comment = {
-    id: randomUUID(),
-    predictionId,
-    author: "",
-    body: body.trim(),
-    createdAt: new Date().toISOString(),
-    votes: {},
-  };
-
-  prediction.comments.push(comment);
-  await writeStore(store);
-  return comment;
-}
-
-export async function voteComment(
-  commentId: string,
-  voterId: string,
-  value: VoteValue | 0,
-) {
-  const store = await readStore();
-
-  for (const prediction of store.predictions) {
-    const comment = prediction.comments.find((item) => item.id === commentId);
-
-    if (!comment) continue;
-
-    if (value === 0) {
-      delete comment.votes[voterId];
-    } else {
-      comment.votes[voterId] = value;
-    }
-
-    await writeStore(store);
-    return { comment, predictionId: prediction.id };
-  }
-
-  return null;
 }

@@ -11,11 +11,9 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = (await request.json()) as {
     text?: string;
-    author?: string;
   };
 
   const text = body.text?.trim() ?? "";
-  const author = body.author?.trim() ?? "";
 
   if (!text) {
     return NextResponse.json({ error: "Prediction text is required." }, { status: 400 });
@@ -25,10 +23,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Keep predictions under 280 characters." }, { status: 400 });
   }
 
-  if (author.length > 40) {
-    return NextResponse.json({ error: "Name is too long." }, { status: 400 });
-  }
-
-  const prediction = await createPrediction(text, author);
+  const prediction = await createPrediction(text);
   return NextResponse.json({ prediction }, { status: 201 });
 }
