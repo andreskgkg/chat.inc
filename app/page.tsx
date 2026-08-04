@@ -122,7 +122,7 @@ export default function Home() {
 
       <div className="fab-wrap">
         <button type="button" className="fab" onClick={() => setComposerOpen(true)}>
-          +
+          add prediction
         </button>
       </div>
 
