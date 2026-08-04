@@ -36,12 +36,14 @@ export default function Home() {
     return () => document.body.classList.remove("modal-open");
   }, [composerOpen]);
 
-  async function loadPredictions() {
-    setLoading(true);
+  async function loadPredictions(options?: { quiet?: boolean }) {
+    if (!options?.quiet) {
+      setLoading(true);
+    }
     setError("");
 
     try {
-      const response = await fetch("/api/predictions");
+      const response = await fetch("/api/predictions", { cache: "no-store" });
       const data = await readJson<{ predictions?: Prediction[]; error?: string }>(response);
 
       if (!response.ok) {
@@ -52,29 +54,52 @@ export default function Home() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load predictions.");
     } finally {
-      setLoading(false);
+      if (!options?.quiet) {
+        setLoading(false);
+      }
     }
   }
 
   async function votePrediction(predictionId: string, next: VoteValue | 0) {
     if (!voterId) return;
 
-    const response = await fetch(`/api/predictions/${predictionId}/vote`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ voterId, value: next }),
-    });
-
-    const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
-
-    if (!response.ok || !data.prediction) {
-      setError(data.error || "Vote failed.");
-      return;
-    }
-
+    const previous = predictions;
     setPredictions((current) =>
-      current.map((item) => (item.id === predictionId ? data.prediction! : item)),
+      current.map((item) => {
+        if (item.id !== predictionId) return item;
+        const votes = { ...item.votes };
+        if (next === 0) {
+          delete votes[voterId];
+        } else {
+          votes[voterId] = next;
+        }
+        return { ...item, votes };
+      }),
     );
+
+    try {
+      const response = await fetch(`/api/predictions/${predictionId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voterId, value: next }),
+        cache: "no-store",
+      });
+
+      const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
+
+      if (!response.ok || !data.prediction) {
+        setPredictions(previous);
+        setError(data.error || "Vote failed.");
+        return;
+      }
+
+      setPredictions((current) =>
+        current.map((item) => (item.id === predictionId ? data.prediction! : item)),
+      );
+    } catch (err) {
+      setPredictions(previous);
+      setError(err instanceof Error ? err.message : "Vote failed.");
+    }
   }
 
   async function createPrediction(text: string) {
@@ -82,6 +107,7 @@ export default function Home() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
+      cache: "no-store",
     });
 
     const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
@@ -92,6 +118,7 @@ export default function Home() {
 
     setPredictions((current) => [data.prediction!, ...current]);
     setComposerOpen(false);
+    void loadPredictions({ quiet: true });
   }
 
   return (

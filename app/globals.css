@@ -82,9 +82,9 @@ button:disabled {
   place-items: center;
   width: 28px;
   height: 28px;
-  color: #ccc;
-  font-size: 16px;
-  font-weight: 300;
+  color: #999;
+  font-size: 18px;
+  font-weight: 400;
   line-height: 1;
 }
 
@@ -94,9 +94,9 @@ button:disabled {
 
 .score {
   min-width: 1.5ch;
-  color: #bbb;
-  font-size: 12px;
-  font-weight: 400;
+  color: #777;
+  font-size: 13px;
+  font-weight: 500;
   letter-spacing: -0.02em;
   text-align: center;
   font-variant-numeric: tabular-nums;

@@ -3,32 +3,38 @@ import { votePrediction } from "@/lib/store";
 import type { VoteValue } from "@/lib/types";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, { params }: Params) {
-  const { id } = await params;
-  const body = (await request.json()) as {
-    voterId?: string;
-    value?: VoteValue | 0;
-  };
+  try {
+    const { id } = await params;
+    const body = (await request.json()) as {
+      voterId?: string;
+      value?: VoteValue | 0;
+    };
 
-  const voterId = body.voterId?.trim() ?? "";
-  const value = body.value;
+    const voterId = body.voterId?.trim() ?? "";
+    const value = body.value;
 
-  if (!voterId) {
-    return NextResponse.json({ error: "Missing voter id." }, { status: 400 });
+    if (!voterId) {
+      return NextResponse.json({ error: "Missing voter id." }, { status: 400 });
+    }
+
+    if (value !== 1 && value !== -1 && value !== 0) {
+      return NextResponse.json({ error: "Invalid vote." }, { status: 400 });
+    }
+
+    const prediction = await votePrediction(id, voterId, value);
+
+    if (!prediction) {
+      return NextResponse.json({ error: "Prediction not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ prediction });
+  } catch (error) {
+    console.error("votePrediction failed", error);
+    return NextResponse.json({ error: "Vote failed." }, { status: 500 });
   }
-
-  if (value !== 1 && value !== -1 && value !== 0) {
-    return NextResponse.json({ error: "Invalid vote." }, { status: 400 });
-  }
-
-  const prediction = await votePrediction(id, voterId, value);
-
-  if (!prediction) {
-    return NextResponse.json({ error: "Prediction not found." }, { status: 404 });
-  }
-
-  return NextResponse.json({ prediction });
 }

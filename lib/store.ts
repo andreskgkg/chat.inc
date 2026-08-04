@@ -1,10 +1,8 @@
 import { randomUUID } from "crypto";
-import { promises as fs } from "fs";
-import path from "path";
+import { get, put } from "@vercel/blob";
 import type { Prediction, StoreData, VoteValue } from "./types";
 
-const dataDir = path.join(process.cwd(), "data");
-const storePath = path.join(dataDir, "store.json");
+const STORE_PATH = "chat-inc/store.json";
 
 const seed: StoreData = {
   predictions: [
@@ -16,14 +14,6 @@ const seed: StoreData = {
     },
   ],
 };
-
-type GlobalStore = typeof globalThis & {
-  __chatIncStore?: StoreData;
-};
-
-function memory(): GlobalStore {
-  return globalThis as GlobalStore;
-}
 
 function normalize(data: StoreData): StoreData {
   return {
@@ -37,36 +27,42 @@ function normalize(data: StoreData): StoreData {
 }
 
 async function readStore(): Promise<StoreData> {
-  const cached = memory().__chatIncStore;
-  if (cached) return cached;
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("Missing BLOB_READ_WRITE_TOKEN");
+  }
 
-  try {
-    const raw = await fs.readFile(storePath, "utf8");
-    const parsed = normalize(JSON.parse(raw) as StoreData);
+  const blob = await get(STORE_PATH, {
+    access: "private",
+    useCache: false,
+  });
 
-    if (!Array.isArray(parsed.predictions)) {
-      throw new Error("invalid store");
-    }
-
-    memory().__chatIncStore = parsed;
-    return parsed;
-  } catch {
+  if (!blob?.stream) {
     const initial = structuredClone(seed);
-    memory().__chatIncStore = initial;
-    await writeStore(initial).catch(() => undefined);
+    await writeStore(initial);
     return initial;
   }
+
+  const raw = await new Response(blob.stream).text();
+  const parsed = normalize(JSON.parse(raw) as StoreData);
+
+  if (!Array.isArray(parsed.predictions)) {
+    throw new Error("invalid store");
+  }
+
+  return parsed;
 }
 
 async function writeStore(data: StoreData) {
-  memory().__chatIncStore = data;
-
-  try {
-    await fs.mkdir(dataDir, { recursive: true });
-    await fs.writeFile(storePath, JSON.stringify(data, null, 2), "utf8");
-  } catch {
-    // Vercel/serverless filesystems are often read-only; memory still works.
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error("Missing BLOB_READ_WRITE_TOKEN");
   }
+
+  await put(STORE_PATH, JSON.stringify(data), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+  });
 }
 
 export async function listPredictions() {
