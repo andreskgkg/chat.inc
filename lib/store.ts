@@ -11,38 +11,53 @@ const seed: StoreData = {
     {
       id: "seed-spacex-robinhood",
       text: "SpaceX will acquire Robinhood",
-      author: "andres",
-      createdAt: new Date().toISOString(),
+      author: "chat.inc",
+      createdAt: "2026-08-04T16:00:00.000Z",
       votes: {},
       comments: [],
     },
   ],
 };
 
-async function ensureDir() {
-  await fs.mkdir(dataDir, { recursive: true });
+type GlobalStore = typeof globalThis & {
+  __chatIncStore?: StoreData;
+};
+
+function memory(): GlobalStore {
+  return globalThis as GlobalStore;
 }
 
 async function readStore(): Promise<StoreData> {
+  const cached = memory().__chatIncStore;
+  if (cached) return cached;
+
   try {
     const raw = await fs.readFile(storePath, "utf8");
     const parsed = JSON.parse(raw) as StoreData;
 
     if (!Array.isArray(parsed.predictions)) {
-      return structuredClone(seed);
+      throw new Error("invalid store");
     }
 
+    memory().__chatIncStore = parsed;
     return parsed;
   } catch {
     const initial = structuredClone(seed);
-    await writeStore(initial);
+    memory().__chatIncStore = initial;
+    await writeStore(initial).catch(() => undefined);
     return initial;
   }
 }
 
 async function writeStore(data: StoreData) {
-  await ensureDir();
-  await fs.writeFile(storePath, JSON.stringify(data, null, 2), "utf8");
+  memory().__chatIncStore = data;
+
+  try {
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.writeFile(storePath, JSON.stringify(data, null, 2), "utf8");
+  } catch {
+    // Vercel/serverless filesystems are often read-only; memory still works.
+  }
 }
 
 export async function listPredictions() {
@@ -57,7 +72,7 @@ export async function createPrediction(text: string) {
   const prediction: Prediction = {
     id: randomUUID(),
     text: text.trim(),
-    author: "andres",
+    author: "chat.inc",
     createdAt: new Date().toISOString(),
     votes: {},
     comments: [],
@@ -105,7 +120,7 @@ export async function addComment(
   const comment: Comment = {
     id: randomUUID(),
     predictionId,
-    author: author.trim() || "anonymous",
+    author: author.trim() || "anon",
     body: body.trim(),
     createdAt: new Date().toISOString(),
     votes: {},
@@ -143,10 +158,6 @@ export async function voteComment(
 
 export function checkAdminPassword(password: string) {
   const expected = process.env.ADMIN_PASSWORD;
-
-  if (!expected) {
-    return false;
-  }
-
+  if (!expected) return false;
   return password === expected;
 }

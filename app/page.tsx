@@ -1,9 +1,23 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import type { Comment, Prediction, VoteValue } from "@/lib/types";
 import { score } from "@/lib/types";
 import { getVisitorId } from "@/lib/visitor";
+
+async function readJson<T>(response: Response): Promise<T> {
+  const text = await response.text();
+
+  if (!text) {
+    throw new Error(response.ok ? "Empty response." : `Request failed (${response.status}).`);
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(response.ok ? "Bad response." : `Request failed (${response.status}).`);
+  }
+}
 
 export default function Home() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
@@ -24,7 +38,7 @@ export default function Home() {
 
     try {
       const response = await fetch("/api/predictions");
-      const data = (await response.json()) as { predictions?: Prediction[]; error?: string };
+      const data = await readJson<{ predictions?: Prediction[]; error?: string }>(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Could not load predictions.");
@@ -47,7 +61,7 @@ export default function Home() {
       body: JSON.stringify({ voterId, value: next }),
     });
 
-    const data = (await response.json()) as { prediction?: Prediction; error?: string };
+    const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
 
     if (!response.ok || !data.prediction) {
       setError(data.error || "Vote failed.");
@@ -68,11 +82,11 @@ export default function Home() {
       body: JSON.stringify({ voterId, value: next }),
     });
 
-    const data = (await response.json()) as {
+    const data = await readJson<{
       comment?: Comment;
       predictionId?: string;
       error?: string;
-    };
+    }>(response);
 
     if (!response.ok || !data.comment || !data.predictionId) {
       setError(data.error || "Vote failed.");
@@ -100,7 +114,7 @@ export default function Home() {
       body: JSON.stringify({ author, body }),
     });
 
-    const data = (await response.json()) as { comment?: Comment; error?: string };
+    const data = await readJson<{ comment?: Comment; error?: string }>(response);
 
     if (!response.ok || !data.comment) {
       throw new Error(data.error || "Could not post comment.");
@@ -123,7 +137,7 @@ export default function Home() {
       body: JSON.stringify({ password, text }),
     });
 
-    const data = (await response.json()) as { prediction?: Prediction; error?: string };
+    const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
 
     if (!response.ok || !data.prediction) {
       throw new Error(data.error || "Could not create prediction.");
@@ -133,30 +147,13 @@ export default function Home() {
     setComposerOpen(false);
   }
 
-  const countLabel = useMemo(() => {
-    const n = predictions.length;
-    return n === 1 ? "1 prediction" : `${n} predictions`;
-  }, [predictions.length]);
-
   return (
     <main className="page">
-      <header className="hero">
-        <h1 className="brand">chat.inc</h1>
-        <p className="lede">Andres writes predictions. Everyone else argues in the replies.</p>
-        <div className="byline">
-          <strong>by andres</strong>
-          <span>·</span>
-          <span>{countLabel}</span>
-        </div>
-      </header>
+      <h1 className="brand">chat.inc</h1>
 
       {error ? <p className="error">{error}</p> : null}
-
-      {loading ? <div className="loading">Loading predictions…</div> : null}
-
-      {!loading && predictions.length === 0 ? (
-        <div className="empty">No predictions yet. Andres, hit the button below.</div>
-      ) : null}
+      {loading ? <p className="loading">loading…</p> : null}
+      {!loading && predictions.length === 0 ? <p className="empty">no predictions yet</p> : null}
 
       <section className="feed" aria-label="predictions">
         {predictions.map((prediction) => {
@@ -164,7 +161,7 @@ export default function Home() {
           const myVote = voterId ? prediction.votes[voterId] : undefined;
 
           return (
-            <article className="prediction" key={prediction.id}>
+            <article key={prediction.id}>
               <div className="prediction-top">
                 <VoteRail
                   value={myVote}
@@ -178,11 +175,9 @@ export default function Home() {
                 <div className="prediction-body">
                   <h2>{prediction.text}</h2>
                   <div className="meta">
-                    <span>andres</span>
                     <span>{formatDate(prediction.createdAt)}</span>
                     <button
                       type="button"
-                      className="linkish"
                       onClick={() =>
                         setOpenComments((current) => ({
                           ...current,
@@ -224,11 +219,7 @@ export default function Home() {
                           </li>
                         ))}
                     </ul>
-                  ) : (
-                    <p className="error" style={{ color: "var(--muted)", marginBottom: 12 }}>
-                      No comments yet. Be first.
-                    </p>
-                  )}
+                  ) : null}
 
                   <CommentForm
                     onSubmit={async (author, body) => {
@@ -244,7 +235,7 @@ export default function Home() {
 
       <div className="fab-wrap">
         <button type="button" className="fab" onClick={() => setComposerOpen(true)}>
-          New prediction
+          new prediction
         </button>
       </div>
 
@@ -262,7 +253,6 @@ function VoteRail({
   value,
   total,
   onVote,
-  compact = false,
 }: {
   value?: VoteValue;
   total: number;
@@ -270,7 +260,7 @@ function VoteRail({
   compact?: boolean;
 }) {
   return (
-    <div className="vote-rail" style={compact ? { minWidth: 36 } : undefined}>
+    <div className="vote-rail">
       <button
         type="button"
         className={`vote-btn ${value === 1 ? "active-up" : ""}`}
@@ -331,7 +321,7 @@ function CommentForm({
         />
         <input
           className="field"
-          placeholder="write a comment"
+          placeholder="comment"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           maxLength={500}
@@ -341,7 +331,7 @@ function CommentForm({
       {error ? <p className="error">{error}</p> : null}
       <div className="form-actions">
         <button className="primary" type="submit" disabled={!body.trim() || pending}>
-          {pending ? "Posting…" : "Comment"}
+          {pending ? "…" : "post"}
         </button>
       </div>
     </form>
@@ -385,8 +375,7 @@ function ComposerModal({
       }}
     >
       <div className="sheet" role="dialog" aria-modal="true" aria-label="New prediction">
-        <h3>New prediction</h3>
-        <p>Enter your password, then write the call.</p>
+        <h3>new prediction</h3>
 
         <form className="composer-form" onSubmit={submit}>
           <input
@@ -410,14 +399,14 @@ function ComposerModal({
           {error ? <p className="error">{error}</p> : null}
           <div className="form-actions">
             <button className="ghost" type="button" onClick={onClose}>
-              Cancel
+              cancel
             </button>
             <button
               className="primary"
               type="submit"
               disabled={!password || !text.trim() || pending}
             >
-              {pending ? "Posting…" : "Post prediction"}
+              {pending ? "…" : "post"}
             </button>
           </div>
         </form>
@@ -430,6 +419,5 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
-    year: "numeric",
   }).format(new Date(value));
 }

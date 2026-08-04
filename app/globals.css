@@ -1,17 +1,11 @@
 :root {
   color-scheme: light;
-  --ink: #102033;
-  --ink-soft: #3a5168;
-  --muted: #6d8296;
-  --line: rgba(16, 32, 51, 0.12);
-  --paper: #eef3f7;
-  --panel: rgba(255, 255, 255, 0.72);
-  --accent: #0f8f7b;
-  --accent-deep: #0a6b5c;
+  --ink: #111;
+  --muted: #999;
+  --line: #eee;
+  --bg: #fbfbfb;
   --up: #0f8f7b;
   --down: #c44b3c;
-  --shadow: 0 24px 80px rgba(16, 32, 51, 0.08);
-  --radius: 22px;
 }
 
 * {
@@ -26,202 +20,132 @@ body {
 
 body {
   color: var(--ink);
+  background: var(--bg);
   font-family: var(--font-body), "IBM Plex Sans", system-ui, sans-serif;
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(15, 143, 123, 0.16), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(48, 92, 140, 0.14), transparent 50%),
-    linear-gradient(180deg, #f7fafc 0%, var(--paper) 45%, #e7eef5 100%);
-  background-attachment: fixed;
 }
 
 button,
 input,
 textarea {
   font: inherit;
+  border: 0;
 }
 
 button {
   cursor: pointer;
+  background: none;
+  color: inherit;
 }
 
 button:disabled {
   cursor: default;
-  opacity: 0.55;
-}
-
-a {
-  color: inherit;
+  opacity: 0.4;
 }
 
 .page {
-  width: min(760px, calc(100% - 40px));
+  width: min(560px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 48px 0 140px;
-}
-
-.hero {
-  margin-bottom: 40px;
-  animation: rise 700ms ease both;
+  padding: 56px 0 120px;
 }
 
 .brand {
-  margin: 0;
-  font-family: var(--font-display), "Bricolage Grotesque", Georgia, serif;
-  font-size: clamp(3.4rem, 10vw, 5.6rem);
-  font-weight: 800;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
-}
-
-.lede {
-  max-width: 34ch;
-  margin: 14px 0 0;
-  color: var(--ink-soft);
-  font-size: 1.05rem;
-  line-height: 1.45;
-}
-
-.byline {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 18px;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.byline strong {
-  color: var(--accent-deep);
+  margin: 0 0 40px;
+  font-size: 1.25rem;
   font-weight: 600;
+  letter-spacing: -0.04em;
 }
 
 .feed {
   display: grid;
-  gap: 18px;
-}
-
-.prediction {
-  padding: 22px 22px 18px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-  backdrop-filter: blur(14px);
-  box-shadow: var(--shadow);
-  animation: rise 650ms ease both;
-}
-
-.prediction:nth-child(2) {
-  animation-delay: 60ms;
-}
-
-.prediction:nth-child(3) {
-  animation-delay: 120ms;
+  gap: 28px;
 }
 
 .prediction-top {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 16px;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
   align-items: start;
 }
 
 .vote-rail {
   display: grid;
   justify-items: center;
-  gap: 4px;
-  min-width: 44px;
+  gap: 2px;
   padding-top: 2px;
 }
 
 .vote-btn {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 32px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
+  width: 28px;
+  height: 24px;
   color: var(--muted);
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+  font-size: 11px;
 }
 
 .vote-btn:hover {
-  background: rgba(16, 32, 51, 0.06);
   color: var(--ink);
 }
 
 .vote-btn.active-up {
   color: var(--up);
-  background: rgba(15, 143, 123, 0.12);
 }
 
 .vote-btn.active-down {
   color: var(--down);
-  background: rgba(196, 75, 60, 0.12);
-}
-
-.vote-btn:active {
-  transform: translateY(1px);
 }
 
 .score {
-  min-width: 2ch;
-  color: var(--ink);
-  font-family: var(--font-display), "Bricolage Grotesque", Georgia, serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  min-width: 1.5ch;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   text-align: center;
 }
 
 .prediction-body h2 {
   margin: 0;
-  font-family: var(--font-display), "Bricolage Grotesque", Georgia, serif;
-  font-size: clamp(1.45rem, 3.5vw, 1.85rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.15;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
 }
 
 .meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 13px;
 }
 
-.meta button.linkish {
-  border: 0;
+.meta button {
+  color: var(--muted);
   padding: 0;
-  background: none;
-  color: var(--accent-deep);
-  font-weight: 500;
+}
+
+.meta button:hover {
+  color: var(--ink);
 }
 
 .comments {
-  margin-top: 18px;
-  padding-top: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--line);
-  animation: fade 220ms ease both;
 }
 
 .comment-list {
   display: grid;
-  gap: 12px;
-  margin: 0 0 16px;
+  gap: 14px;
+  margin: 0 0 14px;
   padding: 0;
   list-style: none;
 }
 
 .comment {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
   align-items: start;
 }
 
@@ -230,55 +154,53 @@ a {
 }
 
 .comment-copy p {
-  margin: 4px 0 0;
-  color: var(--ink);
+  margin: 2px 0 0;
+  font-size: 14px;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
 .comment-copy .who {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 12px;
 }
 
 .comment-form,
 .composer-form {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .field-row {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 10px;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
 }
 
 .field,
 .field-area {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  background: #fff;
   color: var(--ink);
   outline: none;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .field {
-  height: 44px;
-  padding: 0 14px;
+  height: 40px;
+  padding: 0 12px;
 }
 
 .field-area {
-  min-height: 96px;
-  padding: 12px 14px;
+  min-height: 88px;
+  padding: 10px 12px;
   resize: vertical;
 }
 
 .field:focus,
 .field-area:focus {
-  border-color: rgba(15, 143, 123, 0.55);
-  box-shadow: 0 0 0 3px rgba(15, 143, 123, 0.12);
+  border-color: #ccc;
 }
 
 .primary,
@@ -286,56 +208,38 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
-  padding: 0 18px;
+  height: 40px;
+  padding: 0 14px;
   border-radius: 999px;
-  border: 0;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  transition:
-    transform 160ms ease,
-    background 160ms ease,
-    color 160ms ease;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .primary {
   background: var(--ink);
-  color: white;
-}
-
-.primary:hover:not(:disabled) {
-  background: #071421;
+  color: #fff;
 }
 
 .ghost {
-  background: rgba(16, 32, 51, 0.06);
-  color: var(--ink);
-}
-
-.ghost:hover:not(:disabled) {
-  background: rgba(16, 32, 51, 0.1);
+  background: #f0f0f0;
 }
 
 .form-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: flex-end;
 }
 
 .error {
-  margin: 0;
+  margin: 0 0 20px;
   color: var(--down);
-  font-size: 0.9rem;
+  font-size: 13px;
 }
 
 .empty,
 .loading {
-  padding: 28px;
-  border: 1px dashed var(--line);
-  border-radius: var(--radius);
   color: var(--muted);
-  text-align: center;
+  font-size: 14px;
 }
 
 .fab-wrap {
@@ -351,27 +255,13 @@ a {
 
 .fab {
   pointer-events: auto;
-  min-width: 220px;
-  height: 52px;
-  padding: 0 22px;
-  border: 0;
+  height: 44px;
+  padding: 0 18px;
   border-radius: 999px;
   background: var(--ink);
-  color: white;
-  font-family: var(--font-display), "Bricolage Grotesque", Georgia, serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  box-shadow: 0 18px 50px rgba(16, 32, 51, 0.28);
-  transition:
-    transform 180ms ease,
-    background 180ms ease;
-  animation: float-in 700ms ease both;
-}
-
-.fab:hover {
-  transform: translateY(-2px);
-  background: #071421;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .overlay {
@@ -381,94 +271,32 @@ a {
   display: grid;
   place-items: end center;
   padding: 16px;
-  background: rgba(10, 22, 34, 0.42);
-  backdrop-filter: blur(6px);
-  animation: fade 180ms ease both;
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .sheet {
-  width: min(520px, 100%);
+  width: min(440px, 100%);
   margin-bottom: max(8px, env(safe-area-inset-bottom));
-  padding: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 30px 90px rgba(8, 18, 30, 0.28);
-  animation: sheet-up 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fff;
 }
 
 .sheet h3 {
-  margin: 0 0 6px;
-  font-family: var(--font-display), "Bricolage Grotesque", Georgia, serif;
-  font-size: 1.55rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-.sheet p {
-  margin: 0 0 16px;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes sheet-up {
-  from {
-    opacity: 0;
-    transform: translateY(28px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes float-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 640px) {
   .page {
     width: calc(100% - 28px);
-    padding-top: 32px;
+    padding-top: 40px;
   }
 
   .field-row {
     grid-template-columns: 1fr;
-  }
-
-  .prediction {
-    padding: 18px 16px 14px;
-  }
-
-  .prediction-top {
-    gap: 12px;
   }
 
   .fab {
