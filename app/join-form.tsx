@@ -40,7 +40,7 @@ export function JoinForm({ className = "" }: { className?: string }) {
     return (
       <div className={`join ${className}`.trim()}>
         <div className="join-shell join-shell-done" role="status">
-          Check your texts
+          Amazing, texting you now!
         </div>
       </div>
     );
