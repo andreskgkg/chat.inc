@@ -56,7 +56,7 @@ button {
 }
 
 .wrap {
-  width: min(980px, calc(100% - 40px));
+  width: min(1080px, calc(100% - 48px));
   margin: 0 auto;
 }
 
@@ -133,16 +133,16 @@ button {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 36px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(64px, 10vw, 140px);
   align-items: center;
-  justify-content: space-between;
-  padding: 56px 0 64px;
+  padding: 64px 0 72px;
   animation: rise 500ms ease both;
 }
 
 .hero-copy {
-  max-width: 22rem;
+  max-width: 26rem;
+  justify-self: start;
 }
 
 .hero h1 {
@@ -194,6 +194,7 @@ button {
 
 .phone {
   position: relative;
+  justify-self: end;
   width: min(100%, 292px);
   margin: 0;
   padding: 14px 14px 18px;
@@ -680,14 +681,14 @@ button {
 
   .hero {
     grid-template-columns: 1fr;
-    gap: 28px;
+    column-gap: 0;
+    row-gap: 32px;
     padding-top: 36px;
   }
 
   .phone {
     width: min(100%, 292px);
-    margin-left: 0;
-    margin-right: auto;
+    justify-self: start;
   }
 }
 
