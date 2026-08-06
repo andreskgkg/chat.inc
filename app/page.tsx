@@ -37,6 +37,7 @@ export default function Home() {
             </div>
 
             <div className="imsg imsg-out">
+              <span className="imsg-label">You</span>
               <div className="bubble bubble-ans">
                 Strong on AI citation tracking. Weak on classic rank reports. Best if you already
                 have Search Console wired up.
