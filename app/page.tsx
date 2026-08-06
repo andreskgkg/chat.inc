@@ -23,37 +23,46 @@ export default function Home() {
           </div>
 
           <div className="phone" aria-hidden="true">
-            <div className="phone-island" />
-            <div className="phone-top">
-              <div className="phone-back" />
-              <div className="phone-identity">
-                <div className="phone-avatar">$</div>
-                <div className="phone-name">
-                  <span className="phone-check" aria-hidden="true">
-                    ✓
-                  </span>
-                  Chat.inc
-                  <span className="phone-chevron" aria-hidden="true">
-                    ›
-                  </span>
+            <div className="phone-bezel">
+              <div className="phone-screen">
+                <div className="phone-status">
+                  <span>9:41</span>
+                  <div className="phone-status-icons">
+                    <span className="phone-signal" />
+                    <span className="phone-wifi" />
+                    <span className="phone-battery" />
+                  </div>
                 </div>
-              </div>
-            </div>
+                <div className="phone-island" />
 
-            <div className="phone-thread">
-              <div className="bubble bubble-in">
-                what was your experience using Profound the AI SEO tool? ($25)
-              </div>
-              <div className="bubble bubble-out">
-                Strong on AI citation tracking. Weak on classic rank reports. Best if you already
-                have Search Console wired up.
-              </div>
-              <div className="pay" aria-label="$25 Apple Cash">
-                <div className="pay-brand">
-                  <span className="pay-apple"></span>
-                  <span>Pay</span>
+                <div className="phone-top">
+                  <div className="phone-back" />
+                  <div className="phone-identity">
+                    <div className="phone-avatar">$</div>
+                    <div className="phone-name">
+                      <span className="phone-check">✓</span>
+                      Chat.inc
+                      <span className="phone-chevron">›</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="pay-amount">$25</div>
+
+                <div className="phone-thread">
+                  <div className="bubble bubble-in">
+                    what was your experience using Profound the AI SEO tool? ($25)
+                  </div>
+                  <div className="bubble bubble-out">
+                    Strong on AI citation tracking. Weak on classic rank reports. Best if you
+                    already have Search Console wired up.
+                  </div>
+                  <div className="pay" aria-label="$25 Apple Cash">
+                    <div className="pay-brand">
+                      <span className="pay-apple"></span>
+                      <span>Pay</span>
+                    </div>
+                    <div className="pay-amount">$25</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
