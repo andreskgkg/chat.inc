@@ -93,9 +93,9 @@ button {
 
 .nav-tagline {
   color: #9a9a9a;
-  font-size: 0.82rem;
-  font-weight: 450;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
