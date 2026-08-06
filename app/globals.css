@@ -27,7 +27,10 @@ body {
 body {
   color: var(--ink);
   background: var(--bg);
-  font-family: var(--font-body), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -62,9 +65,9 @@ button {
 }
 
 .nav-brand {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 1.35rem;
-  letter-spacing: -0.03em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
 .nav-cta {
@@ -81,24 +84,24 @@ button {
 
 .hero h1 {
   margin: 0;
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.4rem, 8vw, 3.4rem);
-  font-weight: 400;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-size: clamp(2.2rem, 7vw, 2.85rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
 }
 
 .hero-lede {
   margin: 14px 0 0;
-  font-size: 1.1rem;
-  line-height: 1.4;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .hero-sub {
   margin: 10px 0 0;
   color: var(--muted);
   font-size: 0.98rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -223,11 +226,10 @@ button {
 
 .section-head {
   margin: 0 0 18px;
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 1.55rem;
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
 }
 
 .steps {
@@ -392,8 +394,8 @@ button {
 }
 
 .site-footer strong {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
