@@ -478,26 +478,28 @@ button {
   font-weight: 400;
 }
 
-.join-shell button {
+.join-shell button,
+.join-shell button:disabled,
+.join-shell button:hover,
+.join-shell button:active {
   height: 38px;
   padding: 0 16px;
   border-radius: 999px;
-  background: #000;
+  background: #000 !important;
+  background-color: #000 !important;
   color: #fff;
+  -webkit-text-fill-color: #fff;
+  opacity: 1;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.02em;
   white-space: nowrap;
-  transition: color 140ms ease, background 140ms ease;
-}
-
-.join-shell button:hover:not(:disabled) {
-  background: #000;
 }
 
 .join-shell button:disabled {
-  background: #000;
-  color: rgba(255, 255, 255, 0.45);
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.7);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7);
 }
 
 .join-error {
