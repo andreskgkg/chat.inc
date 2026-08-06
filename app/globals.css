@@ -525,6 +525,11 @@ button {
     width: min(100%, 380px);
     gap: 4px;
   }
+
+  .hero-copy,
+  .hero-visual {
+    flex: 0 0 auto;
+  }
 }
 
 @media (max-width: 640px) {
@@ -533,12 +538,17 @@ button {
   }
 
   .hero {
-    padding: 36px 0 48px;
-    gap: 10px;
+    padding: 32px 0 40px;
+    gap: 0;
   }
 
   .join-hero {
     width: min(100%, 340px);
+  }
+
+  .hero-visual {
+    gap: 0;
+    margin-top: -6px;
   }
 
   .hero-caption {
