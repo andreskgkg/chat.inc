@@ -42,19 +42,19 @@ export default function Home() {
           <ol className="steps">
             <li>
               <strong>Create your profile</strong>
-              <span>Tell us what you’ve worked on.</span>
+              <span>Text us and confirm your identity.</span>
             </li>
             <li>
-              <strong>Get matched</strong>
-              <span>Receive questions from people who need your experience.</span>
+              <strong>Get questions</strong>
+              <span>Receive questions via text.</span>
             </li>
             <li>
-              <strong>Answer by text</strong>
-              <span>No meetings. No scheduling. Just text.</span>
+              <strong>Answer</strong>
+              <span>If you have an opinion text back, if not ignore.</span>
             </li>
             <li>
               <strong>Get paid</strong>
-              <span>Earn for every conversation.</span>
+              <span>Earn for every answer.</span>
             </li>
           </ol>
         </section>
