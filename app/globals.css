@@ -61,6 +61,8 @@ button {
 .join-section,
 .site-footer {
   width: min(560px, 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .nav {
