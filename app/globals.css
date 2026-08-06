@@ -162,12 +162,6 @@ button {
   max-width: 34rem;
 }
 
-@media (min-width: 861px) {
-  .hero-sub {
-    white-space: nowrap;
-  }
-}
-
 .join-hero {
   width: min(100%, 292px);
   margin-top: 22px;

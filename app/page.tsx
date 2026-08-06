@@ -17,7 +17,9 @@ export default function Home() {
           <div className="hero-copy">
             <h1>Get paid for what you know.</h1>
             <p className="hero-sub">
-              Answer questions whenever you have a minute. Stay anonymous. Get paid.
+              Answer questions whenever you have a minute.
+              <br />
+              Stay anonymous. Get paid.
             </p>
             <JoinForm className="join-hero" />
           </div>
