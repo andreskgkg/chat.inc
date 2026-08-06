@@ -22,14 +22,17 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.CLAW_API_KEY) {
+    const transport = process.env.MESSAGE_TRANSPORT || "openclaw-imessage";
+    if (transport !== "openclaw-imessage" && !process.env.CLAW_API_KEY) {
       return NextResponse.json(
         { error: "Texting isn’t configured yet. Add CLAW_API_KEY." },
         { status: 503 },
       );
     }
 
-    await registerRoute(phone);
+    if (transport !== "openclaw-imessage" && process.env.CLAW_API_KEY) {
+      await registerRoute(phone);
+    }
     await sendText(phone, IDENTITY_MESSAGE);
 
     const now = new Date().toISOString();

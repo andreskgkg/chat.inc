@@ -49,13 +49,17 @@ function extractText(payload: InboundBody) {
 
 export async function POST(request: Request) {
   try {
-    const secret = process.env.CLAW_WEBHOOK_SECRET?.trim();
-    if (secret) {
+    const clawSecret = process.env.CLAW_WEBHOOK_SECRET?.trim();
+    const outboxSecret = process.env.OUTBOX_SECRET?.trim();
+    if (clawSecret || outboxSecret) {
       const header =
         request.headers.get("x-claw-signature") ||
         request.headers.get("authorization") ||
         "";
-      if (!header.includes(secret)) {
+      const ok =
+        (clawSecret && header.includes(clawSecret)) ||
+        (outboxSecret && header === `Bearer ${outboxSecret}`);
+      if (!ok) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }

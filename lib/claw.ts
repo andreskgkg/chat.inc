@@ -1,4 +1,11 @@
+import { enqueueOutbox } from "@/lib/outbox";
+
 const CLAW_BASE = "https://claw-messenger.onrender.com";
+
+/** openclaw-imessage = send via your Mac iMessage (781). claw = Claw Messenger agent line. */
+export function messageTransport() {
+  return (process.env.MESSAGE_TRANSPORT || "openclaw-imessage").trim();
+}
 
 function apiKey() {
   const key = process.env.CLAW_API_KEY?.trim();
@@ -52,6 +59,11 @@ export async function registerRoute(phoneNumber: string) {
 }
 
 export async function sendText(phoneNumber: string, text: string) {
+  if (messageTransport() === "openclaw-imessage") {
+    const message = await enqueueOutbox(phoneNumber, text);
+    return { ok: true, transport: "openclaw-imessage", id: message.id };
+  }
+
   const response = await fetch(`${CLAW_BASE}/api/agent/send-message`, {
     method: "POST",
     headers: {
