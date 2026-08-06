@@ -5,12 +5,13 @@ export default function Home() {
     <div className="site">
       <div className="wrap">
         <header className="nav">
-          <a className="nav-brand" href="/">
-            chat.inc
-          </a>
-          <a className="nav-cta" href="#join">
-            get started
-          </a>
+          <div className="nav-left">
+            <a className="nav-brand" href="/">
+              chat.inc
+            </a>
+            <span className="nav-tagline">anonymous expert network built on text.</span>
+          </div>
+          <JoinForm className="join-nav" />
         </header>
 
         <section className="hero" aria-label="Hero">
