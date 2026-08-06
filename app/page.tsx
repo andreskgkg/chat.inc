@@ -29,20 +29,30 @@ export default function Home() {
           </div>
 
           <div className="thread" aria-hidden="true">
-            <div className="bubble bubble-ask">
-              what was your experience using Profound the AI SEO tool? ($25)
-              <span className="bubble-meta">chat.inc · just now</span>
+            <div className="imsg imsg-in">
+              <span className="imsg-label">chat.inc</span>
+              <div className="bubble bubble-ask">
+                what was your experience using Profound the AI SEO tool? ($25)
+              </div>
             </div>
-            <div className="bubble bubble-ans">
-              Strong on AI citation tracking. Weak on classic rank reports. Best if you already
-              have Search Console wired up.
-              <span className="bubble-meta">expert · 1–5 messages</span>
+
+            <div className="imsg imsg-out">
+              <div className="bubble bubble-ans">
+                Strong on AI citation tracking. Weak on classic rank reports. Best if you already
+                have Search Console wired up.
+              </div>
             </div>
-            <div className="pay">
-              <span className="pay-mark"></span>
-              <div>
-                <strong>$25 Apple Cash</strong>
-                <span>Sent to expert</span>
+
+            <div className="imsg imsg-in">
+              <span className="imsg-label">chat.inc</span>
+              <div className="pay">
+                <span className="pay-mark" aria-hidden="true">
+                  Cash
+                </span>
+                <div>
+                  <strong>$25</strong>
+                  <span>Apple Cash</span>
+                </div>
               </div>
             </div>
           </div>

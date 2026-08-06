@@ -139,67 +139,83 @@ button {
 
 .thread {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   margin-top: 32px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: #fff;
+  padding: 16px 14px 18px;
+  border-radius: 22px;
+  background: #f2f2f7;
+}
+
+.imsg {
+  display: grid;
+  gap: 4px;
+  max-width: 88%;
+}
+
+.imsg-in {
+  justify-self: start;
+}
+
+.imsg-out {
+  justify-self: end;
+  justify-items: end;
+}
+
+.imsg-label {
+  padding: 0 10px;
+  color: #8e8e93;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .bubble {
   width: fit-content;
-  max-width: 92%;
-  padding: 12px 14px;
-  border-radius: 16px;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  letter-spacing: -0.015em;
+  max-width: 100%;
+  padding: 9px 13px;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .bubble-ask {
-  background: #eceff2;
+  background: #e9e9eb;
+  color: #000;
+  border-radius: 18px 18px 18px 5px;
 }
 
 .bubble-ans {
-  justify-self: end;
-  background: var(--accent);
-  color: #f7fffc;
-}
-
-.bubble-meta {
-  display: block;
-  margin-top: 6px;
-  opacity: 0.65;
-  font-size: 0.72rem;
-  font-weight: 500;
+  background: #007aff;
+  color: #fff;
+  border-radius: 18px 18px 5px 18px;
 }
 
 .pay {
   display: grid;
-  grid-template-columns: 36px 1fr;
+  grid-template-columns: auto 1fr;
   gap: 10px;
   align-items: center;
   width: fit-content;
-  max-width: 100%;
-  justify-self: end;
-  margin-top: 2px;
+  min-width: 168px;
   padding: 10px 14px 10px 10px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: #f6f7f8;
+  border-radius: 18px 18px 18px 5px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .pay-mark {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #111;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #3a3a3c, #1c1c1e);
   color: #fff;
-  font-size: 1.05rem;
-  line-height: 1;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-align: center;
 }
 
 .pay strong,
@@ -208,15 +224,17 @@ button {
 }
 
 .pay strong {
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #000;
 }
 
 .pay span {
-  margin-top: 2px;
-  color: var(--muted);
+  margin-top: 1px;
+  color: #8e8e93;
   font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .section {
