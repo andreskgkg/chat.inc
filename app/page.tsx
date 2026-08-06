@@ -62,11 +62,10 @@ export default function Home() {
         <section className="section" id="why">
           <h2 className="section-head">Why experts join</h2>
           <ul className="reason-list">
-            <li>Get paid on your own schedule.</li>
+            <li>Get paid for your experience and opinions.</li>
             <li>Stay anonymous.</li>
-            <li>No Zoom calls.</li>
-            <li>Answer from your phone.</li>
-            <li>Share real experience.</li>
+            <li>Answer easily via text.</li>
+            <li>No calls.</li>
           </ul>
         </section>
 
