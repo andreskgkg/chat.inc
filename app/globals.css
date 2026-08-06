@@ -167,28 +167,6 @@ button {
   margin-top: 26px;
 }
 
-.hero-visual {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
-  flex: 0 1 420px;
-  width: min(100%, 420px);
-}
-
-.phone-shell {
-  width: 100%;
-  padding: 16px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
-  border-radius: 32px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 245, 247, 0.8)),
-    rgba(255, 255, 255, 0.72);
-  box-shadow:
-    0 28px 60px rgba(17, 17, 17, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(18px);
-}
-
 .join-hero .join-shell {
   padding: 6px 6px 6px 18px;
 }
@@ -230,20 +208,14 @@ button {
 }
 
 .phone {
+  flex: 0 0 auto;
   display: block;
-  width: 100%;
+  width: min(100%, 400px);
   height: auto;
   margin: 0;
   object-fit: contain;
   animation: rise 700ms 80ms ease both;
-}
-
-.hero-caption {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.1));
 }
 
 .section {
@@ -521,14 +493,12 @@ button {
     margin-right: auto;
   }
 
-  .hero-visual {
-    width: min(100%, 380px);
-    gap: 4px;
+  .hero-copy {
+    flex: 0 0 auto;
   }
 
-  .hero-copy,
-  .hero-visual {
-    flex: 0 0 auto;
+  .phone {
+    width: min(100%, 340px);
   }
 }
 
@@ -544,23 +514,6 @@ button {
 
   .join-hero {
     width: min(100%, 340px);
-  }
-
-  .hero-visual {
-    gap: 0;
-    margin-top: 22px;
-  }
-
-  .phone-shell {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-  }
-
-  .hero-caption {
-    font-size: 0.84rem;
   }
 
   .join:not(.join-nav):not(.join-hero) {
