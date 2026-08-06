@@ -141,30 +141,45 @@ button {
 }
 
 .hero-copy {
-  flex: 0 1 32rem;
-  max-width: 32rem;
+  flex: 0 1 36rem;
+  max-width: 36rem;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(2.35rem, 5vw, 3rem);
+  font-size: clamp(2.75rem, 5.8vw, 3.55rem);
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.05;
 }
 
 .hero-sub {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   color: var(--muted);
-  font-size: 1.02rem;
+  font-size: clamp(1.08rem, 1.6vw, 1.2rem);
   font-weight: 400;
   line-height: 1.45;
-  max-width: 34rem;
+  max-width: 36rem;
 }
 
 .join-hero {
-  width: min(100%, 292px);
-  margin-top: 22px;
+  width: min(100%, 320px);
+  margin-top: 26px;
+}
+
+.join-hero .join-shell {
+  padding: 6px 6px 6px 18px;
+}
+
+.join-hero input {
+  height: 42px;
+  font-size: 16px;
+}
+
+.join-hero .join-shell button {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 15px;
 }
 
 .btn {
@@ -195,7 +210,7 @@ button {
 .phone {
   flex: 0 0 auto;
   display: block;
-  width: min(100%, 320px);
+  width: min(100%, 400px);
   height: auto;
   margin: 0;
   object-fit: contain;
@@ -441,7 +456,7 @@ button {
   }
 
   .phone {
-    width: min(100%, 280px);
+    width: min(100%, 340px);
   }
 }
 
