@@ -53,8 +53,14 @@ button {
 }
 
 .wrap {
-  width: min(560px, calc(100% - 40px));
+  width: min(980px, calc(100% - 40px));
   margin: 0 auto;
+}
+
+.section,
+.join-section,
+.site-footer {
+  width: min(560px, 100%);
 }
 
 .nav {
@@ -78,13 +84,21 @@ button {
 }
 
 .hero {
-  padding: 48px 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 48px 0 48px;
   animation: rise 500ms ease both;
+}
+
+.hero-copy {
+  max-width: 28rem;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 7vw, 2.85rem);
+  font-size: clamp(2.2rem, 5vw, 2.85rem);
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.1;
@@ -140,7 +154,7 @@ button {
 .thread {
   display: grid;
   gap: 8px;
-  margin-top: 32px;
+  margin: 0;
   padding: 16px 14px 18px;
   border-radius: 22px;
   background: #f2f2f7;
@@ -428,13 +442,17 @@ button {
   }
 }
 
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 36px;
+  }
+}
+
 @media (max-width: 640px) {
   .wrap {
     width: calc(100% - 28px);
-  }
-
-  .hero {
-    padding-top: 36px;
   }
 
   .cta-row {

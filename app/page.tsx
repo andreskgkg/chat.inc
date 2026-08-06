@@ -14,18 +14,20 @@ export default function Home() {
         </header>
 
         <section className="hero" aria-label="Hero">
-          <h1>Get paid for what you know.</h1>
-          <p className="hero-lede">An anonymous expert network built on text.</p>
-          <p className="hero-sub">
-            Answer questions whenever you have a minute. Stay anonymous. Get paid.
-          </p>
-          <div className="cta-row">
-            <a className="btn btn-primary" href="#join">
-              Get a text
-            </a>
-            <a className="btn btn-ghost" href="#how">
-              Learn More
-            </a>
+          <div className="hero-copy">
+            <h1>Get paid for what you know.</h1>
+            <p className="hero-lede">An anonymous expert network built on text.</p>
+            <p className="hero-sub">
+              Answer questions whenever you have a minute. Stay anonymous. Get paid.
+            </p>
+            <div className="cta-row">
+              <a className="btn btn-primary" href="#join">
+                Get a text
+              </a>
+              <a className="btn btn-ghost" href="#how">
+                Learn More
+              </a>
+            </div>
           </div>
 
           <div className="thread" aria-hidden="true">
