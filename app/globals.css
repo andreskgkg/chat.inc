@@ -163,7 +163,7 @@ button {
 }
 
 .join-hero {
-  width: min(100%, 320px);
+  width: min(100%, 380px);
   margin-top: 26px;
 }
 
@@ -340,7 +340,7 @@ button {
 
 .join {
   width: 100%;
-  max-width: 340px;
+  max-width: 380px;
 }
 
 .join-shell {
