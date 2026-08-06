@@ -551,6 +551,14 @@ button {
     margin-top: 22px;
   }
 
+  .phone-shell {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
   .hero-caption {
     font-size: 0.84rem;
   }
