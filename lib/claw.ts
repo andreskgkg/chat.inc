@@ -85,10 +85,10 @@ export async function sendText(phoneNumber: string, text: string) {
 }
 
 export const IDENTITY_MESSAGE =
-  "Welcome to chat.inc — reply with your LinkedIn or X profile so we can match you with the right questions.";
+  "Hey welcome to chat.inc — reply with your LinkedIn so we know who you are. After that you'll get your first (paid) question!";
 
 export const SAMPLE_QUESTION =
-  "How was your experience working with Gabor Gorondi? ($35)";
+  "What payroll provider does your company use (ADP, Rippling, Gusto, Deel) and what's your experience with it? Up to $20";
 
 export const THANKS_MESSAGE =
-  "Got it. Here’s a paid question you can answer whenever you have a minute:";
+  "Got it — here’s your first paid question:";

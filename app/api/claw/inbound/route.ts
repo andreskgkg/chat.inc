@@ -86,8 +86,7 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     });
 
-    await sendText(phone, THANKS_MESSAGE);
-    await sendText(phone, SAMPLE_QUESTION);
+    await sendText(phone, `${THANKS_MESSAGE}\n\n${SAMPLE_QUESTION}`);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
