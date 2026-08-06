@@ -55,12 +55,6 @@ export default function Home() {
                 </div>
                 <div className="pay-amount">$25</div>
               </div>
-              <div className="phone-delivered">Delivered</div>
-              <div className="phone-typing">
-                <span />
-                <span />
-                <span />
-              </div>
             </div>
           </div>
         </section>
