@@ -31,7 +31,7 @@ export default function Home() {
           <div className="thread" aria-hidden="true">
             <div className="bubble bubble-ask">
               what was your experience using Profound the AI SEO tool? ($25)
-              <span className="bubble-meta">anonymous · just now</span>
+              <span className="bubble-meta">chat.inc · just now</span>
             </div>
             <div className="bubble bubble-ans">
               Strong on AI citation tracking. Weak on classic rank reports. Best if you already
