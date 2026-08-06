@@ -331,11 +331,20 @@ button {
   line-height: 1.5;
 }
 
+.join-section {
+  text-align: center;
+}
+
 .join-section .join-lede {
   margin: -6px 0 18px;
   color: var(--muted);
   font-size: 0.98rem;
   line-height: 1.5;
+}
+
+.join-section .join {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .join {
