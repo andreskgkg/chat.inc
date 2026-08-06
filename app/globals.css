@@ -201,7 +201,7 @@ button {
 .phone {
   position: relative;
   justify-self: end;
-  width: min(100%, 300px);
+  width: min(100%, 308px);
   margin: 0;
   padding-bottom: 28px;
   animation: rise 700ms 80ms ease both;
@@ -210,79 +210,117 @@ button {
 }
 
 .phone-bezel {
-  padding: 10px;
-  border-radius: 42px;
+  position: relative;
+  padding: 11px;
+  border-radius: 46px;
   background:
-    linear-gradient(160deg, #f7f7f8 0%, #c8c8cc 42%, #9a9aa0 70%, #d8d8dc 100%);
+    linear-gradient(
+      145deg,
+      #fafafb 0%,
+      #d5d5d8 28%,
+      #a8a8ae 52%,
+      #ececef 78%,
+      #bdbdc3 100%
+    );
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 1.5px 0 rgba(255, 255, 255, 0.85) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.12) inset,
     0 28px 60px rgba(0, 0, 0, 0.16),
     0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.phone-earpiece {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  z-index: 3;
+  width: 56px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #6e6e73 0%, #2c2c2e 100%);
+  transform: translateX(-50%);
+  box-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.35);
 }
 
 .phone-screen {
   position: relative;
   overflow: hidden;
-  border-radius: 34px;
+  border-radius: 36px;
   background: #fff;
   padding: 0 12px 28px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 3px #050505;
+}
+
+.phone-chrome {
+  position: relative;
+  height: 48px;
 }
 
 .phone-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 34px;
-  padding: 10px 18px 0;
+  height: 48px;
+  padding: 14px 16px 0;
   color: #111;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+
+.phone-time {
+  min-width: 42px;
+  font-size: 0.92rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
 }
 
 .phone-status-icons {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  color: #111;
 }
 
 .phone-signal {
-  width: 14px;
-  height: 9px;
-  background:
-    linear-gradient(#111, #111) 0 100% / 2px 35% no-repeat,
-    linear-gradient(#111, #111) 4px 100% / 2px 55% no-repeat,
-    linear-gradient(#111, #111) 8px 100% / 2px 75% no-repeat,
-    linear-gradient(#111, #111) 12px 100% / 2px 100% no-repeat;
+  width: 17px;
+  height: 11px;
+  fill: currentColor;
 }
 
 .phone-wifi {
-  width: 13px;
-  height: 10px;
-  border: 1.6px solid #111;
-  border-top-color: transparent;
-  border-left-color: transparent;
-  border-radius: 0 0 12px 0;
-  transform: rotate(225deg) translateY(1px);
+  width: 15px;
+  height: 11px;
+  fill: currentColor;
 }
 
 .phone-battery {
-  width: 18px;
-  height: 9px;
-  border: 1.4px solid #111;
-  border-radius: 2.5px;
   position: relative;
-  box-shadow: inset 10px 0 0 #111;
+  width: 22px;
+  height: 11px;
+  border: 1.35px solid #111;
+  border-radius: 3px;
+  margin-right: 2px;
+}
+
+.phone-battery-fill {
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  right: 3px;
+  bottom: 1.5px;
+  border-radius: 1.2px;
+  background: #111;
 }
 
 .phone-battery::after {
   content: "";
   position: absolute;
-  top: 2px;
-  right: -3px;
-  width: 1.5px;
-  height: 3.5px;
+  top: 2.5px;
+  right: -3.5px;
+  width: 1.6px;
+  height: 4.5px;
   border-radius: 0 1px 1px 0;
   background: #111;
 }
@@ -292,12 +330,29 @@ button {
   top: 10px;
   left: 50%;
   z-index: 2;
-  width: 96px;
-  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 110px;
+  height: 32px;
+  padding: 0 9px 0 14px;
   border-radius: 999px;
-  background: #0b0b0d;
+  background: #000;
   transform: translateX(-50%);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.phone-lens {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 30%, #3a4a6a 0%, #152033 45%, #05070c 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 1.5px #111;
 }
 
 .phone-top {
@@ -305,12 +360,12 @@ button {
   display: grid;
   justify-items: center;
   gap: 10px;
-  padding: 18px 0 16px;
+  padding: 10px 0 16px;
 }
 
 .phone-back {
   position: absolute;
-  top: 28px;
+  top: 18px;
   left: 2px;
   width: 28px;
   height: 28px;
