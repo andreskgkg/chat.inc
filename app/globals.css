@@ -134,6 +134,88 @@ button {
   color: var(--ink);
 }
 
+.thread {
+  display: grid;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+
+.bubble {
+  width: fit-content;
+  max-width: 92%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+}
+
+.bubble-ask {
+  background: #eceff2;
+}
+
+.bubble-ans {
+  justify-self: end;
+  background: var(--accent);
+  color: #f7fffc;
+}
+
+.bubble-meta {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.65;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.pay {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: end;
+  margin-top: 2px;
+  padding: 10px 14px 10px 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f6f7f8;
+}
+
+.pay-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.pay strong,
+.pay span {
+  display: block;
+}
+
+.pay strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.pay span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .section {
   padding: 36px 0;
   border-top: 1px solid var(--line);
