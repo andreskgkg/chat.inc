@@ -211,49 +211,53 @@ button {
 
 .pay {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: center;
-  width: fit-content;
-  min-width: 168px;
-  padding: 10px 14px 10px 10px;
-  border-radius: 18px 18px 18px 5px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-}
-
-.pay-mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #3a3a3c, #1c1c1e);
+  align-content: space-between;
+  width: 168px;
+  min-height: 112px;
+  padding: 12px 14px 10px;
+  border-radius: 20px 20px 20px 6px;
+  background:
+    radial-gradient(120% 90% at 50% 120%, rgba(255, 255, 255, 0.08), transparent 50%),
+    linear-gradient(180deg, #1c1c1e 0%, #000 55%, #0a0a0a 100%);
   color: #fff;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
-.pay strong,
-.pay span {
-  display: block;
-}
-
-.pay strong {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #000;
-}
-
-.pay span {
-  margin-top: 1px;
-  color: #8e8e93;
-  font-size: 0.78rem;
+.pay-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.82rem;
   font-weight: 500;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pay-apple {
+  font-size: 1rem;
+  line-height: 1;
+  transform: translateY(-0.5px);
+}
+
+.pay-amount {
+  justify-self: center;
+  margin: 8px 0 4px;
+  font-size: 2.55rem;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  background: linear-gradient(
+    180deg,
+    #ffffff 12%,
+    #d7d7d7 38%,
+    #f5f5f5 52%,
+    #a8a8a8 78%,
+    #efefef 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25));
 }
 
 .section {

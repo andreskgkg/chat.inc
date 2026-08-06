@@ -45,14 +45,12 @@ export default function Home() {
 
             <div className="imsg imsg-in">
               <span className="imsg-label">chat.inc</span>
-              <div className="pay">
-                <span className="pay-mark" aria-hidden="true">
-                  Cash
-                </span>
-                <div>
-                  <strong>$25</strong>
-                  <span>Apple Cash</span>
+              <div className="pay" aria-label="$25 Apple Cash">
+                <div className="pay-brand">
+                  <span className="pay-apple"></span>
+                  <span>Pay</span>
                 </div>
+                <div className="pay-amount">$25</div>
               </div>
             </div>
           </div>
