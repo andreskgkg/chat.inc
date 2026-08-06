@@ -15,7 +15,11 @@ export default function Home() {
 
         <section className="hero" aria-label="Hero">
           <div className="hero-copy">
-            <h1>Get paid for what you know.</h1>
+            <h1>
+              Get paid for what
+              <br />
+              you know.
+            </h1>
             <p className="hero-sub">
               Answer questions whenever you have a minute.
               <br />
