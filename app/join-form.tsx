@@ -47,20 +47,22 @@ export function JoinForm({ className = "" }: { className?: string }) {
 
   return (
     <form className={`join ${className}`.trim()} onSubmit={submit}>
-      <input
-        type="tel"
-        name="phone"
-        placeholder="(415) 555-0198"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        autoComplete="tel"
-        inputMode="tel"
-        required
-        aria-label="Phone number"
-      />
-      <button className="btn btn-primary" type="submit" disabled={pending}>
-        {pending ? "…" : "get started"}
-      </button>
+      <div className="join-shell">
+        <input
+          type="tel"
+          name="phone"
+          placeholder="(415) 555-0198"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          autoComplete="tel"
+          inputMode="tel"
+          required
+          aria-label="Phone number"
+        />
+        <button type="submit" disabled={pending || !phone.trim()}>
+          {pending ? "…" : "Get started"}
+        </button>
+      </div>
       {error ? <p className="join-error">{error}</p> : null}
     </form>
   );
