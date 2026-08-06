@@ -38,10 +38,11 @@ export function JoinForm({ className = "" }: { className?: string }) {
 
   if (done) {
     return (
-      <p className="join-note">
-        Check your texts — we’ll ask for your LinkedIn or X, then send your first paid
-        question.
-      </p>
+      <div className={`join ${className}`.trim()}>
+        <div className="join-shell join-shell-done" role="status">
+          Check your texts
+        </div>
+      </div>
     );
   }
 
