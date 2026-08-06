@@ -28,7 +28,7 @@ export default function Home() {
             className="phone"
             src="/phone.png"
             alt="chat.inc iMessage conversation paying $25 for an expert answer"
-            width={807}
+            width={808}
             height={1024}
           />
         </section>
