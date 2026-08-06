@@ -9,7 +9,7 @@ export default function Home() {
             <a className="nav-brand" href="/">
               chat.inc
             </a>
-            <span className="nav-tagline">anonymous expert network built on text.</span>
+            <span className="nav-tagline">— anonymous expert network built on text.</span>
           </div>
         </header>
 
