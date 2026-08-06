@@ -498,8 +498,8 @@ button {
 
 .join-shell button:disabled {
   cursor: not-allowed;
-  color: rgba(255, 255, 255, 0.7);
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.7);
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .join-error {
