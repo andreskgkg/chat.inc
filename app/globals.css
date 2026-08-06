@@ -475,8 +475,15 @@ button {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
-  width: min(460px, 100%);
+  width: min(480px, 100%);
   margin-top: 26px;
+}
+
+.join-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #ffb4a8;
+  font-size: 0.88rem;
 }
 
 .join input {

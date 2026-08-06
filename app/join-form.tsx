@@ -3,34 +3,65 @@
 import { FormEvent, useState } from "react";
 
 export function JoinForm() {
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!email.trim()) return;
-    setDone(true);
+    if (!phone.trim() || pending) return;
+
+    setPending(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not text you.");
+      }
+
+      setDone(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not text you.");
+    } finally {
+      setPending(false);
+    }
   }
 
   if (done) {
-    return <p className="join-note">You’re on the list. We’ll be in touch.</p>;
+    return (
+      <p className="join-note">
+        Check your texts — we’ll ask for your LinkedIn or X, then send your first paid
+        question.
+      </p>
+    );
   }
 
   return (
     <form className="join" onSubmit={submit}>
       <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        autoComplete="email"
+        type="tel"
+        name="phone"
+        placeholder="Your phone number"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        autoComplete="tel"
+        inputMode="tel"
         required
-        aria-label="Email"
+        aria-label="Phone number"
       />
-      <button className="btn btn-primary" type="submit">
-        Become an Expert
+      <button className="btn btn-primary" type="submit" disabled={pending}>
+        {pending ? "Texting…" : "Text me"}
       </button>
+      {error ? <p className="join-error">{error}</p> : null}
     </form>
   );
 }
