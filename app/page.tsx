@@ -68,10 +68,13 @@ export default function Home() {
                 <div className="phone-top">
                   <div className="phone-back" />
                   <div className="phone-identity">
-                    <div className="phone-avatar">$</div>
+                    <div className="phone-avatar">
+                      chat
+                      <span>.inc</span>
+                    </div>
                     <div className="phone-name">
                       <span className="phone-check">✓</span>
-                      Chat.inc
+                      chat.inc
                       <span className="phone-chevron">›</span>
                     </div>
                   </div>
@@ -79,18 +82,19 @@ export default function Home() {
 
                 <div className="phone-thread">
                   <div className="bubble bubble-in">
-                    what was your experience using Profound the AI SEO tool? ($25)
+                    How was your experience using Profound (AI SEO)? ($25)
                   </div>
                   <div className="bubble bubble-out">
-                    Strong on AI citation tracking. Weak on classic rank reports. Best if you
-                    already have Search Console wired up.
+                    It was okay, it seems to do the same as its competitors but is more expensive
+                    so we switched
                   </div>
                   <div className="pay" aria-label="$25 Apple Cash">
                     <div className="pay-brand">
                       <span className="pay-apple"></span>
-                      <span>Pay</span>
+                      <span>Cash</span>
                     </div>
                     <div className="pay-amount">$25</div>
+                    <div className="pay-sent">Sent</div>
                   </div>
                 </div>
               </div>
