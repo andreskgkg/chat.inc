@@ -160,17 +160,25 @@ button {
 
 .thread {
   display: grid;
+  align-content: start;
   gap: 8px;
+  width: min(100%, 300px);
+  min-height: 420px;
   margin: 0;
-  padding: 16px 14px 18px;
-  border-radius: 22px;
+  margin-left: auto;
+  padding: 18px 12px 20px;
+  border: 1px solid #d8d8de;
+  border-radius: 28px;
   background: #f2f2f7;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 40px rgba(0, 0, 0, 0.08);
 }
 
 .imsg {
   display: grid;
   gap: 4px;
-  max-width: 88%;
+  max-width: 84%;
 }
 
 .imsg-in {
@@ -193,9 +201,9 @@ button {
 .bubble {
   width: fit-content;
   max-width: 100%;
-  padding: 9px 13px;
-  font-size: 0.98rem;
-  line-height: 1.35;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  line-height: 1.32;
   letter-spacing: -0.01em;
 }
 
@@ -214,10 +222,10 @@ button {
 .pay {
   display: grid;
   align-content: space-between;
-  width: 168px;
-  min-height: 112px;
-  padding: 12px 14px 10px;
-  border-radius: 20px 20px 20px 6px;
+  width: 148px;
+  min-height: 98px;
+  padding: 11px 12px 9px;
+  border-radius: 18px 18px 18px 6px;
   background:
     radial-gradient(120% 90% at 50% 120%, rgba(255, 255, 255, 0.08), transparent 50%),
     linear-gradient(180deg, #1c1c1e 0%, #000 55%, #0a0a0a 100%);
@@ -243,8 +251,8 @@ button {
 
 .pay-amount {
   justify-self: center;
-  margin: 8px 0 4px;
-  font-size: 2.55rem;
+  margin: 6px 0 2px;
+  font-size: 2.2rem;
   font-weight: 800;
   letter-spacing: -0.06em;
   line-height: 1;
@@ -493,6 +501,13 @@ button {
     grid-template-columns: 1fr;
     gap: 28px;
     padding-top: 36px;
+  }
+
+  .thread {
+    width: min(100%, 300px);
+    min-height: 380px;
+    margin-left: 0;
+    margin-right: auto;
   }
 }
 
