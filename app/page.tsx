@@ -79,11 +79,6 @@ export default function Home() {
             <li>Answer from your phone.</li>
             <li>Share real experience.</li>
           </ul>
-          <div className="pill-row">
-            <span className="pill">Most questions: under 5 messages</span>
-            <span className="pill">No hour-long calls</span>
-            <span className="pill">Minutes, not meetings</span>
-          </div>
         </section>
 
         <section className="section" id="faq">

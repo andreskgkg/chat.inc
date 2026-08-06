@@ -292,25 +292,6 @@ button {
   color: var(--muted);
 }
 
-.pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.pill {
-  color: var(--muted);
-  font-size: 0.86rem;
-  letter-spacing: -0.01em;
-}
-
-.pill:not(:last-child)::after {
-  content: "·";
-  margin-left: 8px;
-  color: #ccc;
-}
-
 .faq details {
   border-top: 1px solid var(--line);
 }
