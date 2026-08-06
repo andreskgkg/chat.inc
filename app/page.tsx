@@ -97,7 +97,7 @@ export default function Home() {
         <section className="section join-section" id="join">
           <h2 className="section-head">Your experience is valuable.</h2>
           <p className="join-lede">
-            Drop your number and we’ll text you. No app. No Zoom. Just a few messages.
+            Drop your number and we’ll text you.
           </p>
           <JoinForm />
         </section>
