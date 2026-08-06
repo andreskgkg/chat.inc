@@ -22,9 +22,6 @@ export default function Home() {
             </p>
             <div className="cta-row">
               <JoinForm className="join-hero" />
-              <a className="btn btn-ghost" href="#how">
-                Learn More
-              </a>
             </div>
           </div>
 
