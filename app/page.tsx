@@ -16,13 +16,10 @@ export default function Home() {
         <section className="hero" aria-label="Hero">
           <div className="hero-copy">
             <h1>Get paid for what you know.</h1>
-            <p className="hero-lede">An anonymous expert network built on text.</p>
             <p className="hero-sub">
               Answer questions whenever you have a minute. Stay anonymous. Get paid.
             </p>
-            <div className="cta-row">
-              <JoinForm className="join-hero" />
-            </div>
+            <JoinForm className="join-hero" />
           </div>
 
           <div className="thread" aria-hidden="true">
