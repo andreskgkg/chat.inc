@@ -132,17 +132,17 @@ button {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(16px, 2.5vw, 36px);
+  display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 40px;
   padding: 64px 0 72px;
   animation: rise 500ms ease both;
 }
 
 .hero-copy {
+  flex: 0 1 32rem;
   max-width: 32rem;
-  justify-self: start;
 }
 
 .hero h1 {
@@ -194,7 +194,7 @@ button {
 
 .phone {
   position: relative;
-  justify-self: end;
+  flex: 0 0 auto;
   width: min(100%, 308px);
   margin: 0;
   padding-bottom: 28px;
@@ -762,15 +762,14 @@ button {
   }
 
   .hero {
-    grid-template-columns: 1fr;
-    column-gap: 0;
-    row-gap: 32px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
     padding-top: 36px;
   }
 
   .phone {
     width: min(100%, 292px);
-    justify-self: start;
   }
 }
 
