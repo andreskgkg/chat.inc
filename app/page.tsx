@@ -11,7 +11,6 @@ export default function Home() {
             </a>
             <span className="nav-tagline">anonymous expert network built on text.</span>
           </div>
-          <JoinForm className="join-nav" />
         </header>
 
         <section className="hero" aria-label="Hero">
