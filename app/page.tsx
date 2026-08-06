@@ -30,7 +30,7 @@ export default function Home() {
 
           <img
             className="phone"
-            src="/phone.png?v=4"
+            src="/phone.png?v=5"
             alt="chat.inc iMessage conversation paying $25 for an expert answer"
             width={808}
             height={1024}
