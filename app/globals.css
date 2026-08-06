@@ -478,13 +478,14 @@ button {
   .hero {
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 28px;
     padding-top: 36px;
     text-align: center;
   }
 
   .hero-copy {
     max-width: 40rem;
+    flex: 0 0 auto;
   }
 
   .hero-sub,
@@ -493,12 +494,9 @@ button {
     margin-right: auto;
   }
 
-  .hero-copy {
-    flex: 0 0 auto;
-  }
-
   .phone {
     width: min(100%, 340px);
+    margin-top: 28px;
   }
 }
 
@@ -509,11 +507,15 @@ button {
 
   .hero {
     padding: 32px 0 52px;
-    gap: 28px;
+    gap: 24px;
   }
 
   .join-hero {
     width: min(100%, 340px);
+  }
+
+  .phone {
+    margin-top: 36px;
   }
 
   .join:not(.join-nav):not(.join-hero) {
