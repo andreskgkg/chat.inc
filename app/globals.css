@@ -134,7 +134,7 @@ button {
 .hero {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 40px;
   padding: 64px 0 72px;
   animation: rise 500ms ease both;
