@@ -1,8 +1,6 @@
 # chat.inc
 
-Predictions. Vote up or down.
-
-Data is stored in Vercel Blob (`BLOB_READ_WRITE_TOKEN`).
+Anonymous expert network built on text.
 
 ```bash
 npm install

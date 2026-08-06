@@ -1,257 +1,136 @@
-"use client";
-
-import { FormEvent, useEffect, useState } from "react";
-import type { Prediction, VoteValue } from "@/lib/types";
-import { score } from "@/lib/types";
-import { getVisitorId } from "@/lib/visitor";
-
-async function readJson<T>(response: Response): Promise<T> {
-  const text = await response.text();
-
-  if (!text) {
-    throw new Error(response.ok ? "Empty response." : `Request failed (${response.status}).`);
-  }
-
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    throw new Error(response.ok ? "Bad response." : `Request failed (${response.status}).`);
-  }
-}
+import { JoinForm } from "./join-form";
 
 export default function Home() {
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [voterId, setVoterId] = useState("");
-  const [composerOpen, setComposerOpen] = useState(false);
-
-  useEffect(() => {
-    setVoterId(getVisitorId());
-    void loadPredictions();
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("modal-open", composerOpen);
-    return () => document.body.classList.remove("modal-open");
-  }, [composerOpen]);
-
-  async function loadPredictions(options?: { quiet?: boolean }) {
-    if (!options?.quiet) {
-      setLoading(true);
-    }
-    setError("");
-
-    try {
-      const response = await fetch("/api/predictions", { cache: "no-store" });
-      const data = await readJson<{ predictions?: Prediction[]; error?: string }>(response);
-
-      if (!response.ok) {
-        throw new Error(data.error || "Could not load predictions.");
-      }
-
-      setPredictions(data.predictions ?? []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not load predictions.");
-    } finally {
-      if (!options?.quiet) {
-        setLoading(false);
-      }
-    }
-  }
-
-  async function votePrediction(predictionId: string, next: VoteValue | 0) {
-    if (!voterId) return;
-
-    const previous = predictions;
-    setPredictions((current) =>
-      current.map((item) => {
-        if (item.id !== predictionId) return item;
-        const votes = { ...item.votes };
-        if (next === 0) {
-          delete votes[voterId];
-        } else {
-          votes[voterId] = next;
-        }
-        return { ...item, votes };
-      }),
-    );
-
-    try {
-      const response = await fetch(`/api/predictions/${predictionId}/vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voterId, value: next }),
-        cache: "no-store",
-      });
-
-      const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
-
-      if (!response.ok || !data.prediction) {
-        setPredictions(previous);
-        setError(data.error || "Vote failed.");
-        return;
-      }
-
-      setPredictions((current) =>
-        current.map((item) => (item.id === predictionId ? data.prediction! : item)),
-      );
-    } catch (err) {
-      setPredictions(previous);
-      setError(err instanceof Error ? err.message : "Vote failed.");
-    }
-  }
-
-  async function createPrediction(text: string) {
-    const response = await fetch("/api/predictions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-      cache: "no-store",
-    });
-
-    const data = await readJson<{ prediction?: Prediction; error?: string }>(response);
-
-    if (!response.ok || !data.prediction) {
-      throw new Error(data.error || "Could not create prediction.");
-    }
-
-    setPredictions((current) => [data.prediction!, ...current]);
-    setComposerOpen(false);
-    void loadPredictions({ quiet: true });
-  }
-
   return (
-    <main className="page">
-      {error ? <p className="error">{error}</p> : null}
-      {loading ? <p className="muted">…</p> : null}
-      {!loading && predictions.length === 0 ? <p className="muted">nothing yet</p> : null}
+    <div className="site">
+      <div className="wrap">
+        <header className="nav">
+          <a className="nav-brand" href="/">
+            chat.inc
+          </a>
+          <a className="nav-cta" href="#join">
+            Become an Expert
+          </a>
+        </header>
 
-      <section className="feed" aria-label="predictions">
-        {predictions.map((prediction) => {
-          const myVote = voterId ? prediction.votes[voterId] : undefined;
-
-          return (
-            <article className="prediction" key={prediction.id}>
-              <VoteRail
-                value={myVote}
-                total={score(prediction.votes)}
-                onVote={(next) => {
-                  const current = prediction.votes[voterId];
-                  void votePrediction(prediction.id, current === next ? 0 : next);
-                }}
-              />
-              <p className="prediction-text">{prediction.text}</p>
-            </article>
-          );
-        })}
-      </section>
-
-      <div className="fab-wrap">
-        <button type="button" className="fab" onClick={() => setComposerOpen(true)}>
-          add prediction
-        </button>
-      </div>
-
-      {composerOpen ? (
-        <ComposerModal
-          onClose={() => setComposerOpen(false)}
-          onCreate={createPrediction}
-        />
-      ) : null}
-    </main>
-  );
-}
-
-function VoteRail({
-  value,
-  total,
-  onVote,
-}: {
-  value?: VoteValue;
-  total: number;
-  onVote: (value: VoteValue) => void;
-}) {
-  return (
-    <div className="vote-rail">
-      <button
-        type="button"
-        className={`vote-btn ${value === 1 ? "active" : ""}`}
-        aria-label="Upvote"
-        onClick={() => onVote(1)}
-      >
-        +
-      </button>
-      <div className={`score ${value ? "voted" : ""}`}>{total}</div>
-      <button
-        type="button"
-        className={`vote-btn ${value === -1 ? "active" : ""}`}
-        aria-label="Downvote"
-        onClick={() => onVote(-1)}
-      >
-        −
-      </button>
-    </div>
-  );
-}
-
-function ComposerModal({
-  onClose,
-  onCreate,
-}: {
-  onClose: () => void;
-  onCreate: (text: string) => Promise<void>;
-}) {
-  const [text, setText] = useState("");
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (!text.trim() || pending) return;
-
-    setPending(true);
-    setError("");
-
-    try {
-      await onCreate(text.trim());
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not create prediction.");
-    } finally {
-      setPending(false);
-    }
-  }
-
-  return (
-    <div
-      className="overlay"
-      role="presentation"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div className="sheet" role="dialog" aria-modal="true" aria-label="New prediction">
-        <div className="sheet-handle" aria-hidden="true" />
-        <form className="composer-form" onSubmit={submit}>
-          <textarea
-            className="field-area"
-            placeholder="SpaceX will acquire Robinhood"
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            maxLength={280}
-            required
-            autoFocus
-          />
-          {error ? <p className="error">{error}</p> : null}
-          <div className="form-actions">
-            <button className="ghost" type="button" onClick={onClose}>
-              Cancel
-            </button>
-            <button className="primary" type="submit" disabled={!text.trim() || pending}>
-              {pending ? "…" : "Post"}
-            </button>
+        <section className="hero" aria-label="Hero">
+          <div className="hero-copy">
+            <h1>Get paid for what you know.</h1>
+            <p className="hero-lede">An anonymous expert network built on text.</p>
+            <p className="hero-sub">
+              Answer questions whenever you have a minute. Stay anonymous. Get paid.
+            </p>
+            <div className="cta-row">
+              <a className="btn btn-primary" href="#join">
+                Become an Expert
+              </a>
+              <a className="btn btn-ghost" href="#how">
+                Learn More
+              </a>
+            </div>
           </div>
-        </form>
+
+          <div className="hero-visual" aria-hidden="true">
+            <div className="thread">
+              <div className="bubble bubble-ask">
+                What’s the fastest way to cut churn in the first 90 days?
+                <span className="bubble-meta">anonymous · 2m</span>
+              </div>
+              <div className="bubble bubble-ans">
+                Talk to the last 20 churned customers yourself. Patterns show up by call 8.
+                <span className="bubble-meta">expert · paid</span>
+              </div>
+              <div className="bubble bubble-ask">
+                Any red flags in a Series A SaaS with 110% NRR?
+                <span className="bubble-meta">anonymous · just now</span>
+              </div>
+              <div className="bubble bubble-ans">
+                Watch logo concentration. High NRR with 3 customers is still fragile.
+                <span className="bubble-meta">expert · 1–5 messages</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section" id="how">
+          <h2 className="section-head">How it works</h2>
+          <div className="steps">
+            <article className="step">
+              <h3>Create your profile</h3>
+              <p>Tell us what you’ve worked on.</p>
+            </article>
+            <article className="step">
+              <h3>Get matched</h3>
+              <p>Receive questions from people who need your experience.</p>
+            </article>
+            <article className="step">
+              <h3>Answer by text</h3>
+              <p>No meetings. No scheduling. Just text.</p>
+            </article>
+            <article className="step">
+              <h3>Get paid</h3>
+              <p>Earn for every conversation.</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="section" id="why">
+          <div className="reasons">
+            <h2 className="section-head">Why experts join</h2>
+            <div>
+              <ul className="reason-list">
+                <li>Get paid on your own schedule.</li>
+                <li>Stay anonymous.</li>
+                <li>No Zoom calls.</li>
+                <li>Answer from your phone.</li>
+                <li>Share real experience.</li>
+              </ul>
+              <div className="pill-row">
+                <span className="pill">Most questions: under 5 messages</span>
+                <span className="pill">No hour-long calls</span>
+                <span className="pill">Minutes, not meetings</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section" id="faq">
+          <h2 className="section-head">FAQ</h2>
+          <div className="faq">
+            <details open>
+              <summary>Who can join?</summary>
+              <p>
+                Founders, engineers, investors, operators, designers, researchers—anyone with
+                valuable experience.
+              </p>
+            </details>
+            <details>
+              <summary>How long are conversations?</summary>
+              <p>1–5 messages. That’s it.</p>
+            </details>
+            <details>
+              <summary>Do I have to reveal who I am?</summary>
+              <p>No. Stay anonymous unless you choose otherwise.</p>
+            </details>
+            <details>
+              <summary>What shouldn’t I discuss?</summary>
+              <p>Never share confidential or non-public information.</p>
+            </details>
+          </div>
+        </section>
+
+        <section className="section" id="join">
+          <div className="footer-cta">
+            <h2>Your experience is valuable.</h2>
+            <p>Join thousands of people getting paid to answer questions.</p>
+            <JoinForm />
+          </div>
+        </section>
+
+        <footer className="site-footer">
+          <strong>chat.inc</strong>
+          <span>Anonymous expertise, over text.</span>
+        </footer>
       </div>
     </div>
   );
