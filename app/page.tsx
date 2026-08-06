@@ -22,30 +22,44 @@ export default function Home() {
             <JoinForm className="join-hero" />
           </div>
 
-          <div className="thread" aria-hidden="true">
-            <div className="imsg imsg-in">
-              <span className="imsg-label">chat.inc</span>
-              <div className="bubble bubble-ask">
-                what was your experience using Profound the AI SEO tool? ($25)
+          <div className="phone" aria-hidden="true">
+            <div className="phone-island" />
+            <div className="phone-top">
+              <div className="phone-back" />
+              <div className="phone-identity">
+                <div className="phone-avatar">$</div>
+                <div className="phone-name">
+                  <span className="phone-check" aria-hidden="true">
+                    ✓
+                  </span>
+                  Chat.inc
+                  <span className="phone-chevron" aria-hidden="true">
+                    ›
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="imsg imsg-out">
-              <span className="imsg-label">You</span>
-              <div className="bubble bubble-ans">
+            <div className="phone-thread">
+              <div className="bubble bubble-in">
+                what was your experience using Profound the AI SEO tool? ($25)
+              </div>
+              <div className="bubble bubble-out">
                 Strong on AI citation tracking. Weak on classic rank reports. Best if you already
                 have Search Console wired up.
               </div>
-            </div>
-
-            <div className="imsg imsg-in">
-              <span className="imsg-label">chat.inc</span>
               <div className="pay" aria-label="$25 Apple Cash">
                 <div className="pay-brand">
                   <span className="pay-apple"></span>
                   <span>Pay</span>
                 </div>
                 <div className="pay-amount">$25</div>
+              </div>
+              <div className="phone-delivered">Delivered</div>
+              <div className="phone-typing">
+                <span />
+                <span />
+                <span />
               </div>
             </div>
           </div>
