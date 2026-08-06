@@ -28,13 +28,18 @@ export default function Home() {
             <JoinForm className="join-hero" />
           </div>
 
-          <img
-            className="phone"
-            src="/phone.png?v=6"
-            alt="chat.inc iMessage conversation paying $25 for an expert answer"
-            width={808}
-            height={1024}
-          />
+          <div className="hero-visual" aria-label="Preview of the mobile conversation experience">
+            <div className="phone-shell">
+              <img
+                className="phone"
+                src="/phone.png?v=6"
+                alt="chat.inc iMessage conversation paying $25 for an expert answer"
+                width={808}
+                height={1024}
+              />
+            </div>
+            <p className="hero-caption">built to feel natural on a phone.</p>
+          </div>
         </section>
 
         <section className="section" id="how">
