@@ -307,7 +307,6 @@ button {
   display: grid;
   gap: 7px;
   padding: 0 2px 4px;
-  min-height: 280px;
 }
 
 .bubble {
