@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
-export function JoinForm() {
+export function JoinForm({ className = "" }: { className?: string }) {
   const [phone, setPhone] = useState("");
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
@@ -46,11 +46,11 @@ export function JoinForm() {
   }
 
   return (
-    <form className="join" onSubmit={submit}>
+    <form className={`join ${className}`.trim()} onSubmit={submit}>
       <input
         type="tel"
         name="phone"
-        placeholder="Your phone number"
+        placeholder="(415) 555-0198"
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
         autoComplete="tel"
@@ -59,7 +59,7 @@ export function JoinForm() {
         aria-label="Phone number"
       />
       <button className="btn btn-primary" type="submit" disabled={pending}>
-        {pending ? "Texting…" : "Text me"}
+        {pending ? "…" : "get started"}
       </button>
       {error ? <p className="join-error">{error}</p> : null}
     </form>

@@ -9,7 +9,7 @@ export default function Home() {
             chat.inc
           </a>
           <a className="nav-cta" href="#join">
-            Get a text
+            get started
           </a>
         </header>
 
@@ -21,9 +21,7 @@ export default function Home() {
               Answer questions whenever you have a minute. Stay anonymous. Get paid.
             </p>
             <div className="cta-row">
-              <a className="btn btn-primary" href="#join">
-                Get a text
-              </a>
+              <JoinForm className="join-hero" />
               <a className="btn btn-ghost" href="#how">
                 Learn More
               </a>

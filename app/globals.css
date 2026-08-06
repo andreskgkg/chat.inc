@@ -120,10 +120,15 @@ button {
 }
 
 .cta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  gap: 12px;
   margin-top: 22px;
+}
+
+.cta-row .btn-ghost {
+  justify-self: start;
+  min-height: auto;
+  padding: 0;
 }
 
 .btn {
@@ -379,6 +384,12 @@ button {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.join-hero input {
+  background: #fff;
 }
 
 .join-error {
@@ -455,17 +466,13 @@ button {
     width: calc(100% - 28px);
   }
 
-  .cta-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
   .join {
     grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .join .btn-primary {
+    width: 100%;
   }
 
   .site-footer {
