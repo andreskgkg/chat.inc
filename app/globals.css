@@ -134,7 +134,7 @@ button {
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(64px, 10vw, 140px);
+  column-gap: clamp(32px, 5vw, 70px);
   align-items: center;
   padding: 64px 0 72px;
   animation: rise 500ms ease both;
