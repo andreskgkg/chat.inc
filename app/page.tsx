@@ -32,7 +32,7 @@ export default function Home() {
           <div className="hero-phone">
             <img
               className="phone"
-              src="/phone.png?v=8"
+              src="/phone.png?v=9"
               alt="chat.inc iMessage conversation paying $25 for an expert answer"
               width={808}
               height={1024}
