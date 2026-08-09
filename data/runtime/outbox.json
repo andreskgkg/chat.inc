@@ -51,6 +51,13 @@
       "createdAt": "2026-08-09T20:51:10.269Z",
       "status": "claimed",
       "claimedAt": "2026-08-09T20:51:12.924Z"
+    },
+    {
+      "id": "msg_1786309051405_zj3o03",
+      "phone": "+17816929689",
+      "text": "Lead +14155550198 is already past approval (awaiting_identity).",
+      "createdAt": "2026-08-09T20:57:31.405Z",
+      "status": "pending"
     }
   ]
 }
