@@ -103,6 +103,13 @@
       "status": "sent",
       "claimedAt": "2026-08-09T21:01:44.504Z",
       "sentAt": "2026-08-09T21:01:48.801Z"
+    },
+    {
+      "id": "msg_1786309322696_qlaben",
+      "phone": "+18188089369",
+      "text": "Great, we're approving new ppl everyday, hold tight for your first question",
+      "createdAt": "2026-08-09T21:02:02.696Z",
+      "status": "pending"
     }
   ]
 }
