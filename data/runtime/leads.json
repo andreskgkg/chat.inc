@@ -3,8 +3,15 @@
     "+18188089369": {
       "phone": "+18188089369",
       "createdAt": "2026-08-09T20:49:23.579Z",
-      "updatedAt": "2026-08-09T20:49:23.579Z",
-      "status": "awaiting_identity"
+      "updatedAt": "2026-08-09T20:51:05.996Z",
+      "status": "pending_approval",
+      "identity": "https://www.linkedin.com/in/allysenbell?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+      "linkedin": "https://www.linkedin.com/in/allysenbell",
+      "followUps": [
+        "Can you describe your experience managing payroll compliance and reporting in your previous roles? Which tools or software did you use? (up to $20 reward)",
+        "What HRIS or workforce management platforms have you implemented or worked with extensively? Any pros and cons to share? (up to $20 reward)",
+        "Have you worked with any international payroll or employee benefits vendors? How did you handle the complexities involved? (up to $20 reward)"
+      ]
     },
     "+14155550198": {
       "phone": "+14155550198",
