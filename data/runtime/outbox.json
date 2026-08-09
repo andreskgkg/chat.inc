@@ -26,6 +26,13 @@
       "status": "sent",
       "claimedAt": "2026-08-09T20:49:25.133Z",
       "sentAt": "2026-08-09T20:49:28.678Z"
+    },
+    {
+      "id": "msg_1786308646879_90j1h3",
+      "phone": "+14155550198",
+      "text": "Hey welcome to chat.inc!",
+      "createdAt": "2026-08-09T20:50:46.879Z",
+      "status": "pending"
     }
   ]
 }
