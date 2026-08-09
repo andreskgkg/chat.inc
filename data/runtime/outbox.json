@@ -118,8 +118,9 @@
       "phone": "+17816929689",
       "text": "New chat.inc applicant\nPhone: +18188089369\nLinkedIn: https://www.linkedin.com/in/allysenbell\n\n👍 on this message to approve\n👎 on this message to reject\n\nOr text: Approve https://www.linkedin.com/in/allysenbell\nOr: Reject https://www.linkedin.com/in/allysenbell",
       "createdAt": "2026-08-09T21:02:03.413Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T21:02:03.887Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T21:02:03.887Z",
+      "sentAt": "2026-08-09T21:02:07.409Z"
     }
   ]
 }
