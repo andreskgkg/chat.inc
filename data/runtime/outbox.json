@@ -1,3 +1,25 @@
 {
-  "messages": []
+  "messages": [
+    {
+      "id": "msg_1786319785871_wqn8xp",
+      "phone": "+17816929689",
+      "text": "Hey welcome to chat.inc!",
+      "createdAt": "2026-08-09T23:56:25.871Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786319785871_apbsuf",
+      "phone": "+17816929689",
+      "text": "Reply with your LinkedIn so we know who you are.",
+      "createdAt": "2026-08-09T23:56:25.871Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786319785871_j6oetg",
+      "phone": "+17816929689",
+      "text": "After that you'll get your first (paid) question!",
+      "createdAt": "2026-08-09T23:56:25.871Z",
+      "status": "pending"
+    }
+  ]
 }
