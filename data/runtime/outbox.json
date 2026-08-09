@@ -130,6 +130,13 @@
       "status": "sent",
       "claimedAt": "2026-08-09T21:02:12.213Z",
       "sentAt": "2026-08-09T21:02:13.300Z"
+    },
+    {
+      "id": "msg_1786309334799_bpyawq",
+      "phone": "+18188089369",
+      "text": "Got it — here’s your paid question:",
+      "createdAt": "2026-08-09T21:02:14.799Z",
+      "status": "pending"
     }
   ]
 }
