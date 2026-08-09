@@ -121,6 +121,13 @@
       "status": "sent",
       "claimedAt": "2026-08-09T21:02:03.887Z",
       "sentAt": "2026-08-09T21:02:07.409Z"
+    },
+    {
+      "id": "msg_1786309326739_pijewl",
+      "phone": "+17816929689",
+      "text": "Lead +14155550198 is already past approval (awaiting_identity).",
+      "createdAt": "2026-08-09T21:02:06.739Z",
+      "status": "pending"
     }
   ]
 }
