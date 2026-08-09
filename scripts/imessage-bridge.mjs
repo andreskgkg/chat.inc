@@ -1,16 +1,6 @@
 #!/usr/bin/env node
-/**
- * Option C bridge: send chat.inc outbox messages from your Mac iMessage
- * (your current number, +17816929689) and forward replies to the inbound API.
- *
- * Required env:
- *   OUTBOX_SECRET   - shared secret with Vercel
- *   CHAT_INC_URL    - https://chat.inc (default)
- *
- * Optional:
- *   IMSG_BIN        - path to imsg (default: imsg on PATH)
- *   POLL_MS         - outbox poll interval (default: 4000)
- */
+// Sends chat.inc outbox messages from this Mac's iMessage and forwards replies to the inbound API.
+// Env: OUTBOX_SECRET (required), CHAT_INC_URL, IMSG_BIN, POLL_MS.
 
 import { spawn } from "node:child_process";
 import { setTimeout as sleep } from "node:timers/promises";

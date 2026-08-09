@@ -3,6 +3,3 @@ node_modules
 .vercel
 .env*
 !.env.example
-data/store.json
-!data/.gitkeep
-.env*.local

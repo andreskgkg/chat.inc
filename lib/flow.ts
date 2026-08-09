@@ -92,8 +92,7 @@ export function parseAdminCommand(text: string) {
     return { type: "paid" as const, target: (paid[1] || "").trim() };
   }
 
-  // Tapback / emoji replies: 👍, 👎, like, dislike — optional target after.
-  // Also openclaw-style: like "associated message body"
+  // Tapback/emoji replies (👍👎/like/dislike), incl. openclaw-style: like "body".
   const quoted = trimmed.match(/^(like|love|dislike)\s+[\u0022\u0027\u201c\u201d]([\s\S]*)[\u0022\u0027\u201c\u201d]$/i);
   if (quoted) {
     const decision = thumbsDecision(quoted[1]);

@@ -1,7 +1,4 @@
-/**
- * Durable JSON store for leads/outbox.
- * Prefers GitHub repo contents (GITHUB_TOKEN), then Supabase Storage.
- */
+// Durable JSON store for leads/outbox — GitHub repo contents, else Supabase Storage.
 
 type GithubEnv = {
   token: string;
@@ -125,31 +122,6 @@ async function readGithub<T>(path: string, fallback: T): Promise<T> {
   return data;
 }
 
-async function writeGithub<T>(path: string, data: T): Promise<void> {
-  const { sha } = await readGithubWithMeta(path, data);
-  for (let attempt = 0; attempt < 6; attempt++) {
-    try {
-      await writeGithubWithSha(path, data, sha);
-      return;
-    } catch (error) {
-      if (error instanceof GithubConflictError && attempt < 5) {
-        const latest = await readGithubWithMeta(path, data);
-        // Blind overwrite with fresh sha — callers that need merge should use updateJsonFile.
-        await sleep(40 * (attempt + 1) + Math.floor(Math.random() * 40));
-        try {
-          await writeGithubWithSha(path, data, latest.sha);
-          return;
-        } catch (retryError) {
-          if (retryError instanceof GithubConflictError) continue;
-          throw retryError;
-        }
-      }
-      throw error;
-    }
-  }
-  throw new Error(`GitHub write failed after retries: ${path}`);
-}
-
 async function readSupabase<T>(path: string, fallback: T): Promise<T> {
   const env = supabaseEnv();
   if (!env) return fallback;
@@ -227,14 +199,6 @@ async function writeSupabase<T>(path: string, data: T): Promise<void> {
 export async function readJsonFile<T>(path: string, fallback: T): Promise<T> {
   if (githubEnv()) return readGithub(path, fallback);
   return readSupabase(path, fallback);
-}
-
-export async function writeJsonFile<T>(path: string, data: T): Promise<void> {
-  if (githubEnv()) {
-    await writeGithub(path, data);
-    return;
-  }
-  await writeSupabase(path, data);
 }
 
 /** Read → update → write with conflict retries (safe under concurrent writers). */
