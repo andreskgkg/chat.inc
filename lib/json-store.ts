@@ -210,13 +210,19 @@ export async function updateJsonFile<T>(
   if (!githubEnv()) {
     const current = await readSupabase(path, fallback);
     const next = updater(current);
-    await writeSupabase(path, next);
+    if (JSON.stringify(next) !== JSON.stringify(current)) {
+      await writeSupabase(path, next);
+    }
     return next;
   }
 
   for (let attempt = 0; attempt < 8; attempt++) {
     const { data, sha } = await readGithubWithMeta(path, fallback);
     const next = updater(structuredClone(data));
+    // Skip the commit when nothing changed — idle polling shouldn't churn git.
+    if (JSON.stringify(next) === JSON.stringify(data)) {
+      return next;
+    }
     try {
       await writeGithubWithSha(path, next, sha);
       return next;
