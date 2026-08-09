@@ -41,14 +41,16 @@
       "phone": "+18188089369",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-09T20:51:09.446Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T20:51:12.924Z"
     },
     {
       "id": "msg_1786308670269_k8vu7a",
       "phone": "+17816929689",
       "text": "New chat.inc applicant\nPhone: +18188089369\nLinkedIn: https://www.linkedin.com/in/allysenbell\n\nApprove with: Approve https://www.linkedin.com/in/allysenbell\nOr reject: Reject https://www.linkedin.com/in/allysenbell",
       "createdAt": "2026-08-09T20:51:10.269Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T20:51:12.924Z"
     }
   ]
 }
