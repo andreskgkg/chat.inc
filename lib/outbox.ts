@@ -1,4 +1,4 @@
-import { get, put } from "@vercel/blob";
+import { updateJsonFile } from "@/lib/json-store";
 
 export type OutboxMessage = {
   id: string;
@@ -15,72 +15,53 @@ type OutboxStore = {
   messages: OutboxMessage[];
 };
 
-const STORE_PATH = "chat-inc/outbox.json";
+const STORE_PATH = "outbox.json";
+const EMPTY: OutboxStore = { messages: [] };
 
-async function readStore(): Promise<OutboxStore> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return { messages: [] };
-  }
-
-  const blob = await get(STORE_PATH, {
-    access: "private",
-    useCache: false,
-  });
-
-  if (!blob?.stream) {
-    return { messages: [] };
-  }
-
-  const raw = await new Response(blob.stream).text();
-  const parsed = JSON.parse(raw) as OutboxStore;
-  return { messages: parsed.messages ?? [] };
-}
-
-async function writeStore(data: OutboxStore) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error("Missing BLOB_READ_WRITE_TOKEN");
-  }
-
-  await put(STORE_PATH, JSON.stringify(data), {
-    access: "private",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-  });
-}
-
-export async function enqueueOutbox(phone: string, text: string) {
-  const store = await readStore();
-  const message: OutboxMessage = {
+function makeMessage(phone: string, text: string): OutboxMessage {
+  return {
     id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     phone,
     text,
     createdAt: new Date().toISOString(),
     status: "pending",
   };
-  store.messages.push(message);
-  // Keep the file small.
-  store.messages = store.messages.slice(-200);
-  await writeStore(store);
+}
+
+export async function enqueueOutbox(phone: string, text: string) {
+  const message = makeMessage(phone, text);
+  await updateJsonFile(STORE_PATH, EMPTY, (store) => {
+    const messages = [...(store.messages ?? []), message].slice(-200);
+    return { messages };
+  });
   return message;
 }
 
+export async function enqueueOutboxMany(phone: string, texts: string[]) {
+  const created = texts.map((text) => makeMessage(phone, text));
+  await updateJsonFile(STORE_PATH, EMPTY, (store) => {
+    const messages = [...(store.messages ?? []), ...created].slice(-200);
+    return { messages };
+  });
+  return created;
+}
+
 export async function claimOutbox(limit = 10) {
-  const store = await readStore();
-  const now = new Date().toISOString();
   const claimed: OutboxMessage[] = [];
+  const now = new Date().toISOString();
 
-  for (const message of store.messages) {
-    if (claimed.length >= limit) break;
-    if (message.status !== "pending") continue;
-    message.status = "claimed";
-    message.claimedAt = now;
-    claimed.push(message);
-  }
-
-  if (claimed.length) {
-    await writeStore(store);
-  }
+  await updateJsonFile(STORE_PATH, EMPTY, (store) => {
+    claimed.length = 0;
+    const messages = (store.messages ?? []).map((message) => {
+      if (claimed.length >= limit || message.status !== "pending") {
+        return message;
+      }
+      const next = { ...message, status: "claimed" as const, claimedAt: now };
+      claimed.push(next);
+      return next;
+    });
+    return { messages };
+  });
 
   return claimed;
 }
@@ -89,19 +70,27 @@ export async function completeOutbox(
   id: string,
   result: { ok: true } | { ok: false; error: string },
 ) {
-  const store = await readStore();
-  const message = store.messages.find((item) => item.id === id);
-  if (!message) return null;
+  let updated: OutboxMessage | null = null;
 
-  if (result.ok) {
-    message.status = "sent";
-    message.sentAt = new Date().toISOString();
-    message.error = undefined;
-  } else {
-    message.status = "failed";
-    message.error = result.error;
-  }
+  await updateJsonFile(STORE_PATH, EMPTY, (store) => {
+    const messages = (store.messages ?? []).map((message) => {
+      if (message.id !== id) return message;
+      updated = result.ok
+        ? {
+            ...message,
+            status: "sent",
+            sentAt: new Date().toISOString(),
+            error: undefined,
+          }
+        : {
+            ...message,
+            status: "failed",
+            error: result.error,
+          };
+      return updated;
+    });
+    return { messages };
+  });
 
-  await writeStore(store);
-  return message;
+  return updated;
 }

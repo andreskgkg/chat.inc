@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  IDENTITY_MESSAGE,
+  IDENTITY_MESSAGES,
   normalizePhone,
   registerRoute,
-  sendText,
+  sendTexts,
 } from "@/lib/claw";
 import { upsertLead } from "@/lib/leads";
 
@@ -33,7 +33,8 @@ export async function POST(request: Request) {
     if (transport !== "openclaw-imessage" && process.env.CLAW_API_KEY) {
       await registerRoute(phone);
     }
-    await sendText(phone, IDENTITY_MESSAGE);
+
+    await sendTexts(phone, [...IDENTITY_MESSAGES]);
 
     const now = new Date().toISOString();
     await upsertLead({
@@ -46,12 +47,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, phone });
   } catch (error) {
     console.error("join failed", error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Could not start texting.",
-      },
-      { status: 500 },
-    );
+    const raw = error instanceof Error ? error.message : "";
+    const friendly =
+      /GitHub|BLOB|Supabase|storage/i.test(raw)
+        ? "Could not start texting. Please try again in a moment."
+        : raw || "Could not start texting.";
+    return NextResponse.json({ error: friendly }, { status: 500 });
   }
 }

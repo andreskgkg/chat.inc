@@ -1,4 +1,4 @@
-import { enqueueOutbox } from "@/lib/outbox";
+import { enqueueOutbox, enqueueOutboxMany } from "@/lib/outbox";
 
 const CLAW_BASE = "https://claw-messenger.onrender.com";
 
@@ -64,6 +64,23 @@ export async function sendText(phoneNumber: string, text: string) {
     return { ok: true, transport: "openclaw-imessage", id: message.id };
   }
 
+  return sendViaClaw(phoneNumber, text);
+}
+
+export async function sendTexts(phoneNumber: string, texts: string[]) {
+  if (messageTransport() === "openclaw-imessage") {
+    const messages = await enqueueOutboxMany(phoneNumber, texts);
+    return { ok: true, transport: "openclaw-imessage", ids: messages.map((m) => m.id) };
+  }
+
+  for (const text of texts) {
+    await sendViaClaw(phoneNumber, text);
+  }
+  return { ok: true, transport: "claw" };
+}
+
+async function sendViaClaw(phoneNumber: string, text: string) {
+
   const response = await fetch(`${CLAW_BASE}/api/agent/send-message`, {
     method: "POST",
     headers: {
@@ -96,11 +113,13 @@ export async function sendText(phoneNumber: string, text: string) {
   return json;
 }
 
-export const IDENTITY_MESSAGE =
-  "Hey welcome to chat.inc — reply with your LinkedIn so we know who you are. After that you'll get your first (paid) question!";
+export const IDENTITY_MESSAGES = [
+  "Hey welcome to chat.inc!",
+  "Reply with your LinkedIn so we know who you are.",
+  "After that you'll get your first (paid) question!",
+] as const;
 
 export const SAMPLE_QUESTION =
-  "What payroll provider does your company use (ADP, Rippling, Gusto, Deel) and what's your experience with it? Up to $20";
+  "What payroll provider does your company use (ADP, Rippling, Gusto, Deel) and what's your experience with it? (up to $20 reward)";
 
-export const THANKS_MESSAGE =
-  "Got it — here’s your first paid question:";
+export const THANKS_MESSAGE = "Got it — here’s your paid question:";

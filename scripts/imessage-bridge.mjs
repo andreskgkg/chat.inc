@@ -19,6 +19,7 @@ const SECRET = process.env.OUTBOX_SECRET?.trim();
 const BASE = (process.env.CHAT_INC_URL || "https://chat.inc").replace(/\/$/, "");
 const IMSG = process.env.IMSG_BIN || "imsg";
 const POLL_MS = Number(process.env.POLL_MS || 4000);
+const ADMIN_FALLBACK = "+17816929689";
 
 if (!SECRET) {
   console.error("Missing OUTBOX_SECRET");
@@ -91,7 +92,89 @@ async function drainOnce() {
   }
 }
 
-async function forwardInbound(phone, text) {
+function looksLikePhone(value) {
+  return /^\+?\d{10,15}$/.test(String(value || "").replace(/[\s()-]/g, ""));
+}
+
+function normalizeHandle(value) {
+  return String(value || "").trim();
+}
+
+function isAdminCommand(text) {
+  const trimmed = text.trim();
+  if (/^(approve|reject|paid|like|love|dislike)\b/i.test(trimmed)) return true;
+  if (/^[👍👎]/u.test(trimmed)) return true;
+  if (/^(\+1|-1)(?:\s|$)/.test(trimmed)) return true;
+  return false;
+}
+
+function extractApprovalTarget(text) {
+  const blob = String(text || "");
+  const phoneLine = blob.match(/Phone:\s*([+\d()\s-]+)/i);
+  if (phoneLine) {
+    const digits = phoneLine[1].replace(/[^\d+]/g, "");
+    if (looksLikePhone(digits)) {
+      return digits.startsWith("+") ? digits : `+${digits}`;
+    }
+  }
+
+  const linkedinLine = blob.match(/LinkedIn:\s*(\S+)/i);
+  if (linkedinLine?.[1]) return linkedinLine[1].trim();
+
+  const linkedin = blob.match(
+    /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[A-Za-z0-9\-_%]+\/?/i,
+  );
+  if (linkedin?.[0]) {
+    return linkedin[0].startsWith("http")
+      ? linkedin[0].replace(/\/$/, "")
+      : `https://${linkedin[0].replace(/\/$/, "")}`;
+  }
+
+  return "";
+}
+
+function reactionDecision(event) {
+  if (event.is_reaction_add === false) return null;
+
+  const type = String(event.reaction_type || event.reaction || "").toLowerCase();
+  const emoji = String(event.reaction_emoji || "");
+  const text = String(event.text || event.body || "").trim();
+
+  if (type === "like" || type === "love" || /^👍/u.test(emoji)) {
+    return "approve";
+  }
+  if (type === "dislike" || /^👎/u.test(emoji)) {
+    return "reject";
+  }
+
+  // openclaw-style synthetic text: like "original body"
+  const quoted = text.match(/^(like|love|dislike)\s+[\u0022\u0027\u201c\u201d]([\s\S]*)[\u0022\u0027\u201c\u201d]$/i);
+  if (quoted) {
+    if (/^(like|love)$/i.test(quoted[1])) return "approve";
+    if (/^dislike$/i.test(quoted[1])) return "reject";
+  }
+
+  if (/^👍/u.test(text) || text === "+1") return "approve";
+  if (/^👎/u.test(text) || text === "-1") return "reject";
+
+  return null;
+}
+
+function associatedBody(event) {
+  const text = String(event.text || event.body || "");
+  const quoted = text.match(/^(?:like|love|dislike)\s+[\u0022\u0027\u201c\u201d]([\s\S]*)[\u0022\u0027\u201c\u201d]$/i);
+  return [
+    event.reply_to_text,
+    event.associated_text,
+    event.reacted_to_text,
+    quoted?.[1],
+    text,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+async function forwardInbound(phone, text, extra = {}) {
   const response = await fetch(`${BASE}/api/claw/inbound`, {
     method: "POST",
     headers: {
@@ -102,6 +185,7 @@ async function forwardInbound(phone, text) {
       type: "message",
       phone_number: phone,
       text,
+      ...extra,
     }),
   });
   const body = await response.text();
@@ -109,7 +193,7 @@ async function forwardInbound(phone, text) {
 }
 
 function startWatch() {
-  const child = spawn(IMSG, ["watch", "--json"], {
+  const child = spawn(IMSG, ["watch", "--json", "--reactions"], {
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -122,22 +206,72 @@ function startWatch() {
       if (!line.trim()) continue;
       try {
         const event = JSON.parse(line);
-        if (event.is_group || event.is_from_me || event.fromMe) continue;
-        const phone = String(
-          event.sender ||
-            event.from ||
-            event.handle ||
-            event.phone_number ||
-            "",
-        ).trim();
+        if (event.is_group) continue;
+
+        const isReaction = Boolean(
+          event.is_reaction || event.is_tapback || event.reaction_type,
+        );
+        const fromMe = Boolean(event.is_from_me || event.fromMe);
+        const sender = normalizeHandle(
+          event.sender || event.from || event.handle || event.phone_number || "",
+        );
+        const chatId = normalizeHandle(
+          event.chat_identifier || event.reply_to_sender || "",
+        );
+
+        // Tapbacks: 👍 approve / 👎 reject on the approval prompt.
+        if (isReaction) {
+          const decision = reactionDecision(event);
+          if (!decision) continue;
+          if (!fromMe && !looksLikePhone(sender)) continue;
+
+          const target = extractApprovalTarget(associatedBody(event));
+          const command = `${decision === "approve" ? "Approve" : "Reject"}${
+            target ? ` ${target}` : ""
+          }`;
+          const phone =
+            (looksLikePhone(chatId) && chatId) ||
+            (looksLikePhone(sender) && sender) ||
+            ADMIN_FALLBACK;
+
+          console.log(`↺ reaction ${decision} → ${command}`);
+          forwardInbound(phone, command, {
+            type: "reaction",
+            is_from_me: true,
+            is_reaction: true,
+            is_tapback: true,
+            reaction_type: event.reaction_type || decision,
+            reaction_emoji: event.reaction_emoji || "",
+            reply_to_text: associatedBody(event),
+          }).catch((error) => console.error("forward failed", error));
+          continue;
+        }
+
         const text = String(event.text || event.body || event.message || "")
           .replace(/\uFFFC/g, "")
           .trim();
-        // Only 1:1 phone replies (not groups / business urns / short codes).
-        if (!/^\+?\d{10,15}$/.test(phone.replace(/[\s()-]/g, "")) || !text) {
+        if (!text) continue;
+
+        // Your Approve / Paid / Reject / 👍👎 commands (sent from this Mac).
+        if (fromMe) {
+          if (!isAdminCommand(text)) continue;
+          const target = looksLikePhone(chatId) ? chatId : sender;
+          if (!looksLikePhone(target) && !/linkedin\.com\/in\//i.test(text)) {
+            // Still forward — API can resolve LinkedIn / latest pending.
+            forwardInbound(chatId || sender || ADMIN_FALLBACK, text, {
+              is_from_me: true,
+            }).catch((error) => console.error("forward failed", error));
+            continue;
+          }
+          forwardInbound(target || ADMIN_FALLBACK, text, {
+            is_from_me: true,
+          }).catch((error) => console.error("forward failed", error));
           continue;
         }
-        forwardInbound(phone, text).catch((error) => {
+
+        // Expert replies into your iMessage.
+        if (!looksLikePhone(sender)) continue;
+        forwardInbound(sender, text).catch((error) => {
           console.error("forward failed", error);
         });
       } catch (error) {
@@ -158,6 +292,7 @@ function startWatch() {
 
 console.log(`chat.inc iMessage bridge → ${BASE}`);
 console.log("Sending from your Mac Messages identity (current number).");
+console.log("Watching messages + tapbacks (👍 approve / 👎 reject).");
 startWatch();
 
 for (;;) {

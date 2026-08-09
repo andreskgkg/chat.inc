@@ -9,14 +9,13 @@ export default function Home() {
             <a className="nav-brand" href="/">
               chat.inc
             </a>
-            <span className="nav-tagline">— anonymous expert network built on text.</span>
           </div>
         </header>
 
         <section className="hero" aria-label="Hero">
           <div className="hero-copy">
             <h1>
-              Get paid for what
+              <span className="hero-line">Get paid for what</span>
               <br />
               you know.
             </h1>
@@ -25,86 +24,105 @@ export default function Home() {
               <br />
               Stay anonymous. Get paid.
             </p>
-            <JoinForm className="join-hero" />
+            <div id="hero-join">
+              <JoinForm className="join-hero" />
+            </div>
           </div>
 
-          <img
-            className="phone"
-            src="/phone.png?v=6"
-            alt="chat.inc iMessage conversation paying $25 for an expert answer"
-            width={808}
-            height={1024}
-          />
-        </section>
-
-        <section className="section" id="how">
-          <h2 className="section-head">How it works</h2>
-          <ol className="steps">
-            <li>
-              <strong>Create your profile</strong>
-              <span>Text us and confirm your identity.</span>
-            </li>
-            <li>
-              <strong>Get questions</strong>
-              <span>Receive questions via text.</span>
-            </li>
-            <li>
-              <strong>Answer</strong>
-              <span>If you have an opinion text back, if not ignore.</span>
-            </li>
-            <li>
-              <strong>Get paid</strong>
-              <span>Earn for every answer.</span>
-            </li>
-          </ol>
-        </section>
-
-        <section className="section" id="why">
-          <h2 className="section-head">Why experts join</h2>
-          <ul className="reason-list">
-            <li>Get paid for your experience and opinions.</li>
-            <li>Stay anonymous.</li>
-            <li>Answer easily via text.</li>
-            <li>No calls.</li>
-          </ul>
-        </section>
-
-        <section className="section" id="faq">
-          <h2 className="section-head">FAQ</h2>
-          <div className="faq">
-            <details>
-              <summary>Who can join?</summary>
-              <p>
-                Founders, engineers, investors, operators, designers, researchers—anyone with
-                valuable experience.
-              </p>
-            </details>
-            <details>
-              <summary>How long are conversations?</summary>
-              <p>1–5 messages. That’s it.</p>
-            </details>
-            <details>
-              <summary>Do I have to reveal who I am?</summary>
-              <p>No. Stay anonymous unless you choose otherwise.</p>
-            </details>
-            <details>
-              <summary>What shouldn’t I discuss?</summary>
-              <p>Never share confidential or non-public information.</p>
-            </details>
+          <div className="hero-phone">
+            <img
+              className="phone"
+              src="/phone.png?v=6"
+              alt="chat.inc iMessage conversation paying $25 for an expert answer"
+              width={808}
+              height={1024}
+            />
           </div>
         </section>
 
-        <section className="section join-section" id="join">
-          <h2 className="section-head">Your experience is valuable.</h2>
-          <p className="join-lede">
-            Drop your number and we’ll text you.
-          </p>
-          <JoinForm />
-        </section>
+        <div className="content-band">
+          <section className="section section-how" id="how">
+            <h2 className="section-head section-head-center">
+              Chat.inc is a text-only expert network
+            </h2>
+            <ol className="how-grid">
+              <li>
+                <div className="how-num" aria-hidden="true">
+                  1
+                </div>
+                <div className="how-copy">
+                  <strong>Create your profile</strong>
+                  <span>Text us and confirm your identity.</span>
+                </div>
+              </li>
+              <li>
+                <div className="how-num" aria-hidden="true">
+                  2
+                </div>
+                <div className="how-copy">
+                  <strong>Get questions</strong>
+                  <span>We'll send you questions via text</span>
+                </div>
+              </li>
+              <li>
+                <div className="how-num" aria-hidden="true">
+                  3
+                </div>
+                <div className="how-copy">
+                  <strong>Answer</strong>
+                  <span>If you have an opinion text back, if not ignore.</span>
+                </div>
+              </li>
+              <li>
+                <div className="how-num" aria-hidden="true">
+                  4
+                </div>
+                <div className="how-copy">
+                  <strong>Get paid</strong>
+                  <span>Earn for every answer.</span>
+                </div>
+              </li>
+            </ol>
+          </section>
+
+          <section className="section" id="faq">
+            <h2 className="section-head">FAQ</h2>
+            <div className="faq">
+              <details>
+                <summary>Who can join?</summary>
+                <p>
+                  Founders, engineers, investors, operators, designers,
+                  researchers, and anyone with valuable experience.
+                </p>
+              </details>
+              <details>
+                <summary>How long are conversations?</summary>
+                <p>1–5 messages. That’s it.</p>
+              </details>
+              <details>
+                <summary>Do I have to reveal who I am?</summary>
+                <p>
+                  You need to identify who you are to Chat Inc. Your responses
+                  are always kept fully anonymous.
+                </p>
+              </details>
+              <details>
+                <summary>What shouldn’t I discuss?</summary>
+                <p>Never share confidential or violate any NDAs.</p>
+              </details>
+            </div>
+          </section>
+
+          <section className="section join-section" id="join">
+            <h2 className="section-head">Get paid for what you know.</h2>
+            <p className="join-lede">Drop your number and we’ll text you.</p>
+            <JoinForm />
+          </section>
+        </div>
 
         <footer className="site-footer">
           <strong>chat.inc</strong>
-          <span>Anonymous expertise, over text.</span>
+          <span>A text-only expert network.</span>
         </footer>
       </div>
     </div>

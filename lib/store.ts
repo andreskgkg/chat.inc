@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
-import { get, put } from "@vercel/blob";
+import { readJsonFile, updateJsonFile } from "@/lib/json-store";
 import type { Prediction, StoreData, VoteValue } from "./types";
 
-const STORE_PATH = "chat-inc/store.json";
+const STORE_PATH = "store.json";
 
 const seed: StoreData = {
   predictions: [
@@ -27,42 +27,14 @@ function normalize(data: StoreData): StoreData {
 }
 
 async function readStore(): Promise<StoreData> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error("Missing BLOB_READ_WRITE_TOKEN");
-  }
+  const parsed = await readJsonFile<StoreData>(STORE_PATH, structuredClone(seed));
+  const normalized = normalize(parsed);
 
-  const blob = await get(STORE_PATH, {
-    access: "private",
-    useCache: false,
-  });
-
-  if (!blob?.stream) {
-    const initial = structuredClone(seed);
-    await writeStore(initial);
-    return initial;
-  }
-
-  const raw = await new Response(blob.stream).text();
-  const parsed = normalize(JSON.parse(raw) as StoreData);
-
-  if (!Array.isArray(parsed.predictions)) {
+  if (!Array.isArray(normalized.predictions)) {
     throw new Error("invalid store");
   }
 
-  return parsed;
-}
-
-async function writeStore(data: StoreData) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error("Missing BLOB_READ_WRITE_TOKEN");
-  }
-
-  await put(STORE_PATH, JSON.stringify(data), {
-    access: "private",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-  });
+  return normalized;
 }
 
 export async function listPredictions() {
@@ -73,7 +45,6 @@ export async function listPredictions() {
 }
 
 export async function createPrediction(text: string) {
-  const store = await readStore();
   const prediction: Prediction = {
     id: randomUUID(),
     text: text.trim(),
@@ -81,8 +52,12 @@ export async function createPrediction(text: string) {
     votes: {},
   };
 
-  store.predictions.unshift(prediction);
-  await writeStore(store);
+  await updateJsonFile(STORE_PATH, structuredClone(seed), (store) => {
+    const normalized = normalize(store);
+    normalized.predictions.unshift(prediction);
+    return normalized;
+  });
+
   return prediction;
 }
 
@@ -91,19 +66,23 @@ export async function votePrediction(
   voterId: string,
   value: VoteValue | 0,
 ) {
-  const store = await readStore();
-  const prediction = store.predictions.find((item) => item.id === predictionId);
+  let updated: Prediction | null = null;
 
-  if (!prediction) {
-    return null;
-  }
+  await updateJsonFile(STORE_PATH, structuredClone(seed), (store) => {
+    const normalized = normalize(store);
+    const prediction = normalized.predictions.find(
+      (item) => item.id === predictionId,
+    );
+    if (!prediction) return normalized;
 
-  if (value === 0) {
-    delete prediction.votes[voterId];
-  } else {
-    prediction.votes[voterId] = value;
-  }
+    if (value === 0) {
+      delete prediction.votes[voterId];
+    } else {
+      prediction.votes[voterId] = value;
+    }
+    updated = prediction;
+    return normalized;
+  });
 
-  await writeStore(store);
-  return prediction;
+  return updated;
 }

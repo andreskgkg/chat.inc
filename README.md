@@ -12,7 +12,7 @@ cp .env.example .env.local
 Required for the phone CTA:
 
 - `CLAW_API_KEY` — Claw Messenger API key
-- `BLOB_READ_WRITE_TOKEN` — stores leads
+- `GITHUB_TOKEN` + `CHAT_INC_DATA_REPO` — durable lead/outbox storage (or Supabase)
 
 Optional:
 
