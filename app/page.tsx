@@ -43,7 +43,8 @@ export default function Home() {
         <div className="content-band">
           <section className="section section-how" id="how">
             <h2 className="section-head section-head-center">
-              Chat.inc is a text-only expert network
+              <span className="brand-emph">Chat.inc</span> is a text-only expert
+              network
             </h2>
             <ol className="how-grid">
               <li>
