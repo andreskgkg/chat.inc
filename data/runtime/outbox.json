@@ -14,8 +14,9 @@
       "phone": "+17816929689",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-09T23:56:25.871Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T23:56:27.081Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T23:56:27.081Z",
+      "sentAt": "2026-08-09T23:56:29.549Z"
     },
     {
       "id": "msg_1786319785871_j6oetg",
