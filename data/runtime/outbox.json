@@ -32,8 +32,9 @@
       "phone": "+14155550198",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-09T20:50:46.879Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T20:50:47.958Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T20:50:47.958Z",
+      "sentAt": "2026-08-09T20:50:50.299Z"
     }
   ]
 }
