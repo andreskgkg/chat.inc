@@ -57,7 +57,8 @@
       "phone": "+17816929689",
       "text": "Lead +14155550198 is already past approval (awaiting_identity).",
       "createdAt": "2026-08-09T20:57:31.405Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T20:57:34.181Z"
     }
   ]
 }
