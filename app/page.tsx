@@ -32,7 +32,7 @@ export default function Home() {
           <div className="hero-phone">
             <img
               className="phone"
-              src="/phone.png?v=10"
+              src="https://github.com/andreskgkg/chat.inc/releases/download/phone-fix-v8/phone.png"
               alt="chat.inc iMessage conversation paying $25 for an expert answer"
               width={808}
               height={1024}
