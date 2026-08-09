@@ -109,8 +109,9 @@
       "phone": "+18188089369",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-09T21:02:02.696Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T21:02:03.887Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T21:02:03.887Z",
+      "sentAt": "2026-08-09T21:02:06.495Z"
     },
     {
       "id": "msg_1786309323413_0y0s9y",
