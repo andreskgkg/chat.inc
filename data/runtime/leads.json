@@ -5,6 +5,12 @@
       "createdAt": "2026-08-09T20:49:23.579Z",
       "updatedAt": "2026-08-09T20:49:23.579Z",
       "status": "awaiting_identity"
+    },
+    "+14155550198": {
+      "phone": "+14155550198",
+      "createdAt": "2026-08-09T20:50:49.162Z",
+      "updatedAt": "2026-08-09T20:50:49.162Z",
+      "status": "awaiting_identity"
     }
   }
 }
