@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600", "700"],
-});
-
-const serif = Newsreader({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -31,7 +25,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${sans.variable} ${serif.variable}`}>{children}</body>
+      <body className={sans.variable}>{children}</body>
     </html>
   );
 }

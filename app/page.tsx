@@ -86,24 +86,6 @@ export default function Home() {
             </ol>
           </section>
 
-          <section className="section section-testimonies" id="testimonies">
-            <h2 className="section-head section-head-center">Testimonies</h2>
-            <figure className="testimony">
-              <blockquote>
-                “I answer a couple questions on my walk to coffee and get paid
-                the same day. No calls, no decks — just text.”
-              </blockquote>
-              <figcaption>— Maya</figcaption>
-            </figure>
-            <figure className="testimony">
-              <blockquote>
-                “It’s the only expert network that respects my time. Stay
-                anonymous, reply when I actually know something, move on.”
-              </blockquote>
-              <figcaption>— Jordan</figcaption>
-            </figure>
-          </section>
-
           <section className="section" id="faq">
             <h2 className="section-head">FAQ</h2>
             <div className="faq">
