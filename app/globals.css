@@ -358,6 +358,43 @@ button {
   line-height: 1.45;
 }
 
+.section-testimonies {
+  text-align: center;
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.section-testimonies .section-head-center {
+  margin-bottom: 48px;
+}
+
+.testimony {
+  margin: 0 auto;
+  max-width: 34rem;
+}
+
+.testimony + .testimony {
+  margin-top: 48px;
+}
+
+.testimony blockquote {
+  margin: 0;
+  color: #1a1c20;
+  font-family: var(--font-serif), "Newsreader", Georgia, serif;
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.45;
+}
+
+.testimony figcaption {
+  margin-top: 18px;
+  color: #8a8f98;
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
 .faq {
   display: grid;
   gap: 0;
