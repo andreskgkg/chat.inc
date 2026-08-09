@@ -32,21 +32,8 @@
       "phone": "+14155550198",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-09T20:50:46.879Z",
-      "status": "pending"
-    },
-    {
-      "id": "msg_1786308647704_kk34s3",
-      "phone": "+14155550198",
-      "text": "Reply with your LinkedIn so we know who you are.",
-      "createdAt": "2026-08-09T20:50:47.704Z",
-      "status": "pending"
-    },
-    {
-      "id": "msg_1786308648437_nmut0k",
-      "phone": "+14155550198",
-      "text": "After that you'll get your first (paid) question!",
-      "createdAt": "2026-08-09T20:50:48.437Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T20:50:47.958Z"
     }
   ]
 }
