@@ -100,8 +100,9 @@
       "phone": "+18188089369",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-09T21:01:43.580Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T21:01:44.504Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T21:01:44.504Z",
+      "sentAt": "2026-08-09T21:01:48.801Z"
     }
   ]
 }
