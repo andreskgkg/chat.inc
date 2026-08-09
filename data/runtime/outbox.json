@@ -74,28 +74,32 @@
       "phone": "+17816929689",
       "text": "Lead +14155550198 is already past approval (awaiting_identity).",
       "createdAt": "2026-08-09T21:00:44.673Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T21:01:44.504Z"
     },
     {
       "id": "msg_1786309303578_k0jdxr",
       "phone": "+18188089369",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-09T21:01:43.578Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T21:01:44.504Z"
     },
     {
       "id": "msg_1786309303580_8o7gfv",
       "phone": "+18188089369",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-09T21:01:43.580Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T21:01:44.504Z"
     },
     {
       "id": "msg_1786309303580_gg0qxg",
       "phone": "+18188089369",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-09T21:01:43.580Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-09T21:01:44.504Z"
     }
   ]
 }
