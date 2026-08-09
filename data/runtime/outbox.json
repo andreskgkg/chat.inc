@@ -91,8 +91,9 @@
       "phone": "+18188089369",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-09T21:01:43.580Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-09T21:01:44.504Z"
+      "status": "sent",
+      "claimedAt": "2026-08-09T21:01:44.504Z",
+      "sentAt": "2026-08-09T21:01:47.749Z"
     },
     {
       "id": "msg_1786309303580_gg0qxg",
