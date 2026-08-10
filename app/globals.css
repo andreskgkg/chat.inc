@@ -437,42 +437,76 @@ button {
   -webkit-text-fill-color: #fff !important;
 }
 
+.join-submit {
+  position: relative;
+}
+
+.join-submit-label {
+  display: inline-block;
+  transition: opacity 160ms ease;
+}
+
+.join-submit[aria-busy="true"] .join-submit-label {
+  opacity: 0;
+}
+
 .typing-dots {
-  display: inline-flex;
+  position: absolute;
+  inset: 0;
+  display: none;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-width: 4.5rem;
-  height: 1em;
+  gap: 5px;
+}
+
+.join-submit[aria-busy="true"] .typing-dots {
+  display: inline-flex;
 }
 
 .typing-dots span {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #fff;
-  opacity: 0.35;
-  animation: typing-dot 1.2s ease-in-out infinite;
+  opacity: 0.4;
+  animation: typing-dot 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .typing-dots span:nth-child(2) {
-  animation-delay: 0.15s;
+  animation-delay: 0.18s;
 }
 
 .typing-dots span:nth-child(3) {
-  animation-delay: 0.3s;
+  animation-delay: 0.36s;
 }
 
 @keyframes typing-dot {
   0%,
-  60%,
+  70%,
   100% {
     opacity: 0.35;
-    transform: translateY(0);
+    transform: translateY(0) scale(0.85);
   }
-  30% {
+  35% {
     opacity: 1;
-    transform: translateY(-3px);
+    transform: translateY(-3px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing-dots span {
+    animation-name: typing-fade;
+    transform: none;
+  }
+}
+
+@keyframes typing-fade {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

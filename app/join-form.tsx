@@ -60,16 +60,19 @@ export function JoinForm({ className = "" }: { className?: string }) {
           required
           aria-label="Phone number"
         />
-        <button type="submit" disabled={pending || !phone.trim()}>
-          {pending ? (
-            <span className="typing-dots" aria-label="Sending">
-              <span />
-              <span />
-              <span />
-            </span>
-          ) : (
-            "Get started"
-          )}
+        <button
+          type="submit"
+          className="join-submit"
+          disabled={pending || !phone.trim()}
+          aria-busy={pending}
+          aria-label={pending ? "Sending" : undefined}
+        >
+          <span className="join-submit-label">Get started</span>
+          <span className="typing-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
         </button>
       </div>
       {error ? <p className="join-error">{error}</p> : null}
