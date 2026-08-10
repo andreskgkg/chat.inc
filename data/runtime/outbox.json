@@ -149,8 +149,9 @@
       "phone": "+16096614617",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-10T16:23:19.164Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T16:23:21.845Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T16:23:21.845Z",
+      "sentAt": "2026-08-10T16:23:23.050Z"
     },
     {
       "id": "msg_1786378999950_xg3z7n",
