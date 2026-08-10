@@ -38,8 +38,8 @@ export function JoinForm({ className = "" }: { className?: string }) {
 
   if (done) {
     return (
-      <div className={`join ${className}`.trim()}>
-        <div className="join-shell join-shell-done" role="status">
+      <div className={`join join-done-wrap ${className}`.trim()}>
+        <div className="join-done" role="status">
           Amazing, texting you now!
         </div>
       </div>
