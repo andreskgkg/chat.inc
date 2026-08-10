@@ -44,6 +44,13 @@
       "status": "sent",
       "claimedAt": "2026-08-10T00:30:38.478Z",
       "sentAt": "2026-08-10T00:30:40.639Z"
+    },
+    {
+      "id": "msg_1786321860005_bcrdjp",
+      "phone": "+17816929689",
+      "text": "Got it — here’s your paid question:",
+      "createdAt": "2026-08-10T00:31:00.005Z",
+      "status": "pending"
     }
   ]
 }
