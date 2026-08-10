@@ -143,6 +143,13 @@
       "status": "sent",
       "claimedAt": "2026-08-10T16:20:54.482Z",
       "sentAt": "2026-08-10T16:20:58.475Z"
+    },
+    {
+      "id": "msg_1786378999164_ui8hag",
+      "phone": "+16096614617",
+      "text": "Great, we're approving new ppl everyday, hold tight for your first question",
+      "createdAt": "2026-08-10T16:23:19.164Z",
+      "status": "pending"
     }
   ]
 }
