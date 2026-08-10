@@ -32,8 +32,9 @@
       "phone": "+17816929689",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-10T00:30:34.401Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T00:30:38.478Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T00:30:38.478Z",
+      "sentAt": "2026-08-10T00:30:39.650Z"
     },
     {
       "id": "msg_1786321835116_ziaquf",
