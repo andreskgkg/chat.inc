@@ -149,14 +149,16 @@
       "phone": "+16096614617",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-10T16:23:19.164Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T16:23:21.845Z"
     },
     {
       "id": "msg_1786378999950_xg3z7n",
       "phone": "+17816929689",
       "text": "New chat.inc applicant\nPhone: +16096614617\nLinkedIn: https://www.linkedin.com/in/devin-ostermann-cpa-45677365\n\n👍 on this message to approve\n👎 on this message to reject\n\nOr text: Approve https://www.linkedin.com/in/devin-ostermann-cpa-45677365\nOr: Reject https://www.linkedin.com/in/devin-ostermann-cpa-45677365",
       "createdAt": "2026-08-10T16:23:19.950Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T16:23:21.845Z"
     }
   ]
 }
