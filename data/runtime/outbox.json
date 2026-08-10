@@ -80,6 +80,13 @@
       "status": "sent",
       "claimedAt": "2026-08-10T00:31:16.573Z",
       "sentAt": "2026-08-10T00:31:17.732Z"
+    },
+    {
+      "id": "msg_1786323460810_on2owg",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: friendly and nice",
+      "createdAt": "2026-08-10T00:57:40.810Z",
+      "status": "pending"
     }
   ]
 }
