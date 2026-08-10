@@ -50,8 +50,9 @@
       "phone": "+17816929689",
       "text": "Got it — here’s your paid question:",
       "createdAt": "2026-08-10T00:31:00.005Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T00:31:03.796Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T00:31:03.796Z",
+      "sentAt": "2026-08-10T00:31:05.021Z"
     },
     {
       "id": "msg_1786321860659_rj0yar",
