@@ -86,7 +86,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: friendly and nice",
       "createdAt": "2026-08-10T00:57:40.810Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T00:57:42.036Z"
     }
   ]
 }
