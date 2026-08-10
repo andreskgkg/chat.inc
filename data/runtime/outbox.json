@@ -113,8 +113,9 @@
       "phone": "+17816929689",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-10T06:45:39.953Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T06:45:44.156Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T06:45:44.156Z",
+      "sentAt": "2026-08-10T06:45:47.871Z"
     }
   ]
 }
