@@ -122,8 +122,9 @@
       "phone": "+16096614617",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-10T16:20:52.667Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T16:20:54.482Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T16:20:54.482Z",
+      "sentAt": "2026-08-10T16:20:55.822Z"
     },
     {
       "id": "msg_1786378852667_br3xxn",
