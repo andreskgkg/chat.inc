@@ -95,8 +95,9 @@
       "phone": "+17816929689",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-10T06:45:39.953Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-10T06:45:44.156Z"
+      "status": "sent",
+      "claimedAt": "2026-08-10T06:45:44.156Z",
+      "sentAt": "2026-08-10T06:45:45.784Z"
     },
     {
       "id": "msg_1786344339953_doo3nf",
