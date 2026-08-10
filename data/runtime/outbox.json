@@ -26,6 +26,13 @@
       "status": "sent",
       "claimedAt": "2026-08-09T23:56:27.081Z",
       "sentAt": "2026-08-09T23:56:31.215Z"
+    },
+    {
+      "id": "msg_1786321834401_xbbmtk",
+      "phone": "+17816929689",
+      "text": "Great, we're approving new ppl everyday, hold tight for your first question",
+      "createdAt": "2026-08-10T00:30:34.401Z",
+      "status": "pending"
     }
   ]
 }
