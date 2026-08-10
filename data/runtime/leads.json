@@ -3,15 +3,23 @@
     "+17816929689": {
       "phone": "+17816929689",
       "createdAt": "2026-08-09T23:56:26.571Z",
-      "updatedAt": "2026-08-10T00:30:59.326Z",
-      "status": "q1_sent",
+      "updatedAt": "2026-08-10T00:31:13.999Z",
+      "status": "q1_answered",
       "identity": "https://www.linkedin.com/in/allysenbell",
       "linkedin": "https://www.linkedin.com/in/allysenbell",
       "followUps": [
         "Can you describe your experience managing HRIS systems and which platforms you have found most effective for workforce management? (up to $20 reward)",
         "What tools or software do you use for talent acquisition and recruitment processes, and how have they improved your hiring outcomes? (up to $20 reward)",
         "Have you worked with any employee engagement or performance management platforms? If so, which ones and what results did you observe? (up to $20 reward)"
-      ]
+      ],
+      "answers": {
+        "q1": "Whejshsbbwvvww"
+      },
+      "pendingPay": {
+        "question": "q1",
+        "amount": 20,
+        "answer": "Whejshsbbwvvww"
+      }
     }
   }
 }
