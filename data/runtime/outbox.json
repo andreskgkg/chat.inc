@@ -89,6 +89,27 @@
       "status": "sent",
       "claimedAt": "2026-08-10T00:57:42.036Z",
       "sentAt": "2026-08-10T00:57:43.296Z"
+    },
+    {
+      "id": "msg_1786344339953_wbanpl",
+      "phone": "+17816929689",
+      "text": "Hey welcome to chat.inc!",
+      "createdAt": "2026-08-10T06:45:39.953Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786344339953_doo3nf",
+      "phone": "+17816929689",
+      "text": "Reply with your LinkedIn so we know who you are.",
+      "createdAt": "2026-08-10T06:45:39.953Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786344339953_zl07z7",
+      "phone": "+17816929689",
+      "text": "After that you'll get your first (paid) question!",
+      "createdAt": "2026-08-10T06:45:39.953Z",
+      "status": "pending"
     }
   ]
 }
