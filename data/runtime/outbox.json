@@ -167,21 +167,24 @@
       "phone": "+16096614617",
       "text": "Got it — here’s your paid question:",
       "createdAt": "2026-08-10T17:43:39.708Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T17:43:44.396Z"
     },
     {
       "id": "msg_1786383820489_bm8fq0",
       "phone": "+16096614617",
       "text": "What payroll provider does your company use (ADP, Rippling, Gusto, Deel) and what's your experience with it? (up to $20 reward)",
       "createdAt": "2026-08-10T17:43:40.489Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T17:43:44.396Z"
     },
     {
       "id": "msg_1786383821715_e545lc",
       "phone": "+17816929689",
       "text": "Approved +16096614617. Payroll question sent.",
       "createdAt": "2026-08-10T17:43:41.715Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-10T17:43:44.396Z"
     }
   ]
 }
