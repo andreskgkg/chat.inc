@@ -52,14 +52,14 @@ const STEPS: Step[] = [
 export function HowItWorks() {
   const [active, setActive] = useState(0);
 
-  // All messages revealed so far; the thread is bottom-anchored so new
-  // ones arrive at the bottom and older ones scroll up under a fade.
+  // All messages revealed so far. The thread is top-anchored, so new
+  // messages append below the previous ones and spring in on arrival.
   const visible = STEPS.slice(0, active + 1).flatMap((step, s) =>
     step.bubbles.map((bubble, i) => ({ bubble, i, key: `${s}-${i}` })),
   );
 
-  // FLIP: when new messages arrive, glide the existing bubbles up smoothly
-  // (new bubbles get the CSS spring "pop" via animation on mount).
+  // FLIP: if an existing bubble's position shifts when messages change,
+  // glide it to its new spot (new bubbles get the CSS spring "pop" on mount).
   const threadRef = useRef<HTMLDivElement>(null);
   const prevRects = useRef<Map<string, DOMRect>>(new Map());
 

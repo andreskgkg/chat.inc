@@ -298,13 +298,10 @@ button {
 .hiw-thread {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 2cqw;
-  height: 108cqw;
-  overflow: hidden;
+  min-height: 108cqw;
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%);
 }
 
 .hiw-msg {
