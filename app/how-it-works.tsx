@@ -81,8 +81,10 @@ export function HowItWorks() {
   return (
     <div className="hiw">
       <div className="hiw-phone" aria-hidden="true">
-        <div className="hiw-screen-live">
-          <div className="hiw-statusbar">
+        <div className="hiw-frame">
+          <div className="hiw-screen-live">
+            <span className="hiw-island" />
+            <div className="hiw-statusbar">
             <span className="hiw-time">9:41</span>
             <StatusIcons />
           </div>
@@ -147,16 +149,8 @@ export function HowItWorks() {
               );
             })}
           </div>
+          </div>
         </div>
-
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="hiw-frame-img"
-          src="/phone-frame.png"
-          alt=""
-          width={323}
-          height={663}
-        />
       </div>
 
       <ol className="hiw-steps">
