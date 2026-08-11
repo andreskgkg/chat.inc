@@ -9,8 +9,15 @@
     "+16096614617": {
       "phone": "+16096614617",
       "createdAt": "2026-08-11T00:50:22.787Z",
-      "updatedAt": "2026-08-11T00:50:22.787Z",
-      "status": "awaiting_identity"
+      "updatedAt": "2026-08-11T00:51:01.424Z",
+      "status": "pending_approval",
+      "identity": "https://www.linkedin.com/in/devin-ostermann-cpa-45677365",
+      "linkedin": "https://www.linkedin.com/in/devin-ostermann-cpa-45677365",
+      "followUps": [
+        "Can you describe your experience managing financial audits in previous roles and the tools you used for audit tracking? (up to $20 reward)",
+        "Which accounting software have you primarily used for managing corporate taxes, and how has it impacted your workflow? (up to $20 reward)",
+        "Have you worked with any ERP systems in your past finance roles? If so, which vendors, and what was your role in implementation or usage? (up to $20 reward)"
+      ]
     },
     "+16093614617": {
       "phone": "+16093614617",
