@@ -53,10 +53,11 @@ const STEPS: Step[] = [
 export function HowItWorks() {
   const [active, setActive] = useState(0);
 
-  const revealed = STEPS.slice(0, active + 1).flatMap((step, s) =>
+  // All messages revealed so far; the thread is bottom-anchored so new
+  // ones arrive at the bottom and older ones scroll up under a fade.
+  const visible = STEPS.slice(0, active + 1).flatMap((step, s) =>
     step.bubbles.map((bubble, i) => ({ bubble, i, key: `${s}-${i}` })),
   );
-  const visible = revealed.slice(-3);
 
   return (
     <div className="hiw">
