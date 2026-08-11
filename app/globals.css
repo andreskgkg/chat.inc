@@ -240,99 +240,29 @@ button {
   margin: 0 auto;
 }
 
-/* Phone (crisp SVG frame + live screen) */
-.hiw-phone {
-  position: relative;
+/* Chat (frameless: no iPhone border, status bar, or island) */
+.hiw-chat {
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   margin: 0 auto;
   container-type: inline-size;
-  aspect-ratio: 372 / 762;
-}
-
-.hiw-frame-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.26));
-}
-
-.hiw-screen-live {
-  position: absolute;
-  z-index: 1;
-  top: 2.23%;
-  left: 4.57%;
-  right: 4.57%;
-  bottom: 2.23%;
-  border-radius: 16cqw;
-  overflow: hidden;
-  background: #f6f6f6;
   display: flex;
   flex-direction: column;
 }
 
-.hiw-statusbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4.8cqw 7cqw 0;
-  color: #000;
-}
-
-.hiw-time {
-  font-size: 4.2cqw;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.hiw-status-icons {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.6cqw;
-}
-
-.hiw-status-icons svg {
-  width: auto;
-  height: 3.3cqw;
-}
-
-.hiw-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2.5cqw;
-  padding: 2.5cqw 5cqw 3cqw;
-}
-
-.hiw-back {
-  flex: 0 0 auto;
-  width: 2.6cqw;
-  height: auto;
-  color: #0b8cff;
-}
-
-.hiw-cam {
-  flex: 0 0 auto;
-  width: 6.4cqw;
-  height: auto;
-  color: #0b8cff;
-}
-
-.hiw-peer {
+.hiw-chat-head {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.6cqw;
+  gap: 2cqw;
+  margin-bottom: 5cqw;
 }
 
 .hiw-avatar {
   position: relative;
-  width: 13cqw;
-  height: 13cqw;
-  border-radius: 3.4cqw;
+  width: 15cqw;
+  height: 15cqw;
+  border-radius: 4cqw;
   background: #000;
 }
 
@@ -341,8 +271,8 @@ button {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 4.6cqw;
-  height: 4.6cqw;
+  width: 5.4cqw;
+  height: 5.4cqw;
   border-radius: 50%;
   background: #fff;
 }
@@ -350,35 +280,25 @@ button {
 .hiw-peer-name {
   display: inline-flex;
   align-items: center;
-  gap: 1.3cqw;
-  padding: 1cqw 3cqw 1cqw 2cqw;
+  gap: 1.6cqw;
+  padding: 1.4cqw 4cqw 1.4cqw 3cqw;
   border-radius: 999px;
   background: #eceef0;
-  font-size: 3.8cqw;
+  font-size: 4.2cqw;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #111;
 }
 
 .hiw-peer-name svg {
-  width: 4cqw;
-  height: 4cqw;
-}
-
-.hiw-chev {
-  margin-left: 0.3cqw;
-  color: #b6babf;
-  font-weight: 700;
+  width: 4.6cqw;
+  height: 4.6cqw;
 }
 
 .hiw-thread {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 1.3cqw;
-  padding: 1.5cqw 4cqw;
-  overflow: hidden;
+  gap: 1.8cqw;
 }
 
 .hiw-msg {
@@ -417,7 +337,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #f6f6f6;
+  background: var(--bg);
   border-bottom-right-radius: 3.2cqw;
 }
 
@@ -446,7 +366,7 @@ button {
   right: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #f6f6f6;
+  background: var(--bg);
   border-bottom-left-radius: 3.2cqw;
 }
 
@@ -480,7 +400,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #f6f6f6;
+  background: var(--bg);
   border-bottom-right-radius: 3.2cqw;
 }
 
