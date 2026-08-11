@@ -299,6 +299,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.8cqw;
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
 
 .hiw-msg {

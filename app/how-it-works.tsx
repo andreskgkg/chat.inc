@@ -17,9 +17,9 @@ const STEPS: Step[] = [
     title: "Create your profile",
     desc: "Text us your number and confirm who you are with your LinkedIn. That's the whole signup.",
     bubbles: [
-      { kind: "them", text: "Welcome to chat.inc 👋" },
+      { kind: "them", text: "Welcome to chat.inc" },
       { kind: "them", text: "Reply with your LinkedIn so we know who you are." },
-      { kind: "me", text: "linkedin.com/in/andres" },
+      { kind: "me", text: "linkedin.com/in/eo18dn-3i233" },
     ],
   },
   {
@@ -27,7 +27,7 @@ const STEPS: Step[] = [
     desc: "We text you short, paid questions in your area of expertise — whenever we have a good one.",
     bubbles: [
       { kind: "them", text: "You're verified. Here's your first paid question:" },
-      { kind: "them", text: "How was your experience using Profound (AI SEO)? ($25)" },
+      { kind: "them", text: "How was your experience using Profound AI (AI SEO)? (Up to $25)" },
     ],
   },
   {
@@ -36,14 +36,17 @@ const STEPS: Step[] = [
     bubbles: [
       {
         kind: "me",
-        text: "It was okay — seems to do the same as competitors but is pricier, so we switched.",
+        text: "It was okay, it seems to do the same as its competitors but is more expensive so we switched",
       },
     ],
   },
   {
     title: "Get paid",
     desc: "Get paid instantly over Apple Cash for every answer. Stay anonymous the whole time.",
-    bubbles: [{ kind: "cash", amount: "$25", note: "Sent" }],
+    bubbles: [
+      { kind: "cash", amount: "$25", note: "Sent" },
+      { kind: "me", text: "yayyy" },
+    ],
   },
 ];
 
