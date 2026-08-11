@@ -383,8 +383,9 @@
       "phone": "+15614181919",
       "text": "Great, we're approving new ppl everyday, hold tight for your first question",
       "createdAt": "2026-08-11T23:58:45.391Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-11T23:59:04.172Z"
+      "status": "sent",
+      "claimedAt": "2026-08-11T23:59:04.172Z",
+      "sentAt": "2026-08-11T23:59:05.922Z"
     },
     {
       "id": "msg_1786492729999_wu1ljt",
