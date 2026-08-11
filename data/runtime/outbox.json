@@ -302,8 +302,9 @@
       "phone": "+17789902145",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-11T22:00:40.943Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-11T23:58:18.912Z"
+      "status": "sent",
+      "claimedAt": "2026-08-11T23:58:18.912Z",
+      "sentAt": "2026-08-11T23:58:21.974Z"
     },
     {
       "id": "msg_1786485640943_ruicyl",
