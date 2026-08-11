@@ -308,6 +308,27 @@
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-11T22:00:40.943Z",
       "status": "pending"
+    },
+    {
+      "id": "msg_1786491305529_st5zyg",
+      "phone": "+15614181919",
+      "text": "Hey welcome to chat.inc!",
+      "createdAt": "2026-08-11T23:35:05.529Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786491305532_xtyie9",
+      "phone": "+15614181919",
+      "text": "Reply with your LinkedIn so we know who you are.",
+      "createdAt": "2026-08-11T23:35:05.532Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786491305532_bmfk4c",
+      "phone": "+15614181919",
+      "text": "After that you'll get your first (paid) question!",
+      "createdAt": "2026-08-11T23:35:05.532Z",
+      "status": "pending"
     }
   ]
 }
