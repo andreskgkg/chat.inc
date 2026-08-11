@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 type Bubble =
   | { kind: "them"; text: string }
@@ -55,6 +58,40 @@ export function HowItWorks() {
     step.bubbles.map((bubble, i) => ({ bubble, i, key: `${s}-${i}` })),
   );
 
+  // FLIP: when new messages arrive, glide the existing bubbles up smoothly
+  // (new bubbles get the CSS spring "pop" via animation on mount).
+  const threadRef = useRef<HTMLDivElement>(null);
+  const prevRects = useRef<Map<string, DOMRect>>(new Map());
+
+  useIsoLayoutEffect(() => {
+    const el = threadRef.current;
+    if (!el) return;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const next = new Map<string, DOMRect>();
+    for (const kid of Array.from(el.children) as HTMLElement[]) {
+      const k = kid.dataset.key;
+      if (!k) continue;
+      const rect = kid.getBoundingClientRect();
+      next.set(k, rect);
+      const prev = prevRects.current.get(k);
+      if (prev && !reduce) {
+        const dy = prev.top - rect.top;
+        if (Math.abs(dy) > 0.5) {
+          kid.animate(
+            [
+              { transform: `translateY(${dy}px)` },
+              { transform: "translateY(0)" },
+            ],
+            { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+          );
+        }
+      }
+    }
+    prevRects.current = next;
+  }, [active]);
+
   return (
     <div className="hiw">
       <div className="hiw-chat" aria-hidden="true">
@@ -69,16 +106,17 @@ export function HowItWorks() {
           </span>
         </div>
 
-        <div className="hiw-thread">
-          {visible.map(({ bubble, i, key }) => {
-            const delay = `${i * 90}ms`;
+          <div className="hiw-thread" ref={threadRef}>
+            {visible.map(({ bubble, i, key }) => {
+              const delay = `${i * 120}ms`;
             if (bubble.kind === "cash") {
               return (
-                <div
-                  key={key}
-                  className="hiw-msg hiw-cash"
-                  style={{ animationDelay: delay }}
-                >
+                  <div
+                    key={key}
+                    data-key={key}
+                    className="hiw-msg hiw-cash"
+                    style={{ animationDelay: delay }}
+                  >
                   <span className="hiw-cash-top">
                     <svg viewBox="0 0 14 17" width="10" height="12" fill="currentColor" aria-hidden="true">
                       <path d="M11.7 9c0-1.5.8-2.5 1.9-3.1-.7-1-1.7-1.5-3-1.6-1.3-.1-2.6.7-3 .7-.5 0-1.6-.7-2.6-.7C3.2 4.4 1.5 5.6 1.5 8c0 1.2.2 2.4.7 3.7.6 1.7 1.9 3.7 3 3.7.5 0 .9-.4 1.9-.4s1.3.4 1.9.4c1.1 0 2.3-1.9 2.9-3.6-1.4-.5-2.1-1.6-2.1-2.8zM9.4 3.1c.6-.7.9-1.6.8-2.5-.8.1-1.6.5-2.1 1.1-.5.6-.9 1.4-.8 2.3.9.1 1.6-.3 2.1-.9z" />
@@ -95,6 +133,7 @@ export function HowItWorks() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={key}
+                  data-key={key}
                   className="hiw-imgmsg"
                   src={bubble.src}
                   alt=""
@@ -105,6 +144,7 @@ export function HowItWorks() {
             return (
               <div
                 key={key}
+                data-key={key}
                 className="hiw-msg hiw-msg-them"
                 style={{ animationDelay: delay }}
               >
