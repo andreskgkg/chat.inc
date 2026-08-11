@@ -1,3 +1,4 @@
+import { HowItWorks } from "./how-it-works";
 import { JoinForm } from "./join-form";
 
 export default function Home() {
@@ -45,44 +46,7 @@ export default function Home() {
             <span className="brand-emph">Chat.inc</span> is a text-only expert
             network
           </h2>
-          <ol className="how-grid">
-            <li>
-              <div className="how-num" aria-hidden="true">
-                1
-              </div>
-              <div className="how-copy">
-                <strong>Create your profile</strong>
-                <span>Text us and confirm your identity.</span>
-              </div>
-            </li>
-            <li>
-              <div className="how-num" aria-hidden="true">
-                2
-              </div>
-              <div className="how-copy">
-                <strong>Get questions</strong>
-                <span>We'll send you questions via text</span>
-              </div>
-            </li>
-            <li>
-              <div className="how-num" aria-hidden="true">
-                3
-              </div>
-              <div className="how-copy">
-                <strong>Answer</strong>
-                <span>If you have an opinion text back, if not ignore.</span>
-              </div>
-            </li>
-            <li>
-              <div className="how-num" aria-hidden="true">
-                4
-              </div>
-              <div className="how-copy">
-                <strong>Get paid</strong>
-                <span>Earn for every answer.</span>
-              </div>
-            </li>
-          </ol>
+          <HowItWorks />
         </section>
 
         <section className="section" id="faq">
