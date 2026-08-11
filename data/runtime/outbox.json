@@ -293,42 +293,48 @@
       "phone": "+17789902145",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-11T22:00:40.941Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     },
     {
       "id": "msg_1786485640943_76pme9",
       "phone": "+17789902145",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-11T22:00:40.943Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     },
     {
       "id": "msg_1786485640943_ruicyl",
       "phone": "+17789902145",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-11T22:00:40.943Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     },
     {
       "id": "msg_1786491305529_st5zyg",
       "phone": "+15614181919",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-11T23:35:05.529Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     },
     {
       "id": "msg_1786491305532_xtyie9",
       "phone": "+15614181919",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-11T23:35:05.532Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     },
     {
       "id": "msg_1786491305532_bmfk4c",
       "phone": "+15614181919",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-11T23:35:05.532Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-11T23:58:18.912Z"
     }
   ]
 }
