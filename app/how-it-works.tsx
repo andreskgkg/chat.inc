@@ -50,9 +50,11 @@ const STEPS: Step[] = [
 export function HowItWorks() {
   const [active, setActive] = useState(0);
 
-  const visible = STEPS.slice(0, active + 1).flatMap((step) =>
-    step.bubbles.map((bubble, i) => ({ bubble, i })),
+  const revealed = STEPS.slice(0, active + 1).flatMap((step, s) =>
+    step.bubbles.map((bubble, i) => ({ bubble, i, key: `${s}-${i}` })),
   );
+  // Show only the most recent messages, like a real iMessage thread.
+  const visible = revealed.slice(-3);
 
   return (
     <div className="hiw">
@@ -66,12 +68,12 @@ export function HowItWorks() {
           height={1024}
         />
         <div className="hiw-overlay">
-          {visible.map(({ bubble, i }, index) => {
+          {visible.map(({ bubble, i, key }) => {
             const delay = `${i * 90}ms`;
             if (bubble.kind === "cash") {
               return (
                 <div
-                  key={index}
+                  key={key}
                   className="hiw-msg hiw-cash"
                   style={{ animationDelay: delay }}
                 >
@@ -88,7 +90,7 @@ export function HowItWorks() {
             }
             return (
               <div
-                key={index}
+                key={key}
                 className={`hiw-msg hiw-msg-${bubble.kind}`}
                 style={{ animationDelay: delay }}
               >

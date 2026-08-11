@@ -253,21 +253,21 @@ button {
   display: block;
   width: 100%;
   height: auto;
-  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
-  mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
 }
 
 .hiw-overlay {
   position: absolute;
-  left: 11%;
+  left: 8.5%;
   right: 6%;
-  top: 33%;
-  bottom: 21%;
+  top: 19%;
+  bottom: 50%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: 1.3cqw;
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
 }
 
 .hiw-msg {
