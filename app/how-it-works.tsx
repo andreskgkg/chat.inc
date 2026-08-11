@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 type Bubble =
-  | { kind: "them" | "me"; text: string }
+  | { kind: "them"; text: string }
+  | { kind: "img"; src: string; w: number }
   | { kind: "cash"; amount: string; note: string };
 
 type Step = {
@@ -19,7 +20,7 @@ const STEPS: Step[] = [
     bubbles: [
       { kind: "them", text: "Welcome to chat.inc" },
       { kind: "them", text: "Reply with your LinkedIn so we know who you are." },
-      { kind: "me", text: "linkedin.com/in/eo18dn-3i233" },
+      { kind: "img", src: "/chat/linkedin.png", w: 45 },
     ],
   },
   {
@@ -33,19 +34,14 @@ const STEPS: Step[] = [
   {
     title: "Answer",
     desc: "Have an opinion? Reply in a sentence or two. If not, just ignore it — no pressure.",
-    bubbles: [
-      {
-        kind: "me",
-        text: "It was okay, it seems to do the same as its competitors but is more expensive so we switched",
-      },
-    ],
+    bubbles: [{ kind: "img", src: "/chat/answer.png", w: 42 }],
   },
   {
     title: "Get paid",
     desc: "Get paid instantly over Apple Cash for every answer. Stay anonymous the whole time.",
     bubbles: [
       { kind: "cash", amount: "$25", note: "Sent" },
-      { kind: "me", text: "yayyy" },
+      { kind: "img", src: "/chat/yayyy.png", w: 24 },
     ],
   },
 ];
@@ -94,10 +90,22 @@ export function HowItWorks() {
                 </div>
               );
             }
+            if (bubble.kind === "img") {
+              return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={key}
+                  className="hiw-imgmsg"
+                  src={bubble.src}
+                  alt=""
+                  style={{ width: `${bubble.w}cqw`, animationDelay: delay }}
+                />
+              );
+            }
             return (
               <div
                 key={key}
-                className={`hiw-msg hiw-msg-${bubble.kind}`}
+                className="hiw-msg hiw-msg-them"
                 style={{ animationDelay: delay }}
               >
                 {bubble.text}
