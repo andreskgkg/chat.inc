@@ -300,7 +300,7 @@ button {
   flex-direction: column;
   justify-content: flex-start;
   gap: 2cqw;
-  min-height: 108cqw;
+  min-height: 150cqw;
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
 
