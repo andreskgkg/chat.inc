@@ -250,24 +250,134 @@ button {
 }
 
 .hiw-frame-img {
+  position: relative;
+  z-index: 2;
   display: block;
   width: 100%;
   height: auto;
+  pointer-events: none;
 }
 
-.hiw-overlay {
+/* Live screen rendered inside the transparent frame cutout */
+.hiw-screen-live {
   position: absolute;
-  left: 8.5%;
-  right: 6%;
-  top: 19%;
-  bottom: 50%;
+  z-index: 1;
+  top: 1%;
+  left: 1.6%;
+  right: 1.6%;
+  bottom: 1.8%;
+  border-radius: 11cqw;
+  overflow: hidden;
+  background: #f6f6f6;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+}
+
+.hiw-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4.8cqw 7cqw 0;
+  color: #000;
+}
+
+.hiw-time {
+  font-size: 4.2cqw;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.hiw-status-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqw;
+}
+
+.hiw-status-icons svg {
+  width: auto;
+  height: 3.3cqw;
+}
+
+.hiw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.5cqw;
+  padding: 2.5cqw 5cqw 3cqw;
+}
+
+.hiw-back {
+  flex: 0 0 auto;
+  width: 2.6cqw;
+  height: auto;
+  color: #0b8cff;
+}
+
+.hiw-cam {
+  flex: 0 0 auto;
+  width: 6.4cqw;
+  height: auto;
+  color: #0b8cff;
+}
+
+.hiw-peer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6cqw;
+}
+
+.hiw-avatar {
+  position: relative;
+  width: 13cqw;
+  height: 13cqw;
+  border-radius: 3.4cqw;
+  background: #000;
+}
+
+.hiw-avatar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 4.6cqw;
+  height: 4.6cqw;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.hiw-peer-name {
+  display: inline-flex;
+  align-items: center;
   gap: 1.3cqw;
+  padding: 1cqw 3cqw 1cqw 2cqw;
+  border-radius: 999px;
+  background: #eceef0;
+  font-size: 3.8cqw;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.hiw-peer-name svg {
+  width: 4cqw;
+  height: 4cqw;
+}
+
+.hiw-chev {
+  margin-left: 0.3cqw;
+  color: #b6babf;
+  font-weight: 700;
+}
+
+.hiw-thread {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1.3cqw;
+  padding: 1.5cqw 4cqw;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
 }
 
 .hiw-msg {
