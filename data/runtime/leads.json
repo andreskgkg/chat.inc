@@ -30,6 +30,12 @@
       "createdAt": "2026-08-11T22:00:41.881Z",
       "updatedAt": "2026-08-11T22:00:41.881Z",
       "status": "awaiting_identity"
+    },
+    "+15614181919": {
+      "phone": "+15614181919",
+      "createdAt": "2026-08-11T23:35:06.572Z",
+      "updatedAt": "2026-08-11T23:35:06.572Z",
+      "status": "awaiting_identity"
     }
   }
 }
