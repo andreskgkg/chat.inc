@@ -373,6 +373,13 @@
       "createdAt": "2026-08-11T23:58:46.911Z",
       "status": "claimed",
       "claimedAt": "2026-08-11T23:58:48.106Z"
+    },
+    {
+      "id": "msg_1786492725391_l05crp",
+      "phone": "+15614181919",
+      "text": "Great, we're approving new ppl everyday, hold tight for your first question",
+      "createdAt": "2026-08-11T23:58:45.391Z",
+      "status": "pending"
     }
   ]
 }
