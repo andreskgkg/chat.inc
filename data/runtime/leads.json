@@ -24,6 +24,12 @@
       "createdAt": "2026-08-11T00:50:07.143Z",
       "updatedAt": "2026-08-11T00:50:07.143Z",
       "status": "awaiting_identity"
+    },
+    "+17789902145": {
+      "phone": "+17789902145",
+      "createdAt": "2026-08-11T22:00:41.881Z",
+      "updatedAt": "2026-08-11T22:00:41.881Z",
+      "status": "awaiting_identity"
     }
   }
 }
