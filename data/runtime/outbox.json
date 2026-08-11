@@ -320,8 +320,9 @@
       "phone": "+15614181919",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-11T23:35:05.529Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-11T23:58:18.912Z"
+      "status": "sent",
+      "claimedAt": "2026-08-11T23:58:18.912Z",
+      "sentAt": "2026-08-11T23:58:32.306Z"
     },
     {
       "id": "msg_1786491305532_xtyie9",
