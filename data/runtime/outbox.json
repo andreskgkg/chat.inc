@@ -401,8 +401,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: someone who’s in the final stage of hiring someone, can quickly and anonymously send text to 100 people they may have worked with or for to get their takes.",
       "createdAt": "2026-08-11T23:58:45.032Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-11T23:59:04.172Z"
+      "status": "sent",
+      "claimedAt": "2026-08-11T23:59:04.172Z",
+      "sentAt": "2026-08-11T23:59:13.672Z"
     }
   ]
 }
