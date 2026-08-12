@@ -428,8 +428,9 @@
       "phone": "+17816929689",
       "text": "Approved +15614181919. Payroll question sent.",
       "createdAt": "2026-08-12T00:41:54.514Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T00:41:55.591Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T00:41:55.591Z",
+      "sentAt": "2026-08-12T00:41:59.042Z"
     }
   ]
 }
