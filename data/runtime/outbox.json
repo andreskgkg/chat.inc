@@ -449,6 +449,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T08:12:15.782Z",
       "sentAt": "2026-08-12T08:12:17.184Z"
+    },
+    {
+      "id": "msg_1786527333648_vnmqp2",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: lets talk to be on the same page and align1",
+      "createdAt": "2026-08-12T09:35:33.648Z",
+      "status": "pending"
     }
   ]
 }
