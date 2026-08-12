@@ -530,6 +530,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T09:47:26.988Z",
       "sentAt": "2026-08-12T09:47:28.363Z"
+    },
+    {
+      "id": "msg_1786529141033_i10cld",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: sam’s message was super chill",
+      "createdAt": "2026-08-12T10:05:41.033Z",
+      "status": "pending"
     }
   ]
 }
