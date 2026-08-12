@@ -437,7 +437,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: positioned as looking for beta testers etc.",
       "createdAt": "2026-08-12T08:04:14.170Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T08:04:16.592Z"
     }
   ]
 }
