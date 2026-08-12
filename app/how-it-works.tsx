@@ -186,8 +186,12 @@ export function HowItWorks() {
       <ol className="hiw-steps">
         {STEPS.map((step, index) => {
           const open = index === active;
+          const done = index < active;
           return (
-            <li key={step.title} className={`hiw-step ${open ? "is-open" : ""}`}>
+            <li
+              key={step.title}
+              className={`hiw-step ${open ? "is-open" : ""} ${done ? "is-done" : ""}`}
+            >
               <button
                 type="button"
                 className="hiw-step-head"
