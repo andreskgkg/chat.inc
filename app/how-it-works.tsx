@@ -77,31 +77,48 @@ export function HowItWorks() {
   );
 
   const threadRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const posRef = useRef(0);
 
+  // Spring the thread up when new messages arrive (Apple-style overshoot
+  // and settle), clipping older messages at the top.
   useIsoLayoutEffect(() => {
-    const el = threadRef.current;
-    if (!el) return;
-    const target = Math.max(0, el.scrollHeight - el.clientHeight);
+    const view = threadRef.current;
+    const inner = innerRef.current;
+    if (!view || !inner) return;
+    const targetY = -Math.max(0, inner.scrollHeight - view.clientHeight);
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    if (reduce || Math.abs(target - el.scrollTop) < 1) {
-      el.scrollTop = target;
+    if (reduce) {
+      posRef.current = targetY;
+      inner.style.transform = `translateY(${targetY}px)`;
       return;
     }
 
-    const start = el.scrollTop;
-    const change = target - start;
-    const t0 = performance.now();
-    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    let pos = posRef.current;
+    let vel = 0;
+    const stiffness = 220;
+    const damping = 19;
+    let last = performance.now();
     let raf = 0;
-    const step = (now: number) => {
-      const t = Math.min(1, (now - t0) / 650);
-      el.scrollTop = start + change * ease(t);
-      if (t < 1) raf = requestAnimationFrame(step);
+    const tick = (now: number) => {
+      let dt = (now - last) / 1000;
+      last = now;
+      if (dt > 0.032) dt = 0.032;
+      vel += (-stiffness * (pos - targetY) - damping * vel) * dt;
+      pos += vel * dt;
+      posRef.current = pos;
+      inner.style.transform = `translateY(${pos}px)`;
+      if (Math.abs(targetY - pos) > 0.3 || Math.abs(vel) > 2) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        posRef.current = targetY;
+        inner.style.transform = `translateY(${targetY}px)`;
+      }
     };
-    raf = requestAnimationFrame(step);
+    raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [active]);
 
@@ -120,6 +137,7 @@ export function HowItWorks() {
         </div>
 
         <div className="hiw-thread" ref={threadRef}>
+          <div className="hiw-thread-inner" ref={innerRef}>
             {visible.map(({ bubble, i, key }) => {
               const delay = `${i * 120}ms`;
             if (bubble.kind === "cash") {
@@ -161,6 +179,7 @@ export function HowItWorks() {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
 
