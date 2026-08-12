@@ -539,6 +539,27 @@
       "status": "sent",
       "claimedAt": "2026-08-12T10:05:44.719Z",
       "sentAt": "2026-08-12T10:05:46.112Z"
+    },
+    {
+      "id": "msg_1786547316896_jba1c7",
+      "phone": "+16467997644",
+      "text": "Hey welcome to chat.inc!",
+      "createdAt": "2026-08-12T15:08:36.896Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786547316896_eawyn9",
+      "phone": "+16467997644",
+      "text": "Reply with your LinkedIn so we know who you are.",
+      "createdAt": "2026-08-12T15:08:36.896Z",
+      "status": "pending"
+    },
+    {
+      "id": "msg_1786547316896_1cdqhz",
+      "phone": "+16467997644",
+      "text": "After that you'll get your first (paid) question!",
+      "createdAt": "2026-08-12T15:08:36.896Z",
+      "status": "pending"
     }
   ]
 }
