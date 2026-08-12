@@ -131,15 +131,25 @@ export function HowItWorks() {
   useIsoLayoutEffect(() => {
     const list = stepsRef.current;
     if (!list) return;
-    const activeLi = list.children[active] as HTMLElement | undefined;
+    const kids = Array.from(list.children) as HTMLElement[];
+    const activeLi = kids[active];
     if (!activeLi) return;
     const target = activeLi.offsetTop + activeLi.offsetHeight;
+    // Later segments only advance one collapsed step's height per interval;
+    // give the first segment a matching head start so the speed is constant.
+    const collapsed = kids.find((li) => li !== activeLi)?.offsetHeight ?? target;
+    const firstStart = Math.max(0, target - collapsed);
     const looped = active < prevActiveRef.current;
     prevActiveRef.current = active;
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     const set = (k: string, v: string) => list.style.setProperty(k, v);
+    const jumpTo = (px: number) => {
+      set("--fill-dur", "0ms");
+      set("--fill", `${px}px`);
+      void list.offsetHeight;
+    };
 
     clearTimeout(loopTimer.current);
 
@@ -156,16 +166,17 @@ export function HowItWorks() {
       set("--fill", `${target}px`);
     };
 
-    if (looped) {
-      // Fade the full rail out, reset to the top, then advance again —
-      // so it never visibly slides backward on loop.
+    if (active === 0 && looped) {
+      // Fade the full rail out, reset to the first-segment head start, fill.
       set("--fill-op", "0");
       loopTimer.current = setTimeout(() => {
-        set("--fill-dur", "0ms");
-        set("--fill", "0px");
-        void list.offsetHeight;
+        jumpTo(firstStart);
         advance();
       }, 260);
+    } else if (active === 0) {
+      set("--fill-op", "1");
+      jumpTo(firstStart);
+      advance();
     } else {
       advance();
     }
