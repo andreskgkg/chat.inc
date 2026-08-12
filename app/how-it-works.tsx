@@ -126,6 +126,7 @@ export function HowItWorks() {
   // bottom over the autoplay interval (reset to the top when it loops).
   const stepsRef = useRef<HTMLOListElement>(null);
   const prevActiveRef = useRef(0);
+  const loopTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useIsoLayoutEffect(() => {
     const list = stepsRef.current;
@@ -135,22 +136,41 @@ export function HowItWorks() {
     const target = activeLi.offsetTop + activeLi.offsetHeight;
     const looped = active < prevActiveRef.current;
     prevActiveRef.current = active;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const set = (k: string, v: string) => list.style.setProperty(k, v);
 
-    if (
-      !autoplay ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      list.style.setProperty("--fill-dur", "0ms");
-      list.style.setProperty("--fill", `${target}px`);
+    clearTimeout(loopTimer.current);
+
+    if (!autoplay || reduce) {
+      set("--fill-dur", "0ms");
+      set("--fill-op", "1");
+      set("--fill", `${target}px`);
       return;
     }
+
+    const advance = () => {
+      set("--fill-op", "1");
+      set("--fill-dur", `${AUTOPLAY_MS}ms`);
+      set("--fill", `${target}px`);
+    };
+
     if (looped) {
-      list.style.setProperty("--fill-dur", "0ms");
-      list.style.setProperty("--fill", "0px");
-      void list.offsetHeight;
+      // Fade the full rail out, reset to the top, then advance again —
+      // so it never visibly slides backward on loop.
+      set("--fill-op", "0");
+      loopTimer.current = setTimeout(() => {
+        set("--fill-dur", "0ms");
+        set("--fill", "0px");
+        void list.offsetHeight;
+        advance();
+      }, 260);
+    } else {
+      advance();
     }
-    list.style.setProperty("--fill-dur", `${AUTOPLAY_MS}ms`);
-    list.style.setProperty("--fill", `${target}px`);
+
+    return () => clearTimeout(loopTimer.current);
   }, [active, autoplay]);
 
   return (

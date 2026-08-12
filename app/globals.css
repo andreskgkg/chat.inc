@@ -487,8 +487,11 @@ button {
 
 .hiw-steps::after {
   height: var(--fill, 0px);
+  opacity: var(--fill-op, 1);
   background: #111;
-  transition: height var(--fill-dur, 3500ms) linear;
+  transition:
+    height var(--fill-dur, 3500ms) linear,
+    opacity 260ms ease;
 }
 
 .hiw-step {
