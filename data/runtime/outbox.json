@@ -500,8 +500,9 @@
       "phone": "+16096614617",
       "text": "What payroll provider does your company use (ADP, Rippling, Gusto, Deel) and what's your experience with it? (up to $20 reward)",
       "createdAt": "2026-08-12T09:43:22.591Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T09:43:26.176Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T09:43:26.176Z",
+      "sentAt": "2026-08-12T09:43:28.761Z"
     },
     {
       "id": "msg_1786527803584_t8z8hq",
