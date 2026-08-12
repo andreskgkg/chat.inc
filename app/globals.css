@@ -199,7 +199,7 @@ button {
 }
 
 .section {
-  padding: 52px 0;
+  padding: 90px 0 52px;
 }
 
 .section-head {
@@ -211,7 +211,7 @@ button {
 }
 
 .section-how {
-  padding-top: 56px;
+  padding-top: 90px;
   padding-bottom: 56px;
 }
 
