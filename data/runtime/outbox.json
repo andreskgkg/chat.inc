@@ -431,6 +431,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T00:41:55.591Z",
       "sentAt": "2026-08-12T00:41:59.042Z"
+    },
+    {
+      "id": "msg_1786521854170_0n3oix",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: positioned as looking for beta testers etc.",
+      "createdAt": "2026-08-12T08:04:14.170Z",
+      "status": "pending"
     }
   ]
 }
