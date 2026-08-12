@@ -267,140 +267,14 @@ button {
   margin: 0 auto;
 }
 
-/* iPhone frame around the iMessage chat (titanium, cropped at the bottom) */
-.hiw-phone {
-  position: relative;
+/* Chat (frameless: no iPhone border, status bar, or island) */
+.hiw-chat {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 10px 10px 0;
-  border-radius: 56px 56px 0 0;
-  background: linear-gradient(
-    135deg,
-    #f2f2f4 0%,
-    #b2b2b8 20%,
-    #e4e4e6 40%,
-    #9c9ca2 62%,
-    #d6d6da 82%,
-    #a8a8ae 100%
-  );
-  box-shadow:
-    0 40px 70px -30px rgba(0, 0, 0, 0.4),
-    0 10px 24px -14px rgba(0, 0, 0, 0.3);
-}
-
-/* Side buttons */
-.hiw-phone::before,
-.hiw-phone::after {
-  content: "";
-  position: absolute;
-  width: 3px;
-  border-radius: 2px;
-  background: #8a8a90;
-  z-index: 0;
-}
-
-.hiw-phone::before {
-  left: -1.5px;
-  top: 28%;
-  height: 14%;
-}
-
-.hiw-phone::after {
-  right: -1.5px;
-  top: 33%;
-  height: 17%;
-}
-
-.hiw-screen {
-  position: relative;
   container-type: inline-size;
-  overflow: hidden;
-  border-radius: 46px 46px 0 0;
-  background: #fff;
-  box-shadow: 0 0 0 2.5px #060606;
   display: flex;
   flex-direction: column;
-}
-
-.hiw-island {
-  position: absolute;
-  top: 2.4cqw;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 31cqw;
-  height: 8.6cqw;
-  background: #000;
-  border-radius: 999px;
-  z-index: 6;
-}
-
-.hiw-island::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 1.8cqw;
-  transform: translateY(-50%);
-  width: 4.6cqw;
-  height: 4.6cqw;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #47567a, #0b1226 62%);
-}
-
-.hiw-statusbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4cqw 7.5cqw 1.4cqw;
-  color: #000;
-}
-
-.hiw-time {
-  font-size: 4cqw;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.hiw-status-icons {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.8cqw;
-  color: #000;
-}
-
-.hiw-si {
-  height: 3cqw;
-  width: auto;
-}
-
-.hiw-bat {
-  height: 3.5cqw;
-  width: auto;
-}
-
-.hiw-back {
-  position: absolute;
-  top: 13cqw;
-  left: 4cqw;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 12cqw;
-  height: 12cqw;
-  border-radius: 50%;
-  background: #f0f0f2;
-}
-
-.hiw-back svg {
-  width: 3.6cqw;
-  height: auto;
-}
-
-.hiw-fwd {
-  width: 2.4cqw;
-  height: auto;
-  margin-left: 0.8cqw;
 }
 
 .hiw-chat-head {
@@ -408,7 +282,6 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 2cqw;
-  margin-top: 3cqw;
   margin-bottom: 5cqw;
 }
 
@@ -454,8 +327,7 @@ button {
   flex-direction: column;
   justify-content: flex-start;
   gap: 2cqw;
-  height: 118cqw;
-  padding: 0 4cqw;
+  height: 72cqw;
   overflow: hidden;
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
@@ -496,7 +368,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #fff;
+  background: var(--bg);
   border-bottom-right-radius: 3.2cqw;
 }
 
@@ -526,7 +398,7 @@ button {
   right: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #fff;
+  background: var(--bg);
   border-bottom-left-radius: 3.2cqw;
 }
 
@@ -560,7 +432,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: #fff;
+  background: var(--bg);
   border-bottom-right-radius: 3.2cqw;
 }
 
@@ -590,7 +462,6 @@ button {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .hiw-step {
