@@ -105,17 +105,40 @@ export function HowItWorks() {
 
   return (
     <div className="hiw">
-      <div className="hiw-chat" aria-hidden="true">
-        <div className="hiw-chat-head">
-          <span className="hiw-avatar" />
-          <span className="hiw-peer-name">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="8" cy="8" r="8" fill="#9aa0a6" />
-              <path d="M6.9 10.6 4.6 8.3l.95-.95 1.35 1.35 3.2-3.2.95.95z" fill="#fff" />
-            </svg>
-            chat.inc
-          </span>
-        </div>
+      <div className="hiw-phone" aria-hidden="true">
+        <div className="hiw-screen">
+          <span className="hiw-island" />
+          <div className="hiw-statusbar">
+            <span className="hiw-time">9:41</span>
+            <span className="hiw-status-icons">
+              <svg className="hiw-si" viewBox="0 0 18 12" aria-hidden="true">
+                <rect x="0" y="8" width="3" height="4" rx="1" />
+                <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
+                <rect x="10" y="3" width="3" height="9" rx="1" />
+                <rect x="15" y="0.5" width="3" height="11.5" rx="1" />
+              </svg>
+              <svg className="hiw-si" viewBox="0 0 16 13" aria-hidden="true">
+                <path d="M8 3c2.5 0 4.8 1 6.5 2.6a.6.6 0 0 0 .9 0l.4-.5a.7.7 0 0 0 0-1A11.4 11.4 0 0 0 8 .8 11.4 11.4 0 0 0 .2 4.1a.7.7 0 0 0 0 1l.4.5a.6.6 0 0 0 .9 0A9.2 9.2 0 0 1 8 3z" />
+                <path d="M8 6.9c1.4 0 2.7.6 3.6 1.5a.6.6 0 0 0 .9 0l.5-.6a.7.7 0 0 0 0-.9A7.2 7.2 0 0 0 8 4.6a7.2 7.2 0 0 0-5 2.3.7.7 0 0 0 0 .9l.5.6a.6.6 0 0 0 .9 0A5 5 0 0 1 8 6.9z" />
+                <circle cx="8" cy="10.8" r="1.6" />
+              </svg>
+              <svg className="hiw-bat" viewBox="0 0 28 13" aria-hidden="true">
+                <rect x="0.5" y="0.5" width="24" height="12" rx="3.6" fill="none" stroke="currentColor" strokeOpacity="0.35" />
+                <rect x="2" y="2" width="19" height="9" rx="2.2" />
+                <path d="M26 4.3c1 .4 1 4 0 4.4z" />
+              </svg>
+            </span>
+          </div>
+          <div className="hiw-chat-head">
+            <span className="hiw-avatar" />
+            <span className="hiw-peer-name">
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="8" fill="#9aa0a6" />
+                <path d="M6.9 10.6 4.6 8.3l.95-.95 1.35 1.35 3.2-3.2.95.95z" fill="#fff" />
+              </svg>
+              chat.inc
+            </span>
+          </div>
 
           <div className="hiw-thread" ref={threadRef}>
             {visible.map(({ bubble, i, key }) => {
@@ -159,6 +182,13 @@ export function HowItWorks() {
               </div>
             );
           })}
+          </div>
+
+          <div className="hiw-inputbar">
+            <span className="hiw-plus">+</span>
+            <span className="hiw-input">iMessage</span>
+          </div>
+          <span className="hiw-homebar" />
         </div>
       </div>
 

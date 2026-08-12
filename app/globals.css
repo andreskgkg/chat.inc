@@ -267,14 +267,117 @@ button {
   margin: 0 auto;
 }
 
-/* Chat (frameless: no iPhone border, status bar, or island) */
-.hiw-chat {
+/* iPhone frame around the iMessage chat */
+.hiw-phone {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+  padding: 11px;
+  border-radius: 56px;
+  background: linear-gradient(
+    145deg,
+    #46464a 0%,
+    #0a0a0b 40%,
+    #1c1c1f 72%,
+    #050506 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 1px 1px rgba(255, 255, 255, 0.22) inset,
+    0 40px 70px -30px rgba(0, 0, 0, 0.55),
+    0 10px 24px -14px rgba(0, 0, 0, 0.45);
+}
+
+.hiw-screen {
+  position: relative;
   container-type: inline-size;
+  overflow: hidden;
+  border-radius: 46px;
+  background: #fff;
   display: flex;
   flex-direction: column;
+}
+
+.hiw-island {
+  position: absolute;
+  top: 2.4cqw;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 31cqw;
+  height: 8.6cqw;
+  background: #000;
+  border-radius: 999px;
+  z-index: 6;
+}
+
+.hiw-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4cqw 7.5cqw 1.4cqw;
+  color: #000;
+}
+
+.hiw-time {
+  font-size: 4cqw;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hiw-status-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.8cqw;
+  color: #000;
+}
+
+.hiw-si {
+  height: 3cqw;
+  width: auto;
+}
+
+.hiw-bat {
+  height: 3.5cqw;
+  width: auto;
+}
+
+.hiw-inputbar {
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  padding: 2.6cqw 4cqw 1.8cqw;
+}
+
+.hiw-plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 7.6cqw;
+  height: 7.6cqw;
+  border-radius: 50%;
+  background: #e6e6eb;
+  color: #8a8a8e;
+  font-size: 5cqw;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+.hiw-input {
+  flex: 1;
+  padding: 2cqw 4cqw;
+  border-radius: 999px;
+  border: 0.35cqw solid #d6d6db;
+  color: #9a9aa0;
+  font-size: 3.7cqw;
+}
+
+.hiw-homebar {
+  align-self: center;
+  width: 36cqw;
+  height: 1.4cqw;
+  margin: 1.2cqw 0 2.6cqw;
+  border-radius: 999px;
+  background: #000;
 }
 
 .hiw-chat-head {
@@ -282,6 +385,7 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 2cqw;
+  margin-top: 3cqw;
   margin-bottom: 5cqw;
 }
 
@@ -327,7 +431,8 @@ button {
   flex-direction: column;
   justify-content: flex-start;
   gap: 2cqw;
-  height: 72cqw;
+  height: 118cqw;
+  padding: 0 4cqw;
   overflow: hidden;
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
@@ -368,7 +473,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: var(--bg);
+  background: #fff;
   border-bottom-right-radius: 3.2cqw;
 }
 
@@ -398,7 +503,7 @@ button {
   right: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: var(--bg);
+  background: #fff;
   border-bottom-left-radius: 3.2cqw;
 }
 
@@ -432,7 +537,7 @@ button {
   left: -5.2cqw;
   width: 5.2cqw;
   height: 5.2cqw;
-  background: var(--bg);
+  background: #fff;
   border-bottom-right-radius: 3.2cqw;
 }
 
