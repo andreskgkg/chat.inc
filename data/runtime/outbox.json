@@ -464,8 +464,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: I anti exploded",
       "createdAt": "2026-08-12T09:37:48.594Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T09:37:50.317Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T09:37:50.317Z",
+      "sentAt": "2026-08-12T09:37:51.592Z"
     }
   ]
 }
