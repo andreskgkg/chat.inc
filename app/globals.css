@@ -692,6 +692,7 @@ button {
 .faq details {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
+  interpolate-size: allow-keywords;
 }
 
 .faq details:last-child {
@@ -729,7 +730,9 @@ button {
   border-right: 1.5px solid #bbb;
   border-bottom: 1.5px solid #bbb;
   transform: rotate(45deg) translateY(-2px);
-  transition: transform 160ms ease, border-color 160ms ease;
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease;
 }
 
 .faq details[open] summary::after {
@@ -744,6 +747,28 @@ button {
   font-size: 0.96rem;
   line-height: 1.55;
   max-width: 48ch;
+}
+
+/* Smoothly expand/collapse the native <details> content */
+.faq details::details-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    height 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease,
+    content-visibility 320ms allow-discrete;
+}
+
+.faq details[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq details::details-content {
+    transition: none;
+  }
 }
 
 .join-section {
