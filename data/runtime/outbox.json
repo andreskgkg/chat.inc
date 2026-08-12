@@ -545,21 +545,24 @@
       "phone": "+16467997644",
       "text": "Hey welcome to chat.inc!",
       "createdAt": "2026-08-12T15:08:36.896Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T15:08:38.115Z"
     },
     {
       "id": "msg_1786547316896_eawyn9",
       "phone": "+16467997644",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-12T15:08:36.896Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T15:08:38.115Z"
     },
     {
       "id": "msg_1786547316896_1cdqhz",
       "phone": "+16467997644",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-12T15:08:36.896Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T15:08:38.115Z"
     }
   ]
 }
