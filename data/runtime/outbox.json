@@ -554,8 +554,9 @@
       "phone": "+16467997644",
       "text": "Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-12T15:08:36.896Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T15:08:38.115Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T15:08:38.115Z",
+      "sentAt": "2026-08-12T15:08:41.525Z"
     },
     {
       "id": "msg_1786547316896_1cdqhz",
