@@ -48,8 +48,8 @@ const STEPS: Step[] = [
     title: "Get paid",
     desc: "Get paid instantly over Apple Cash for every answer. Stay anonymous the whole time.",
     bubbles: [
+      { kind: "them", text: "Great, thank you!" },
       { kind: "cash", amount: "$25", note: "Sent" },
-      { kind: "me", text: "yayyy" },
     ],
   },
 ];
