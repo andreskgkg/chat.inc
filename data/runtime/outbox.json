@@ -455,8 +455,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: lets talk to be on the same page and align1",
       "createdAt": "2026-08-12T09:35:33.648Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T09:35:39.215Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T09:35:39.215Z",
+      "sentAt": "2026-08-12T09:35:40.868Z"
     }
   ]
 }
