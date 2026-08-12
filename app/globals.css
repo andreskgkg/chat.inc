@@ -73,27 +73,54 @@ button {
 }
 
 .nav {
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: calc(28px + var(--safe-top)) 0 0;
+  padding: calc(22px + var(--safe-top)) 0 14px;
+  background: rgba(244, 245, 247, 0.75);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
 }
 
 .nav-left {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   min-width: 0;
 }
 
 .nav-brand {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: -0.04em;
+}
+
+.nav-logo {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #000;
+  flex-shrink: 0;
+}
+
+.nav-logo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
 }
 
 .hero {

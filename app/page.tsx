@@ -7,6 +7,7 @@ export default function Home() {
       <header className="nav">
         <div className="nav-left">
           <a className="nav-brand" href="/">
+            <span className="nav-logo" aria-hidden="true" />
             chat.inc
           </a>
         </div>
