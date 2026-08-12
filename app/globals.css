@@ -235,7 +235,7 @@ button {
   display: grid;
   grid-template-columns: minmax(340px, 420px) 1fr;
   gap: 48px;
-  align-items: start;
+  align-items: center;
   max-width: 880px;
   margin: 0 auto;
 }
