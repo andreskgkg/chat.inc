@@ -122,6 +122,37 @@ export function HowItWorks() {
     return () => cancelAnimationFrame(raf);
   }, [active]);
 
+  // Continuous progress rail: the fill flows down to the active step's
+  // bottom over the autoplay interval (reset to the top when it loops).
+  const stepsRef = useRef<HTMLOListElement>(null);
+  const prevActiveRef = useRef(0);
+
+  useIsoLayoutEffect(() => {
+    const list = stepsRef.current;
+    if (!list) return;
+    const activeLi = list.children[active] as HTMLElement | undefined;
+    if (!activeLi) return;
+    const target = activeLi.offsetTop + activeLi.offsetHeight;
+    const looped = active < prevActiveRef.current;
+    prevActiveRef.current = active;
+
+    if (
+      !autoplay ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      list.style.setProperty("--fill-dur", "0ms");
+      list.style.setProperty("--fill", `${target}px`);
+      return;
+    }
+    if (looped) {
+      list.style.setProperty("--fill-dur", "0ms");
+      list.style.setProperty("--fill", "0px");
+      void list.offsetHeight;
+    }
+    list.style.setProperty("--fill-dur", `${AUTOPLAY_MS}ms`);
+    list.style.setProperty("--fill", `${target}px`);
+  }, [active, autoplay]);
+
   return (
     <div className="hiw">
       <div className="hiw-chat" aria-hidden="true">
@@ -183,15 +214,11 @@ export function HowItWorks() {
         </div>
       </div>
 
-      <ol className="hiw-steps">
+      <ol className="hiw-steps" ref={stepsRef}>
         {STEPS.map((step, index) => {
           const open = index === active;
-          const done = index < active;
           return (
-            <li
-              key={step.title}
-              className={`hiw-step ${open ? "is-open" : ""} ${done ? "is-done" : ""}`}
-            >
+            <li key={step.title} className={`hiw-step ${open ? "is-open" : ""}`}>
               <button
                 type="button"
                 className="hiw-step-head"
@@ -211,13 +238,6 @@ export function HowItWorks() {
                 <div className="hiw-step-body">
                   <p>{step.desc}</p>
                 </div>
-              )}
-              {open && autoplay && (
-                <span
-                  key={active}
-                  className="hiw-progress"
-                  style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
-                />
               )}
             </li>
           );

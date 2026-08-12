@@ -463,57 +463,36 @@ button {
 
 /* Steps */
 .hiw-steps {
+  position: relative;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 18px;
 }
 
-.hiw-step {
-  position: relative;
-  padding-left: 18px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* Vertical rail on the left of each step */
-.hiw-step::before {
+/* Continuous progress rail on the left of the steps */
+.hiw-steps::before,
+.hiw-steps::after {
   content: "";
   position: absolute;
   left: 5px;
   top: 0;
-  bottom: -1px;
   width: 2px;
   border-radius: 2px;
-  background: rgba(0, 0, 0, 0.08);
 }
 
-/* Steps already passed keep a filled rail */
-.hiw-step.is-done::before {
+.hiw-steps::before {
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.09);
+}
+
+.hiw-steps::after {
+  height: var(--fill, 0px);
   background: #111;
+  transition: height var(--fill-dur, 3500ms) linear;
 }
 
-/* Autoplay countdown: fills the active step's rail top-to-bottom */
-.hiw-progress {
-  position: absolute;
-  left: 5px;
-  top: 0;
-  bottom: -1px;
-  width: 2px;
-  border-radius: 2px;
-  transform: scaleY(0);
-  transform-origin: top;
-  background: #111;
-  animation-name: hiw-countdown;
-  animation-timing-function: linear;
-  animation-fill-mode: both;
-}
-
-@keyframes hiw-countdown {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
-  }
+.hiw-step {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-reduced-motion: reduce) {
