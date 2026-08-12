@@ -458,6 +458,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T09:35:39.215Z",
       "sentAt": "2026-08-12T09:35:40.868Z"
+    },
+    {
+      "id": "msg_1786527468594_wetslf",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: I anti exploded",
+      "createdAt": "2026-08-12T09:37:48.594Z",
+      "status": "pending"
     }
   ]
 }
