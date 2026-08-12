@@ -473,7 +473,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: hey want u to listen but not w gabor etc",
       "createdAt": "2026-08-12T09:40:23.840Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T09:40:29.082Z"
     }
   ]
 }
