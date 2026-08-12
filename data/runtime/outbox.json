@@ -536,8 +536,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: sam’s message was super chill",
       "createdAt": "2026-08-12T10:05:41.033Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T10:05:44.719Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T10:05:44.719Z",
+      "sentAt": "2026-08-12T10:05:46.112Z"
     }
   ]
 }
