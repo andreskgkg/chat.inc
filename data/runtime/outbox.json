@@ -482,7 +482,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: in morning coffee?",
       "createdAt": "2026-08-12T09:40:41.992Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T09:40:44.219Z"
     }
   ]
 }
