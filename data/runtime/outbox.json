@@ -410,8 +410,9 @@
       "phone": "+15614181919",
       "text": "Got it — here’s your paid question:",
       "createdAt": "2026-08-12T00:41:52.115Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T00:41:55.591Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T00:41:55.591Z",
+      "sentAt": "2026-08-12T00:41:56.922Z"
     },
     {
       "id": "msg_1786495313160_ey8l2l",
