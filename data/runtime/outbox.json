@@ -563,8 +563,9 @@
       "phone": "+16467997644",
       "text": "After that you'll get your first (paid) question!",
       "createdAt": "2026-08-12T15:08:36.896Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T15:08:38.115Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T15:08:38.115Z",
+      "sentAt": "2026-08-12T15:08:43.071Z"
     }
   ]
 }
