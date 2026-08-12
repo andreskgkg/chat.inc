@@ -69,14 +69,12 @@ export function HowItWorks() {
     const el = threadRef.current;
     if (!el) return;
     const target = Math.max(0, el.scrollHeight - el.clientHeight);
-    const setFade = () => el.classList.toggle("is-scrolled", el.scrollTop > 2);
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
     if (reduce || Math.abs(target - el.scrollTop) < 1) {
       el.scrollTop = target;
-      setFade();
       return;
     }
 
@@ -88,7 +86,6 @@ export function HowItWorks() {
     const step = (now: number) => {
       const t = Math.min(1, (now - t0) / 650);
       el.scrollTop = start + change * ease(t);
-      setFade();
       if (t < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);

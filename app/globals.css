@@ -305,12 +305,6 @@ button {
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
 
-/* Fade older messages out at the top only once the thread has scrolled */
-.hiw-thread.is-scrolled {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 15%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 15%);
-}
-
 .hiw-msg {
   position: relative;
   max-width: 78%;
