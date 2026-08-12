@@ -571,7 +571,38 @@ button {
 }
 
 .hiw-step {
+  position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Autoplay countdown bar: fills before advancing to the next step */
+.hiw-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: #111;
+  animation-name: hiw-countdown;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@keyframes hiw-countdown {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hiw-progress {
+    display: none;
+  }
 }
 
 .hiw-step-head {

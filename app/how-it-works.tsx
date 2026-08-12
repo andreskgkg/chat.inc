@@ -54,6 +54,8 @@ const STEPS: Step[] = [
   },
 ];
 
+const AUTOPLAY_MS = 3500;
+
 export function HowItWorks() {
   const [active, setActive] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
@@ -64,7 +66,7 @@ export function HowItWorks() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => {
       setActive((a) => (a + 1) % STEPS.length);
-    }, 3500);
+    }, AUTOPLAY_MS);
     return () => window.clearInterval(id);
   }, [autoplay]);
 
@@ -216,6 +218,13 @@ export function HowItWorks() {
                 <div className="hiw-step-body">
                   <p>{step.desc}</p>
                 </div>
+              )}
+              {open && autoplay && (
+                <span
+                  key={active}
+                  className="hiw-progress"
+                  style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
+                />
               )}
             </li>
           );
