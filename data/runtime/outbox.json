@@ -521,6 +521,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T09:47:07.480Z",
       "sentAt": "2026-08-12T09:47:09.016Z"
+    },
+    {
+      "id": "msg_1786528043291_lcrcm5",
+      "phone": "+17816929689",
+      "text": "Couldn't find a pending applicant to approve.",
+      "createdAt": "2026-08-12T09:47:23.291Z",
+      "status": "pending"
     }
   ]
 }
