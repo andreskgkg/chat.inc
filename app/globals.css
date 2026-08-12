@@ -327,7 +327,7 @@ button {
   flex-direction: column;
   justify-content: flex-start;
   gap: 2cqw;
-  height: 72cqw;
+  height: 48cqw;
   overflow: hidden;
   font-family: -apple-system, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
 }
