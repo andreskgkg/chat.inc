@@ -7,7 +7,7 @@ const useIsoLayoutEffect =
 
 type Bubble =
   | { kind: "them"; text: string }
-  | { kind: "img"; src: string; w: number }
+  | { kind: "me"; text: string }
   | { kind: "cash"; amount: string; note: string };
 
 type Step = {
@@ -23,7 +23,7 @@ const STEPS: Step[] = [
     bubbles: [
       { kind: "them", text: "Welcome to chat.inc" },
       { kind: "them", text: "Reply with your LinkedIn so we know who you are." },
-      { kind: "img", src: "/chat/linkedin.png", w: 45 },
+      { kind: "me", text: "linkedin.com/in/eo18dn-3i233" },
     ],
   },
   {
@@ -37,14 +37,19 @@ const STEPS: Step[] = [
   {
     title: "Answer",
     desc: "Have an opinion? Reply in a sentence or two. If not, just ignore it — no pressure.",
-    bubbles: [{ kind: "img", src: "/chat/answer.png", w: 42 }],
+    bubbles: [
+      {
+        kind: "me",
+        text: "It was okay, it seems to do the same as its competitors but is more expensive so we switched",
+      },
+    ],
   },
   {
     title: "Get paid",
     desc: "Get paid instantly over Apple Cash for every answer. Stay anonymous the whole time.",
     bubbles: [
       { kind: "cash", amount: "$25", note: "Sent" },
-      { kind: "img", src: "/chat/yayyy.png", w: 24 },
+      { kind: "me", text: "yayyy" },
     ],
   },
 ];
@@ -128,17 +133,16 @@ export function HowItWorks() {
                 </div>
               );
             }
-            if (bubble.kind === "img") {
+            if (bubble.kind === "me") {
               return (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <div
                   key={key}
                   data-key={key}
-                  className="hiw-imgmsg"
-                  src={bubble.src}
-                  alt=""
-                  style={{ width: `${bubble.w}cqw`, animationDelay: delay }}
-                />
+                  className="hiw-msg hiw-msg-me"
+                  style={{ animationDelay: delay }}
+                >
+                  {bubble.text}
+                </div>
               );
             }
             return (
