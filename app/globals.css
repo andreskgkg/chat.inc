@@ -41,6 +41,12 @@ a {
   text-decoration: none;
 }
 
+h1,
+h2,
+p {
+  overflow-wrap: break-word;
+}
+
 button,
 input {
   font: inherit;
@@ -1027,6 +1033,16 @@ button {
   .hero {
     gap: 28px;
     padding-top: 44px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 8vw, 3rem);
+  }
+
+  /* Let the heading/subtext wrap naturally instead of forcing wide lines */
+  .hero h1 br,
+  .hero-sub br {
+    display: none;
   }
 
   .hero-sub {
