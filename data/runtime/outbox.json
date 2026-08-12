@@ -440,6 +440,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T08:04:16.592Z",
       "sentAt": "2026-08-12T08:04:18.109Z"
+    },
+    {
+      "id": "msg_1786522331312_w1btmw",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: we could also pay more to promote if that makes sense",
+      "createdAt": "2026-08-12T08:12:11.312Z",
+      "status": "pending"
     }
   ]
 }
