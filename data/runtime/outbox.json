@@ -446,8 +446,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: we could also pay more to promote if that makes sense",
       "createdAt": "2026-08-12T08:12:11.312Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T08:12:15.782Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T08:12:15.782Z",
+      "sentAt": "2026-08-12T08:12:17.184Z"
     }
   ]
 }
