@@ -485,6 +485,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T09:40:44.219Z",
       "sentAt": "2026-08-12T09:40:45.402Z"
+    },
+    {
+      "id": "msg_1786527801739_eaqc0y",
+      "phone": "+16096614617",
+      "text": "Got it — here’s your paid question:",
+      "createdAt": "2026-08-12T09:43:21.739Z",
+      "status": "pending"
     }
   ]
 }
