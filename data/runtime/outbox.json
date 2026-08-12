@@ -491,8 +491,9 @@
       "phone": "+16096614617",
       "text": "Got it — here’s your paid question:",
       "createdAt": "2026-08-12T09:43:21.739Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-12T09:43:26.176Z"
+      "status": "sent",
+      "claimedAt": "2026-08-12T09:43:26.176Z",
+      "sentAt": "2026-08-12T09:43:27.582Z"
     },
     {
       "id": "msg_1786527802591_7fnv3b",
