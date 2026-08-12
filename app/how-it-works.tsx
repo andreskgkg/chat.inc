@@ -23,7 +23,7 @@ const STEPS: Step[] = [
     bubbles: [
       { kind: "them", text: "Welcome to chat.inc" },
       { kind: "them", text: "Reply with your LinkedIn so we know who you are." },
-      { kind: "me", text: "linkedin.com/in/eo18dn-3i233" },
+      { kind: "me", text: "www.linkedin.com/in/andreskg" },
     ],
   },
   {
