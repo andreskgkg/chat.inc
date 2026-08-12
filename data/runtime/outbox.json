@@ -518,7 +518,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: you brought up timing",
       "createdAt": "2026-08-12T09:47:06.324Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-12T09:47:07.480Z"
     }
   ]
 }
