@@ -267,33 +267,58 @@ button {
   margin: 0 auto;
 }
 
-/* iPhone frame around the iMessage chat */
+/* iPhone frame around the iMessage chat (titanium, cropped at the bottom) */
 .hiw-phone {
+  position: relative;
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 11px;
-  border-radius: 56px;
+  padding: 10px 10px 0;
+  border-radius: 56px 56px 0 0;
   background: linear-gradient(
-    145deg,
-    #46464a 0%,
-    #0a0a0b 40%,
-    #1c1c1f 72%,
-    #050506 100%
+    135deg,
+    #f2f2f4 0%,
+    #b2b2b8 20%,
+    #e4e4e6 40%,
+    #9c9ca2 62%,
+    #d6d6da 82%,
+    #a8a8ae 100%
   );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 1px 1px rgba(255, 255, 255, 0.22) inset,
-    0 40px 70px -30px rgba(0, 0, 0, 0.55),
-    0 10px 24px -14px rgba(0, 0, 0, 0.45);
+    0 40px 70px -30px rgba(0, 0, 0, 0.4),
+    0 10px 24px -14px rgba(0, 0, 0, 0.3);
+}
+
+/* Side buttons */
+.hiw-phone::before,
+.hiw-phone::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  border-radius: 2px;
+  background: #8a8a90;
+  z-index: 0;
+}
+
+.hiw-phone::before {
+  left: -1.5px;
+  top: 28%;
+  height: 14%;
+}
+
+.hiw-phone::after {
+  right: -1.5px;
+  top: 33%;
+  height: 17%;
 }
 
 .hiw-screen {
   position: relative;
   container-type: inline-size;
   overflow: hidden;
-  border-radius: 46px;
+  border-radius: 46px 46px 0 0;
   background: #fff;
+  box-shadow: 0 0 0 2.5px #060606;
   display: flex;
   flex-direction: column;
 }
@@ -308,6 +333,18 @@ button {
   background: #000;
   border-radius: 999px;
   z-index: 6;
+}
+
+.hiw-island::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1.8cqw;
+  transform: translateY(-50%);
+  width: 4.6cqw;
+  height: 4.6cqw;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #47567a, #0b1226 62%);
 }
 
 .hiw-statusbar {
@@ -341,43 +378,29 @@ button {
   width: auto;
 }
 
-.hiw-inputbar {
+.hiw-back {
+  position: absolute;
+  top: 13cqw;
+  left: 4cqw;
+  z-index: 5;
   display: flex;
   align-items: center;
-  gap: 2.4cqw;
-  padding: 2.6cqw 4cqw 1.8cqw;
-}
-
-.hiw-plus {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  width: 7.6cqw;
-  height: 7.6cqw;
+  width: 12cqw;
+  height: 12cqw;
   border-radius: 50%;
-  background: #e6e6eb;
-  color: #8a8a8e;
-  font-size: 5cqw;
-  line-height: 0;
-  flex-shrink: 0;
+  background: #f0f0f2;
 }
 
-.hiw-input {
-  flex: 1;
-  padding: 2cqw 4cqw;
-  border-radius: 999px;
-  border: 0.35cqw solid #d6d6db;
-  color: #9a9aa0;
-  font-size: 3.7cqw;
+.hiw-back svg {
+  width: 3.6cqw;
+  height: auto;
 }
 
-.hiw-homebar {
-  align-self: center;
-  width: 36cqw;
-  height: 1.4cqw;
-  margin: 1.2cqw 0 2.6cqw;
-  border-radius: 999px;
-  background: #000;
+.hiw-fwd {
+  width: 2.4cqw;
+  height: auto;
+  margin-left: 0.8cqw;
 }
 
 .hiw-chat-head {

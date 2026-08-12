@@ -131,6 +131,18 @@ export function HowItWorks() {
               </svg>
             </span>
           </div>
+          <span className="hiw-back" aria-hidden="true">
+            <svg viewBox="0 0 12 20">
+              <path
+                d="M10 1 2 10l8 9"
+                fill="none"
+                stroke="#111"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
           <div className="hiw-chat-head">
             <span className="hiw-avatar" />
             <span className="hiw-peer-name">
@@ -139,6 +151,16 @@ export function HowItWorks() {
                 <path d="M6.9 10.6 4.6 8.3l.95-.95 1.35 1.35 3.2-3.2.95.95z" fill="#fff" />
               </svg>
               chat.inc
+              <svg className="hiw-fwd" viewBox="0 0 8 14" aria-hidden="true">
+                <path
+                  d="M1 1l6 6-6 6"
+                  fill="none"
+                  stroke="#b8b8bd"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </span>
           </div>
 
@@ -185,12 +207,6 @@ export function HowItWorks() {
             );
           })}
           </div>
-
-          <div className="hiw-inputbar">
-            <span className="hiw-plus">+</span>
-            <span className="hiw-input">iMessage</span>
-          </div>
-          <span className="hiw-homebar" />
         </div>
       </div>
 
