@@ -512,6 +512,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T09:43:26.176Z",
       "sentAt": "2026-08-12T09:43:30.037Z"
+    },
+    {
+      "id": "msg_1786528026324_oe9ur5",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: you brought up timing",
+      "createdAt": "2026-08-12T09:47:06.324Z",
+      "status": "pending"
     }
   ]
 }
