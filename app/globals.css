@@ -233,17 +233,17 @@ button {
 
 .hiw {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) 1fr;
+  grid-template-columns: minmax(340px, 420px) 1fr;
   gap: 48px;
   align-items: start;
-  max-width: 840px;
+  max-width: 880px;
   margin: 0 auto;
 }
 
 /* Chat (frameless: no iPhone border, status bar, or island) */
 .hiw-chat {
   width: 100%;
-  max-width: 320px;
+  max-width: 420px;
   margin: 0 auto;
   container-type: inline-size;
   display: flex;
@@ -905,7 +905,7 @@ button {
   .hiw {
     grid-template-columns: 1fr;
     gap: 30px;
-    max-width: 420px;
+    max-width: 440px;
   }
 }
 
