@@ -56,6 +56,17 @@ const STEPS: Step[] = [
 
 export function HowItWorks() {
   const [active, setActive] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
+
+  // Cycle through the steps on a timer until the user clicks one.
+  useEffect(() => {
+    if (!autoplay) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      setActive((a) => (a + 1) % STEPS.length);
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, [autoplay]);
 
   // All messages revealed so far. The thread auto-scrolls to the newest
   // message so older ones slide up and fade off the top.
@@ -160,7 +171,10 @@ export function HowItWorks() {
                 type="button"
                 className="hiw-step-head"
                 aria-expanded={open}
-                onClick={() => setActive(index)}
+                onClick={() => {
+                  setAutoplay(false);
+                  setActive(index);
+                }}
               >
                 <span className="hiw-step-num">
                   {String(index + 1).padStart(2, "0")}
