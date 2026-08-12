@@ -57,44 +57,42 @@ const STEPS: Step[] = [
 export function HowItWorks() {
   const [active, setActive] = useState(0);
 
-  // All messages revealed so far. The thread is top-anchored, so new
-  // messages append below the previous ones and spring in on arrival.
+  // All messages revealed so far. The thread auto-scrolls to the newest
+  // message so older ones slide up and fade off the top.
   const visible = STEPS.slice(0, active + 1).flatMap((step, s) =>
     step.bubbles.map((bubble, i) => ({ bubble, i, key: `${s}-${i}` })),
   );
 
-  // FLIP: if an existing bubble's position shifts when messages change,
-  // glide it to its new spot (new bubbles get the CSS spring "pop" on mount).
   const threadRef = useRef<HTMLDivElement>(null);
-  const prevRects = useRef<Map<string, DOMRect>>(new Map());
 
   useIsoLayoutEffect(() => {
     const el = threadRef.current;
     if (!el) return;
+    const target = Math.max(0, el.scrollHeight - el.clientHeight);
+    const setFade = () => el.classList.toggle("is-scrolled", el.scrollTop > 2);
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const next = new Map<string, DOMRect>();
-    for (const kid of Array.from(el.children) as HTMLElement[]) {
-      const k = kid.dataset.key;
-      if (!k) continue;
-      const rect = kid.getBoundingClientRect();
-      next.set(k, rect);
-      const prev = prevRects.current.get(k);
-      if (prev && !reduce) {
-        const dy = prev.top - rect.top;
-        if (Math.abs(dy) > 0.5) {
-          kid.animate(
-            [
-              { transform: `translateY(${dy}px)` },
-              { transform: "translateY(0)" },
-            ],
-            { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
-          );
-        }
-      }
+
+    if (reduce || Math.abs(target - el.scrollTop) < 1) {
+      el.scrollTop = target;
+      setFade();
+      return;
     }
-    prevRects.current = next;
+
+    const start = el.scrollTop;
+    const change = target - start;
+    const t0 = performance.now();
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    let raf = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - t0) / 650);
+      el.scrollTop = start + change * ease(t);
+      setFade();
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
   }, [active]);
 
   return (
@@ -118,7 +116,6 @@ export function HowItWorks() {
               return (
                   <div
                     key={key}
-                    data-key={key}
                     className="hiw-msg hiw-cash"
                     style={{ animationDelay: delay }}
                   >
@@ -137,7 +134,6 @@ export function HowItWorks() {
               return (
                 <div
                   key={key}
-                  data-key={key}
                   className="hiw-msg hiw-msg-me"
                   style={{ animationDelay: delay }}
                 >
@@ -148,7 +144,6 @@ export function HowItWorks() {
             return (
               <div
                 key={key}
-                data-key={key}
                 className="hiw-msg hiw-msg-them"
                 style={{ animationDelay: delay }}
               >
