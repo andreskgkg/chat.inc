@@ -584,6 +584,13 @@
       "status": "sent",
       "claimedAt": "2026-08-13T05:29:10.222Z",
       "sentAt": "2026-08-13T05:29:11.588Z"
+    },
+    {
+      "id": "msg_1786604635264_dq0tt3",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: someone leaves their number, you message them?",
+      "createdAt": "2026-08-13T07:03:55.264Z",
+      "status": "pending"
     }
   ]
 }
