@@ -590,8 +590,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: someone leaves their number, you message them?",
       "createdAt": "2026-08-13T07:03:55.264Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-13T07:03:57.154Z"
+      "status": "sent",
+      "claimedAt": "2026-08-13T07:03:57.154Z",
+      "sentAt": "2026-08-13T07:03:58.343Z"
     }
   ]
 }
