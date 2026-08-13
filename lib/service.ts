@@ -20,8 +20,9 @@ import {
   paidThankYou,
   payoutSetupMessage,
 } from "@/lib/messages";
-import { extractLinkedIn, normalizePhone } from "@/lib/phone";
+import { displayPhone, extractLinkedIn, normalizePhone } from "@/lib/phone";
 import { notifyAdmin, sendMany, sendText } from "@/lib/sendblue";
+import { slackPost } from "@/lib/slack";
 import {
   createAccountLink,
   createExpressAccount,
@@ -35,6 +36,7 @@ export async function startLead(rawPhone: string) {
   if (!phone) throw new Error("Enter a valid phone number.");
   const person = await createPerson(phone);
   await sendMany(phone, WELCOME_MESSAGES, { personId: person.id });
+  await slackPost(`📱 New number — ${displayPhone(phone)}`);
   return person;
 }
 
@@ -55,6 +57,9 @@ export async function handleInbound(rawPhone: string, text: string) {
     await notifyAdmin(
       `New chat.inc applicant\n${linkedin || text}\n${phone}\nApprove in the dashboard.`,
     );
+    await slackPost(
+      `🆕 *New applicant to approve*\n${linkedin || text}\n${displayPhone(phone)}\n${appUrl()}/admin/${person.id}`,
+    );
     return { pending: true as const };
   }
 
@@ -67,6 +72,9 @@ export async function handleInbound(rawPhone: string, text: string) {
     });
     await notifyAdmin(
       `Answer from ${person.linkedin || phone}:\n\n${text}\n\nPay in the dashboard.`,
+    );
+    await slackPost(
+      `💬 *Answer* from ${person.linkedin || displayPhone(phone)}\n"${text}"\n${appUrl()}/admin/${person.id}`,
     );
     return { answered: true as const };
   }

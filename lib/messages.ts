@@ -1,13 +1,11 @@
 // Outbound message copy + defaults for the chat.inc flow.
 
 export const WELCOME_MESSAGES = [
-  "Hey welcome to chat.inc!",
-  "Reply with your LinkedIn so we know who you are.",
-  "After that you'll get your first (paid) question!",
+  "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
 ] as const;
 
 export const HOLD_TIGHT_MESSAGE =
-  "Great, we're approving new folks every day — hold tight for your first question.";
+  "Great — we're onboarding new participants every hour. Stay tuned!";
 
 export const THANKS_MESSAGE = "Got it — here's your paid question:";
 
