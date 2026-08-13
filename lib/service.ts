@@ -89,14 +89,24 @@ export async function approvePerson(
   const person = await getPersonById(personId);
   if (!person) throw new Error("Person not found");
   await updatePerson(personId, { status: "active" });
+  await slackPost(
+    `✅ *Approved* — ${person.linkedin || displayPhone(person.phone)}\n${appUrl()}/admin/${personId}`,
+  );
   if (opts.firstQuestion?.trim()) {
     await sendQuestionTo(personId, opts.firstQuestion.trim(), opts.amountCents);
   }
   return getPersonById(personId);
 }
 
-export function rejectPerson(personId: string) {
-  return updatePerson(personId, { status: "rejected" });
+export async function rejectPerson(personId: string) {
+  const person = await getPersonById(personId);
+  const updated = await updatePerson(personId, { status: "rejected" });
+  if (person) {
+    await slackPost(
+      `🚫 *Rejected* — ${person.linkedin || displayPhone(person.phone)}`,
+    );
+  }
+  return updated;
 }
 
 export async function sendQuestionTo(
@@ -189,6 +199,9 @@ export async function payForQuestion(
       });
     }
     await sendText(person.phone, paidThankYou(amountCents), { personId });
+    await slackPost(
+      `💸 *Paid ${formatAmount(amountCents)}* — ${person.linkedin || displayPhone(person.phone)}`,
+    );
     return { paid: true as const, amount: amountCents };
   } catch (error) {
     await updatePayout(payout.id, {
