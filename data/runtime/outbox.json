@@ -581,7 +581,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: think about it and we talk about it later?",
       "createdAt": "2026-08-13T05:29:06.200Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-13T05:29:10.222Z"
     }
   ]
 }
