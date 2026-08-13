@@ -1,9 +1,9 @@
-import { SAMPLE_QUESTION } from "@/lib/claw";
+import { SAMPLE_QUESTION } from "@/lib/messages";
 
 const FALLBACK_FOLLOW_UPS = [
-  "What tools or products did you use most in your last role, and what did you like or dislike about them? (up to $20 reward)",
-  "At a previous company, what process or system was most broken — and how did your team work around it? (up to $20 reward)",
-  "Which vendor or software have you evaluated or switched away from recently, and why? (up to $20 reward)",
+  "What tools or products did you use most in your last role, and what did you like or dislike about them?",
+  "At a previous company, what process or system was most broken — and how did your team work around it?",
+  "Which vendor or software have you evaluated or switched away from recently, and why?",
 ];
 
 export async function generateFollowUpQuestions(linkedin: string) {
@@ -24,7 +24,7 @@ export async function generateFollowUpQuestions(linkedin: string) {
           {
             role: "system",
             content:
-              "You write short paid expert-network text questions. Return ONLY a JSON array of exactly 3 strings. Each question should be about prior jobs, products/tools used, vendors, or concrete work experience. Keep each under 220 characters. End each with (up to $20 reward). Do not mention LinkedIn scraping limits.",
+              "You write short paid expert-network text questions. Return ONLY a JSON array of exactly 3 strings. Each question should be about prior jobs, products/tools used, vendors, or concrete work experience. Keep each under 200 characters. Do not include any reward or dollar amount. Do not mention LinkedIn scraping limits.",
           },
           {
             role: "user",
