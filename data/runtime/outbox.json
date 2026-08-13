@@ -575,6 +575,13 @@
       "status": "sent",
       "claimedAt": "2026-08-12T18:28:21.577Z",
       "sentAt": "2026-08-12T18:28:22.868Z"
+    },
+    {
+      "id": "msg_1786598946200_ojd96j",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: think about it and we talk about it later?",
+      "createdAt": "2026-08-13T05:29:06.200Z",
+      "status": "pending"
     }
   ]
 }
