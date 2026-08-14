@@ -620,6 +620,13 @@
       "status": "sent",
       "claimedAt": "2026-08-14T06:51:50.484Z",
       "sentAt": "2026-08-14T06:51:52.234Z"
+    },
+    {
+      "id": "msg_1786751224215_4hrx22",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: what does he fear",
+      "createdAt": "2026-08-14T23:47:04.215Z",
+      "status": "pending"
     }
   ]
 }
