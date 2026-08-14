@@ -602,6 +602,13 @@
       "status": "sent",
       "claimedAt": "2026-08-13T17:19:21.472Z",
       "sentAt": "2026-08-13T17:19:23.036Z"
+    },
+    {
+      "id": "msg_1786690274548_rzitac",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: it",
+      "createdAt": "2026-08-14T06:51:14.548Z",
+      "status": "pending"
     }
   ]
 }
