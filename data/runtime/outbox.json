@@ -626,8 +626,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: what does he fear",
       "createdAt": "2026-08-14T23:47:04.215Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-14T23:47:08.147Z"
+      "status": "sent",
+      "claimedAt": "2026-08-14T23:47:08.147Z",
+      "sentAt": "2026-08-14T23:47:09.468Z"
     }
   ]
 }
