@@ -617,8 +617,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: it",
       "createdAt": "2026-08-14T06:51:48.251Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-14T06:51:50.484Z"
+      "status": "sent",
+      "claimedAt": "2026-08-14T06:51:50.484Z",
+      "sentAt": "2026-08-14T06:51:52.234Z"
     }
   ]
 }
