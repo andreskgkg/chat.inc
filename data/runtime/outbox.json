@@ -635,8 +635,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: more top of funnel?",
       "createdAt": "2026-08-14T23:50:21.711Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-14T23:50:25.356Z"
+      "status": "sent",
+      "claimedAt": "2026-08-14T23:50:25.356Z",
+      "sentAt": "2026-08-14T23:50:26.574Z"
     }
   ]
 }
