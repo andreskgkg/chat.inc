@@ -629,6 +629,13 @@
       "status": "sent",
       "claimedAt": "2026-08-14T23:47:08.147Z",
       "sentAt": "2026-08-14T23:47:09.468Z"
+    },
+    {
+      "id": "msg_1786751421711_e5yvok",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: more top of funnel?",
+      "createdAt": "2026-08-14T23:50:21.711Z",
+      "status": "pending"
     }
   ]
 }
