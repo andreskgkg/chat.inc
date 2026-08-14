@@ -611,6 +611,13 @@
       "status": "sent",
       "claimedAt": "2026-08-14T06:51:17.172Z",
       "sentAt": "2026-08-14T06:51:19.285Z"
+    },
+    {
+      "id": "msg_1786690308251_4qqeus",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: it",
+      "createdAt": "2026-08-14T06:51:48.251Z",
+      "status": "pending"
     }
   ]
 }
