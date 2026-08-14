@@ -608,7 +608,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: it",
       "createdAt": "2026-08-14T06:51:14.548Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-14T06:51:17.172Z"
     }
   ]
 }
