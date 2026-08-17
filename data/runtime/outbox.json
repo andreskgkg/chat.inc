@@ -645,6 +645,13 @@
       "text": "Couldn't find a pending applicant to approve.",
       "createdAt": "2026-08-17T21:04:28.096Z",
       "status": "pending"
+    },
+    {
+      "id": "msg_1787000669965_q8ul59",
+      "phone": "+17816929689",
+      "text": "Couldn't find a pending applicant to approve.",
+      "createdAt": "2026-08-17T21:04:29.965Z",
+      "status": "pending"
     }
   ]
 }
