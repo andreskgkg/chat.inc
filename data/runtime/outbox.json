@@ -656,6 +656,13 @@
       "status": "sent",
       "claimedAt": "2026-08-17T21:04:30.759Z",
       "sentAt": "2026-08-17T21:04:33.317Z"
+    },
+    {
+      "id": "msg_1787083792798_19qz13",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: personal question, do u have a tenent lawyer",
+      "createdAt": "2026-08-18T20:09:52.798Z",
+      "status": "pending"
     }
   ]
 }
