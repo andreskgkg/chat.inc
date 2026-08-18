@@ -662,8 +662,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: personal question, do u have a tenent lawyer",
       "createdAt": "2026-08-18T20:09:52.798Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-18T20:09:55.548Z"
+      "status": "sent",
+      "claimedAt": "2026-08-18T20:09:55.548Z",
+      "sentAt": "2026-08-18T20:09:57.061Z"
     }
   ]
 }
