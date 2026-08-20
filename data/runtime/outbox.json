@@ -707,8 +707,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: city inspectors came",
       "createdAt": "2026-08-20T17:37:22.297Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-20T17:37:26.444Z"
+      "status": "sent",
+      "claimedAt": "2026-08-20T17:37:26.444Z",
+      "sentAt": "2026-08-20T17:37:27.729Z"
     }
   ]
 }
