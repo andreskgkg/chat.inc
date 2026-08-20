@@ -692,6 +692,13 @@
       "status": "sent",
       "claimedAt": "2026-08-19T21:42:00.899Z",
       "sentAt": "2026-08-19T21:42:02.245Z"
+    },
+    {
+      "id": "msg_1787247283993_61oixm",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: code compliance?",
+      "createdAt": "2026-08-20T17:34:43.993Z",
+      "status": "pending"
     }
   ]
 }
