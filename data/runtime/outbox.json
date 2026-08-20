@@ -698,7 +698,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: code compliance?",
       "createdAt": "2026-08-20T17:34:43.993Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-20T17:34:49.025Z"
     }
   ]
 }
