@@ -701,6 +701,13 @@
       "status": "sent",
       "claimedAt": "2026-08-20T17:34:49.025Z",
       "sentAt": "2026-08-20T17:34:50.338Z"
+    },
+    {
+      "id": "msg_1787247442297_x6kij9",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: city inspectors came",
+      "createdAt": "2026-08-20T17:37:22.297Z",
+      "status": "pending"
     }
   ]
 }
