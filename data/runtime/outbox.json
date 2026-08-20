@@ -764,6 +764,13 @@
       "status": "sent",
       "claimedAt": "2026-08-20T21:37:56.488Z",
       "sentAt": "2026-08-20T21:37:57.792Z"
+    },
+    {
+      "id": "msg_1787262100824_agvm1g",
+      "phone": "+17816929689",
+      "text": "Couldn't find a pending applicant to approve.",
+      "createdAt": "2026-08-20T21:41:40.824Z",
+      "status": "pending"
     }
   ]
 }
