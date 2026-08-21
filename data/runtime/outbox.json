@@ -851,7 +851,8 @@
       "phone": "+17816929689",
       "text": "Couldn't find a pending applicant to approve.",
       "createdAt": "2026-08-21T18:22:37.837Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-21T18:22:40.380Z"
     }
   ]
 }
