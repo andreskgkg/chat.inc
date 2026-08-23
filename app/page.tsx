@@ -16,9 +16,9 @@ export default function Home() {
       <section className="hero" aria-label="Hero">
         <div className="hero-copy">
           <h1>
-            The first expert network{" "}
+            Expert network{" "}
             <br />
-            via text.
+            over iMessage.
           </h1>
           <p className="hero-sub">
             Answer questions whenever you have a minute.
