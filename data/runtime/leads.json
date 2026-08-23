@@ -34,15 +34,23 @@
     "+15614181919": {
       "phone": "+15614181919",
       "createdAt": "2026-08-11T23:35:06.572Z",
-      "updatedAt": "2026-08-12T00:41:51.302Z",
-      "status": "q1_sent",
+      "updatedAt": "2026-08-23T19:16:07.407Z",
+      "status": "q1_answered",
       "identity": "signed up to test",
       "linkedin": "signed up to test",
       "followUps": [
         "Can you describe any challenges you faced integrating your payroll system with other HR or accounting tools? (up to $20 reward)",
         "Which time-tracking or attendance software do you use alongside your payroll provider? How well do they work together? (up to $20 reward)",
         "Have you worked with any payroll vendors for international employees? What differences did you notice compared to domestic payroll? (up to $20 reward)"
-      ]
+      ],
+      "answers": {
+        "q1": "Yoyo!"
+      },
+      "pendingPay": {
+        "question": "q1",
+        "amount": 20,
+        "answer": "Yoyo!"
+      }
     },
     "+16467997644": {
       "phone": "+16467997644",
