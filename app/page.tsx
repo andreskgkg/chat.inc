@@ -16,9 +16,9 @@ export default function Home() {
       <section className="hero" aria-label="Hero">
         <div className="hero-copy">
           <h1>
-            Get paid for what
+            The first expert network{" "}
             <br />
-            you know.
+            via text.
           </h1>
           <p className="hero-sub">
             Answer questions whenever you have a minute.
