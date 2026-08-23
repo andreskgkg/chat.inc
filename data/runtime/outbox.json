@@ -854,6 +854,13 @@
       "status": "sent",
       "claimedAt": "2026-08-21T18:22:40.380Z",
       "sentAt": "2026-08-21T18:22:41.631Z"
+    },
+    {
+      "id": "msg_1787512568153_mrxjbt",
+      "phone": "+17816929689",
+      "text": "Answer from +15614181919 (Q1 / payroll)\nLinkedIn: signed up to test\n\nYoyo!\n\nSend Apple Cash $20, then reply: Paid +15614181919",
+      "createdAt": "2026-08-23T19:16:08.153Z",
+      "status": "pending"
     }
   ]
 }
