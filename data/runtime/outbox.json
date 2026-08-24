@@ -881,6 +881,13 @@
       "status": "sent",
       "claimedAt": "2026-08-24T01:45:16.296Z",
       "sentAt": "2026-08-24T01:45:17.552Z"
+    },
+    {
+      "id": "msg_1787601234435_cp8c8p",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: how much aum etc",
+      "createdAt": "2026-08-24T19:53:54.435Z",
+      "status": "pending"
     }
   ]
 }
