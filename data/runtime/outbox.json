@@ -887,8 +887,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: how much aum etc",
       "createdAt": "2026-08-24T19:53:54.435Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-24T19:53:57.514Z"
+      "status": "sent",
+      "claimedAt": "2026-08-24T19:53:57.514Z",
+      "sentAt": "2026-08-24T19:53:58.938Z"
     }
   ]
 }
