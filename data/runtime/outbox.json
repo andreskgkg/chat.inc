@@ -923,8 +923,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: the owner>?",
       "createdAt": "2026-08-25T19:50:29.865Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-25T19:50:31.725Z"
+      "status": "sent",
+      "claimedAt": "2026-08-25T19:50:31.725Z",
+      "sentAt": "2026-08-25T19:50:32.992Z"
     }
   ]
 }
