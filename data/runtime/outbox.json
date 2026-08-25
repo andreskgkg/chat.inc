@@ -932,8 +932,9 @@
       "phone": "+19259633317",
       "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-25T23:04:59.632Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-25T23:05:03.717Z"
+      "status": "sent",
+      "claimedAt": "2026-08-25T23:05:03.717Z",
+      "sentAt": "2026-08-25T23:05:05.107Z"
     }
   ]
 }
