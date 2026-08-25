@@ -914,7 +914,8 @@
       "phone": "+14155550198",
       "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-25T19:11:30.864Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-25T19:11:34.331Z"
     }
   ]
 }
