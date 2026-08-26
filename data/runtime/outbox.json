@@ -959,7 +959,8 @@
       "phone": "+17816929689",
       "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-26T04:23:44.095Z",
-      "status": "pending"
+      "status": "claimed",
+      "claimedAt": "2026-08-26T04:23:48.963Z"
     }
   ]
 }
