@@ -962,6 +962,13 @@
       "status": "sent",
       "claimedAt": "2026-08-26T04:23:48.963Z",
       "sentAt": "2026-08-26T04:23:50.220Z"
+    },
+    {
+      "id": "msg_1787718484553_5ek0kd",
+      "phone": "+17816929689",
+      "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
+      "createdAt": "2026-08-26T04:28:04.553Z",
+      "status": "pending"
     }
   ]
 }
