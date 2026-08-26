@@ -977,8 +977,9 @@
       "phone": "+17816929689",
       "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-26T04:28:05.665Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-26T04:28:06.527Z"
+      "status": "sent",
+      "claimedAt": "2026-08-26T04:28:06.527Z",
+      "sentAt": "2026-08-26T04:28:08.754Z"
     }
   ]
 }
