@@ -935,6 +935,13 @@
       "status": "sent",
       "claimedAt": "2026-08-25T23:05:03.717Z",
       "sentAt": "2026-08-25T23:05:05.107Z"
+    },
+    {
+      "id": "msg_1787704657932_sigpk9",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: hf0",
+      "createdAt": "2026-08-26T00:37:37.932Z",
+      "status": "pending"
     }
   ]
 }
