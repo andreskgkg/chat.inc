@@ -941,8 +941,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: hf0",
       "createdAt": "2026-08-26T00:37:37.932Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-26T00:37:41.900Z"
+      "status": "sent",
+      "claimedAt": "2026-08-26T00:37:41.900Z",
+      "sentAt": "2026-08-26T00:37:43.081Z"
     }
   ]
 }
