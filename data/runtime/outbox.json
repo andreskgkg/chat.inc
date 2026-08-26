@@ -944,6 +944,13 @@
       "status": "sent",
       "claimedAt": "2026-08-26T00:37:41.900Z",
       "sentAt": "2026-08-26T00:37:43.081Z"
+    },
+    {
+      "id": "msg_1787708458845_lw5ip0",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: cracks",
+      "createdAt": "2026-08-26T01:40:58.845Z",
+      "status": "pending"
     }
   ]
 }
