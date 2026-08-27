@@ -1007,6 +1007,13 @@
       "status": "sent",
       "claimedAt": "2026-08-26T05:02:43.413Z",
       "sentAt": "2026-08-26T05:02:44.770Z"
+    },
+    {
+      "id": "msg_1787800562149_kfb74d",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: where bench press is",
+      "createdAt": "2026-08-27T03:16:02.149Z",
+      "status": "pending"
     }
   ]
 }
