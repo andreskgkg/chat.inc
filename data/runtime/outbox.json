@@ -1013,8 +1013,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: where bench press is",
       "createdAt": "2026-08-27T03:16:02.149Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-27T03:16:03.131Z"
+      "status": "sent",
+      "claimedAt": "2026-08-27T03:16:03.131Z",
+      "sentAt": "2026-08-27T03:16:04.778Z"
     }
   ]
 }
