@@ -1031,8 +1031,9 @@
       "phone": "+17816929689",
       "text": "Couldn't find a lead for: maybe you leave a comment or note on someone, can press that, add a reminder, and get notified",
       "createdAt": "2026-08-28T19:10:14.677Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-28T19:10:19.213Z"
+      "status": "sent",
+      "claimedAt": "2026-08-28T19:10:19.213Z",
+      "sentAt": "2026-08-28T19:10:20.704Z"
     }
   ]
 }
