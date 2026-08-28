@@ -1025,6 +1025,13 @@
       "status": "sent",
       "claimedAt": "2026-08-28T00:44:38.095Z",
       "sentAt": "2026-08-28T00:44:39.408Z"
+    },
+    {
+      "id": "msg_1787944214676_r6ovdc",
+      "phone": "+17816929689",
+      "text": "Couldn't find a lead for: maybe you leave a comment or note on someone, can press that, add a reminder, and get notified",
+      "createdAt": "2026-08-28T19:10:14.677Z",
+      "status": "pending"
     }
   ]
 }
