@@ -1040,8 +1040,9 @@
       "phone": "+16507969379",
       "text": "Welcome to chat.inc! Reply with your LinkedIn so we know who you are.",
       "createdAt": "2026-08-28T20:15:44.871Z",
-      "status": "claimed",
-      "claimedAt": "2026-08-28T20:15:49.061Z"
+      "status": "sent",
+      "claimedAt": "2026-08-28T20:15:49.061Z",
+      "sentAt": "2026-08-28T20:15:50.407Z"
     }
   ]
 }
