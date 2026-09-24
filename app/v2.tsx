@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
 
 // Agents rotate through the headline. `logo` is a URL (null → monogram chip).
 // To use a custom logo, drop a file in /public/agents/ and point `logo` at it.
@@ -20,7 +20,7 @@ const AGENTS: { name: string; logo: string | null; tint: string }[] = [
 ];
 
 const BUYERS = [
-  { name: "McKinsey", domain: "mckinsey.com" },
+  { name: "McKinsey", domain: "mckinsey.com", logo: "https://www.mckinsey.com/favicon.ico" },
   { name: "BCG", domain: "bcg.com" },
   { name: "Bain", domain: "bain.com" },
   { name: "Goldman Sachs", domain: "goldmansachs.com" },
@@ -29,34 +29,34 @@ const BUYERS = [
 ];
 
 const QUESTIONS: [string, number][] = [
-  ["Best CRM for a 10-person team?", 15],
-  ["How long did your Series A take?", 40],
-  ["Would you pay $20/mo for this?", 10],
-  ["Which cloud do you trust most?", 20],
-  ["How many hours a week in meetings?", 8],
-  ["Do you use AI at work daily?", 10],
-  ["What did your last laptop cost?", 8],
-  ["Hardest role to hire right now?", 30],
-  ["Is remote working for your team?", 12],
-  ["Which bank do you use for payroll?", 15],
-  ["How do you price enterprise deals?", 50],
-  ["Favorite project tracker?", 10],
-  ["Would you switch from Slack?", 15],
-  ["What's your CAC this quarter?", 45],
-  ["How often do you order delivery?", 6],
-  ["Biggest cost you'd cut first?", 25],
-  ["Do you read the terms before signing?", 5],
-  ["What stack would you start with today?", 30],
   ["How many streaming apps do you pay for?", 6],
   ["Where do you buy running shoes?", 8],
-  ["What makes you churn from a tool?", 20],
-  ["How do you vet a new vendor?", 35],
-  ["What's a fair seed valuation?", 60],
+  ["Coffee at home or at a café?", 5],
+  ["What phone would you buy next?", 10],
+  ["How often do you order delivery?", 6],
+  ["Do you read the terms before signing?", 5],
   ["Which EV would you buy next?", 12],
   ["How do you back up your photos?", 6],
-  ["Is your team hiring this year?", 20],
   ["Do you trust online reviews?", 5],
-  ["What's on your 2027 roadmap?", 40],
+  ["What's your go-to grocery store?", 6],
+  ["How many hours of sleep do you get?", 5],
+  ["Gym, run, or neither?", 6],
+  ["Which airline do you fly most?", 8],
+  ["What's the last app you paid for?", 8],
+  ["Would you pay $20/mo for an AI assistant?", 10],
+  ["Do you use AI every day?", 10],
+  ["How do you pick a new restaurant?", 6],
+  ["Rent or own?", 8],
+  ["What's your favorite podcast right now?", 5],
+  ["How far is your commute?", 6],
+  ["Where do you book travel?", 8],
+  ["Which credit card perk do you use most?", 10],
+  ["iPhone or Android?", 5],
+  ["How many subscriptions do you have?", 6],
+  ["What would make you switch banks?", 12],
+  ["Where do you shop for clothes?", 6],
+  ["How often do you work from home?", 8],
+  ["What's one gadget you can't live without?", 8],
 ];
 
 // Slots sit around the edges so the headline stays clear.
@@ -131,6 +131,89 @@ function QuestionField() {
         );
       })}
     </div>
+  );
+}
+
+function useInView<T extends Element>() {
+  const ref = useRef<T | null>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setSeen(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return [ref, seen] as const;
+}
+
+// Plays the question -> typing -> answer -> paid sequence on a slow loop.
+function ThreadDemo() {
+  const [ref, seen] = useInView<HTMLDivElement>();
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (!seen) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStep(4);
+      return;
+    }
+    const plan = [700, 1300, 1500, 900, 4200];
+    const t = window.setTimeout(
+      () => setStep((s) => (s + 1) % 5),
+      plan[step]
+    );
+    return () => window.clearTimeout(t);
+  }, [seen, step]);
+
+  return (
+    <div ref={ref} className="v2-visual v2-thread">
+      <div className={`v2-bubble in ${step >= 1 ? "show" : ""}`}>
+        New question: How many subscriptions are you subscribed to?
+        <br />
+        None &middot; 1&ndash;3 &middot; 4&ndash;6 &middot; 7&ndash;10 &middot; 11+{" "}
+        <em>$25</em>
+      </div>
+      <div className={`v2-typing ${step === 2 ? "show" : ""}`} aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className={`v2-bubble out ${step >= 3 ? "show" : ""}`}>
+        Matched to your experience. Answered in 2 messages.
+      </div>
+      <div className={`v2-paid ${step >= 4 ? "show" : ""}`}>+$25.00 paid to you</div>
+    </div>
+  );
+}
+
+function Reveal({
+  as: Tag = "div",
+  className = "",
+  delay = 0,
+  children,
+}: {
+  as?: "div" | "article";
+  className?: string;
+  delay?: number;
+  children: ReactNode;
+}) {
+  const [ref, seen] = useInView<HTMLElement>();
+  return (
+    <Tag
+      ref={ref as Ref<never>}
+      className={`${className} v2-reveal ${seen ? "seen" : ""}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </Tag>
   );
 }
 
@@ -225,17 +308,17 @@ export function V2Home() {
         </p>
 
         <div className="v2-cards">
-          <article className="v2-card">
+          <Reveal as="article" className="v2-card c1">
             <h3>
-              Companies and consultants pay out billions of dollars a year for
-              people to answer questions.
+              Companies pay $20B+ / year on market research &mdash; for people to
+              answer questions.
             </h3>
             <div className="v2-visual v2-buyers">
               <span className="v2-buyers-label">Who pays for answers today</span>
               <ul>
                 {BUYERS.map((b) => (
                   <li key={b.name}>
-                    <img src={favicon(b.domain)} alt="" width={28} height={28} />
+                    <img src={b.logo ?? favicon(b.domain)} alt="" width={28} height={28} />
                     <span>{b.name}</span>
                   </li>
                 ))}
@@ -246,27 +329,16 @@ export function V2Home() {
                 firms that buy expert research; they are not chat.inc customers.
               </small>
             </div>
-          </article>
+          </Reveal>
 
-          <article className="v2-card">
+          <Reveal as="article" className="v2-card c2" delay={120}>
             <h3>Let your agent answer questions for you and get paid</h3>
             <p>
               Your agent can identify the questions you qualify for and answer
               them for you, so you make money.
             </p>
-            <div className="v2-visual v2-thread">
-              <div className="v2-bubble in">
-                New question: How many subscriptions are you subscribed to?
-                <br />
-                None &middot; 1&ndash;3 &middot; 4&ndash;6 &middot; 7&ndash;10 &middot; 11+{" "}
-                <em>$25</em>
-              </div>
-              <div className="v2-bubble out">
-                Matched to your experience. Answered in 2 messages.
-              </div>
-              <div className="v2-paid">+$25.00 paid to you</div>
-            </div>
-          </article>
+            <ThreadDemo />
+          </Reveal>
         </div>
       </section>
 
@@ -383,6 +455,31 @@ const css = `
 .v2-q.t-p b { color: #7b5ce0; }
 .v2-q.t-o b { color: #d0703f; }
 @media (prefers-reduced-motion: reduce) { .v2-glow { animation: none; } .v2-q { transition: none; } }
+.v2-card.c1 { background: linear-gradient(160deg, #eaf0ff 0%, #f4f2ff 55%, #f7f5f2 100%); }
+.v2-card.c2 { background: linear-gradient(200deg, #fff0e6 0%, #f6f0ff 55%, #f7f5f2 100%); }
+.v2-reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+.v2-reveal.seen { opacity: 1; transform: none; }
+.v2-buyers li { transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+.v2-buyers li:hover { transform: translateY(-3px); background: #fff; box-shadow: 0 8px 20px rgba(40,60,120,.10); }
+.v2-reveal.seen .v2-buyers li { animation: v2pop .6s cubic-bezier(.2,.7,.2,1) both; }
+.v2-reveal.seen .v2-buyers li:nth-child(2) { animation-delay: .08s; }
+.v2-reveal.seen .v2-buyers li:nth-child(3) { animation-delay: .16s; }
+.v2-reveal.seen .v2-buyers li:nth-child(4) { animation-delay: .24s; }
+.v2-reveal.seen .v2-buyers li:nth-child(5) { animation-delay: .32s; }
+.v2-reveal.seen .v2-buyers li:nth-child(6) { animation-delay: .40s; }
+@keyframes v2pop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+.v2-thread { min-height: 250px; }
+.v2-thread .v2-bubble, .v2-thread .v2-paid { opacity: 0; transform: translateY(8px); transition: opacity .45s ease, transform .5s cubic-bezier(.2,.7,.2,1); }
+.v2-thread .show { opacity: 1; transform: none; }
+.v2-typing { align-self: flex-end; display: none; gap: 4px; padding: 12px 14px; border-radius: 18px; background: #0a84ff; }
+.v2-typing.show { display: inline-flex; }
+.v2-typing i { width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .5; animation: v2dot 1s infinite ease-in-out; }
+.v2-typing i:nth-child(2) { animation-delay: .15s; }
+.v2-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes v2dot { 0%, 80%, 100% { opacity: .35; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
+.v2-paid.show { animation: v2glow 1.2s ease; }
+@keyframes v2glow { 0% { box-shadow: 0 0 0 0 rgba(26,143,60,.35); } 100% { box-shadow: 0 0 0 14px rgba(26,143,60,0); } }
+@media (prefers-reduced-motion: reduce) { .v2-reveal { opacity: 1; transform: none; transition: none; } .v2-reveal.seen .v2-buyers li { animation: none; } }
 @media (max-width: 760px) {
   .v2-final { padding: 110px 20px 130px; }
   .v2-cards { grid-template-columns: 1fr; }
