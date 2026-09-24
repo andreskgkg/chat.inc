@@ -1,8 +1,57 @@
 import { HowItWorks } from "./how-it-works";
 import { JoinForm } from "./join-form";
+import { V2Home } from "./v2";
 
-export default function Home() {
+function VersionToggle({ v }: { v: "1" | "2" }) {
+  const pill = (active: boolean) => ({
+    padding: "6px 14px",
+    borderRadius: 999,
+    fontSize: 13,
+    fontWeight: 600,
+    textDecoration: "none",
+    color: active ? "#fff" : "#444",
+    background: active ? "#111" : "transparent",
+  });
   return (
+    <nav
+      aria-label="Site version"
+      style={{
+        position: "fixed",
+        right: 16,
+        bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+        zIndex: 50,
+        display: "flex",
+        gap: 2,
+        padding: 4,
+        borderRadius: 999,
+        background: "rgba(255,255,255,.92)",
+        boxShadow: "0 4px 18px rgba(0,0,0,.12)",
+        backdropFilter: "blur(8px)",
+      }}
+    >
+      <a href="/" style={pill(v === "1")}>v1</a>
+      <a href="/?v=2" style={pill(v === "2")}>v2</a>
+    </nav>
+  );
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ v?: string }>;
+}) {
+  const { v } = await searchParams;
+  if (v === "2") {
+    return (
+      <>
+        <V2Home />
+        <VersionToggle v="2" />
+      </>
+    );
+  }
+  return (
+    <>
+    <VersionToggle v="1" />
     <div className="wrap">
       <header className="nav">
         <div className="nav-left">
@@ -90,5 +139,6 @@ export default function Home() {
         <span>A text-only expert network.</span>
       </footer>
     </div>
+    </>
   );
 }
