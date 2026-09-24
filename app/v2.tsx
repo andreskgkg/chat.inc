@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Agents rotate through the headline. `logo` is a URL (null → monogram chip).
 // To use a custom logo, drop a file in /public/agents/ and point `logo` at it.
@@ -19,8 +19,134 @@ const AGENTS: { name: string; logo: string | null; tint: string }[] = [
   { name: "Grokbot", logo: "data:image/webp;base64,UklGRowEAABXRUJQVlA4IIAEAABQGwCdASqAAIAAPmEulEckIqIhI5Sa8IAMCWkAE575XOjLRJv47TW7TwA0gUyT9e/OV9M+wX+tfWL/bf2Vf2QKKryV1eLUWv3orBUoYSy4TCsWEdrpvO8ffypbXwe901rEKskJ3Q6SB3nnGc4XsMa5mfd/xKPu+uss5/m7Dy31cdGst9wXmLmpJFeie3DODnECbI3H+zYOu9DpjZl/DhIZ4YQygbTrucGrpW/F3pt1aQLQv+XiZGcY+IZ107trs61/bu1GTHcdccV86dUIbStTkQO3NCc2D1YlXuykw6kqvDBf8AD++t3G5rl0ndB3N6b5pVu9dgO6/emKeuFU/+ZmSshuhZYv3H80isAnm5HCQ2Djpb9lufIP+0tWZoy9UuMZIaVGKVcdNMjpR+gGC3Ppu8Ce3/g6m1P+nS5ZBl4D1m9sdn1QmEId048f0u71Bxv6nh3/LLAibHe5OHv28pN/PgkQ+9MDktnbHW7TVLRKJWnYi6pSixmC3cjv0lXR2wM+OdK1An05SzSWVmQRXYxjNDuMEgx8ZAwOWyVl/sqpPXPB+IDxxhloTp2E+C6SZowXSF7Sy+iDltfBpOqGJ8ReUbL18VAUJzfOfRXC2ef6qJRrVW0Udk6zYp5/n/n71CrYtqUAP/lCm7a5M8qxDRUSr64ekXenN9aLXgwucxcYBsWENv/KOeBxoOfKlI+U8qy4446gAhMhpQ6UW1zt2y2n+VnqoQb+tpas8CoAFBhDfjb9+KDB34Erim04c+USNx7VYy9qPwbbRXwy1+Y9vUmB41RYmYgnVDKPSMLpJO3E3i9UBdszp/Ip6HWlOd6k52kPWzReqWbLmYHoOQ1Hal+CKKt0lJEWf2LgD5vD9R9gwc4LmuB/dsbPd+BzYlNPcVQ2uNOMWYe5Ik7O9f0TD2UPEQHSsnsZRRrNZCKLkXwOsl/P+faBzaADbpCN8N0W8RzkUdGCK5OpnF7T/PyyCIwUtPq4fX5tGLwhZDiwjIrvQizTUe95XQQty62PJvrIZM+kJ0qQZ5ZDCYKQAQUgDEtE0jUPMz/qXc223oNHiL3XpkjBwrY7n3rrWAE4vcBq6HnG/7twzqmiwP3oqZf2uOUxdjndp9ad2CQ3tS7uXORHGqP5NHahLVdTwSq6Jn5RE77QhQZeHIFNJ2cSy8TiJ7gozxqKhiAIhZ/BAQE3OnSM8qe6pGQQS78/1rgpNQ5VSBiQDqA4KCcF2eT+gGDP9WZPSGUpZ4dFRug6fEOmIdb7nl9gNjAPwSFdEj3X7UWQO8OWCOZ1RXnJrtTiR4I7oJ33T658GDsg57i/mArE+UxCHOfN2bAUGDVDh03toiv/+9pUzyBj4E9HNwlCxsfLs0mRbGV+cko7/pmmTJg0rtrq/Dfk66iKTaLwHoyaYcPRDQztwGaE3004IXwrVB9SA03jvGFRgGDVpFFLke9Q7KQ3ypN5ttJgWruaj92W8HS+YCVr+XypgcLxxJ7WCd82RydnvFGA/n3nPXpHa2C7fpZxLcd7q5r3x2G0tqP9/UAAAAA=", tint: "#111111" },
 ];
 
+const BUYERS = [
+  { name: "McKinsey", domain: "mckinsey.com" },
+  { name: "BCG", domain: "bcg.com" },
+  { name: "Bain", domain: "bain.com" },
+  { name: "Goldman Sachs", domain: "goldmansachs.com" },
+  { name: "Morgan Stanley", domain: "morganstanley.com" },
+  { name: "Blackstone", domain: "blackstone.com" },
+];
+
+const QUESTIONS: [string, number][] = [
+  ["Best CRM for a 10-person team?", 15],
+  ["How long did your Series A take?", 40],
+  ["Would you pay $20/mo for this?", 10],
+  ["Which cloud do you trust most?", 20],
+  ["How many hours a week in meetings?", 8],
+  ["Do you use AI at work daily?", 10],
+  ["What did your last laptop cost?", 8],
+  ["Hardest role to hire right now?", 30],
+  ["Is remote working for your team?", 12],
+  ["Which bank do you use for payroll?", 15],
+  ["How do you price enterprise deals?", 50],
+  ["Favorite project tracker?", 10],
+  ["Would you switch from Slack?", 15],
+  ["What's your CAC this quarter?", 45],
+  ["How often do you order delivery?", 6],
+  ["Biggest cost you'd cut first?", 25],
+  ["Do you read the terms before signing?", 5],
+  ["What stack would you start with today?", 30],
+  ["How many streaming apps do you pay for?", 6],
+  ["Where do you buy running shoes?", 8],
+  ["What makes you churn from a tool?", 20],
+  ["How do you vet a new vendor?", 35],
+  ["What's a fair seed valuation?", 60],
+  ["Which EV would you buy next?", 12],
+  ["How do you back up your photos?", 6],
+  ["Is your team hiring this year?", 20],
+  ["Do you trust online reviews?", 5],
+  ["What's on your 2027 roadmap?", 40],
+];
+
+// Slots sit around the edges so the headline stays clear.
+type Slot = { left?: string; right?: string; top: string; tone: string; hideMobile?: boolean };
+const SLOTS: Slot[] = [
+  { left: "6%", top: "16%", tone: "b" },
+  { left: "34%", top: "9%", tone: "p", hideMobile: true },
+  { right: "6%", top: "14%", tone: "o", hideMobile: true },
+  { left: "3%", top: "44%", tone: "p", hideMobile: true },
+  { right: "3%", top: "40%", tone: "b", hideMobile: true },
+  { left: "5%", top: "70%", tone: "o", hideMobile: true },
+  { right: "6%", top: "68%", tone: "p", hideMobile: true },
+  { left: "14%", top: "86%", tone: "p", hideMobile: true },
+  { right: "12%", top: "86%", tone: "b" },
+];
+
+function QuestionField() {
+  const [cells, setCells] = useState(() =>
+    SLOTS.map((_, n) => ({ q: n, on: false }))
+  );
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCells((c) => c.map((x) => ({ ...x, on: true })));
+      return;
+    }
+    let next = SLOTS.length;
+    let tick = 0;
+    const timers: number[] = [];
+    // Stagger the first appearance.
+    SLOTS.forEach((_, n) => {
+      timers.push(
+        window.setTimeout(() => {
+          setCells((c) => c.map((x, k) => (k === n ? { ...x, on: true } : x)));
+        }, 300 + n * 450)
+      );
+    });
+    const id = window.setInterval(() => {
+      const slot = tick % SLOTS.length;
+      tick += 1;
+      setCells((c) => c.map((x, k) => (k === slot ? { ...x, on: false } : x)));
+      timers.push(
+        window.setTimeout(() => {
+          const q = next % QUESTIONS.length;
+          next += 1;
+          setCells((c) => c.map((x, k) => (k === slot ? { q, on: true } : x)));
+        }, 1100)
+      );
+    }, 1500);
+    return () => {
+      window.clearInterval(id);
+      timers.forEach((t) => window.clearTimeout(t));
+    };
+  }, []);
+
+  return (
+    <div className="v2-field" aria-hidden="true">
+      <div className="v2-glow g1" />
+      <div className="v2-glow g2" />
+      <div className="v2-glow g3" />
+      {cells.map((c, n) => {
+        const s = SLOTS[n];
+        const [text, price] = QUESTIONS[c.q];
+        return (
+          <div
+            key={n}
+            className={`v2-q t-${s.tone} ${c.on ? "on" : ""} ${s.hideMobile ? "hm" : ""}`}
+            style={{ left: s.left, right: s.right, top: s.top }}
+          >
+            {text} <b>${price}</b>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function V2Home() {
   const [i, setI] = useState(0);
+  const finalRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [widths, setWidths] = useState<number[]>([]);
+
+  useEffect(() => {
+    const measure = () =>
+      setWidths(finalRefs.current.map((el) => el?.offsetWidth ?? 0));
+    measure();
+    document.fonts?.ready.then(measure);
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   useEffect(() => {
     AGENTS.forEach((a) => {
@@ -36,6 +162,7 @@ export function V2Home() {
   return (
     <div className="v2">
       <style>{css}</style>
+      <QuestionField />
 
       <header className="v2-nav">
         <a className="v2-brand" href="/?v=2">
@@ -88,16 +215,17 @@ export function V2Home() {
             <div className="v2-visual v2-buyers">
               <span className="v2-buyers-label">Who pays for answers today</span>
               <ul>
-                <li>Hedge funds</li>
-                <li>Private equity</li>
-                <li>Consulting firms</li>
-                <li>Investment banks</li>
-                <li>Venture capital</li>
-                <li>Corporate strategy teams</li>
+                {BUYERS.map((b) => (
+                  <li key={b.name}>
+                    <img src={favicon(b.domain)} alt="" width={28} height={28} />
+                    <span>{b.name}</span>
+                  </li>
+                ))}
               </ul>
               <small>
                 ~$3B on expert networks (Inex One, 2025) &middot; $56B on market
-                research incl. surveys (ESOMAR, 2024)
+                research incl. surveys (ESOMAR, 2024). Logos show the kinds of
+                firms that buy expert research; they are not chat.inc customers.
               </small>
             </div>
           </article>
@@ -127,10 +255,16 @@ export function V2Home() {
       <section className="v2-final" aria-label="Get started">
         <h2 className="v2-final-h">
           Try it on{" "}
-          <span className="v2-slot">
+          <span
+            className="v2-slot"
+            style={widths[i] ? { width: widths[i] } : undefined}
+          >
             {AGENTS.map((a, n) => (
               <span
                 key={a.name}
+                ref={(el) => {
+                  finalRefs.current[n] = el;
+                }}
                 className={`v2-agent ${n === i ? "in" : "out"}`}
                 aria-hidden={n !== i}
               >
@@ -156,11 +290,11 @@ export function V2Home() {
 
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-.v2 { min-height: 100vh; background: #fcfcfc; color: #111; font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; }
-.v2-nav { max-width: 1160px; width: 100%; margin: 0 auto; padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.v2 { position: relative; min-height: 100vh; background: #fcfcfc; color: #111; font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; }
+.v2-nav { position: relative; z-index: 1; max-width: 1160px; width: 100%; margin: 0 auto; padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 0; display: flex; align-items: center; justify-content: space-between; }
 .v2-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; color: #111; text-decoration: none; }
 .v2-brand img { border-radius: 5px; }
-.v2-main { flex: 1; min-height: calc(100vh - 60px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px 96px; }
+.v2-main { position: relative; z-index: 1; flex: 1; min-height: calc(100vh - 60px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px 96px; }
 .v2-mark { border-radius: 20px; margin-bottom: 36px; }
 .v2-h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.12; letter-spacing: -0.035em; font-weight: 500; margin: 0; }
 .v2-slot { display: inline-grid; vertical-align: bottom; }
@@ -193,7 +327,8 @@ const css = `
 .v2-stats small { grid-column: 1 / -1; font-size: 11px; color: #999; }
 .v2-buyers-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #888; margin-bottom: 14px; }
 .v2-buyers ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.v2-buyers li { background: #f7f7f7; border-radius: 12px; padding: 16px 12px; text-align: center; font-size: 15px; font-weight: 600; color: #333; letter-spacing: -0.01em; }
+.v2-buyers li { background: #f7f7f7; border-radius: 12px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 14px; font-weight: 600; color: #333; letter-spacing: -0.01em; }
+.v2-buyers li img { width: 28px; height: 28px; border-radius: 6px; object-fit: contain; }
 .v2-buyers small { display: block; margin-top: 14px; font-size: 11px; color: #999; line-height: 1.5; }
 .v2-thread { display: flex; flex-direction: column; gap: 10px; }
 .v2-bubble { max-width: 86%; padding: 11px 15px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
@@ -207,16 +342,33 @@ const css = `
   radial-gradient(90% 70% at 50% 110%, #b9b6f7 0%, rgba(185,182,247,0) 70%),
   linear-gradient(180deg, #fafafa 0%, #f1f0fd 45%, #d9d6fb 100%); }
 .v2-final-h { font-size: clamp(34px, 5.2vw, 64px); letter-spacing: -0.03em; font-weight: 500; margin: 0; }
-.v2-final-h .v2-slot { vertical-align: -0.28em; }
+.v2-final-h { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .26em; }
+.v2-final-h .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
+.v2-final-h .v2-agent { white-space: nowrap; }
 .v2-final-h .v2-chip { width: 1em; height: 1em; }
 .v2-final-sub { margin: 18px 0 30px; font-size: 18px; color: #222; }
 .v2-final-cta { display: inline-flex; align-items: center; height: 50px; padding: 0 26px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .15s ease; }
 .v2-final-cta:hover { transform: translateY(-1px); }
+.v2-field { position: absolute; top: 0; left: 0; right: 0; height: 100vh; min-height: 640px; overflow: hidden; z-index: 0; pointer-events: none; }
+.v2-glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: v2drift 28s ease-in-out infinite alternate; }
+.v2-glow.g1 { width: 46vw; height: 46vw; left: -10vw; top: -8vw; background: #b9ccff; }
+.v2-glow.g2 { width: 40vw; height: 40vw; right: -8vw; top: 10%; background: #d9c8ff; animation-duration: 34s; animation-direction: alternate-reverse; }
+.v2-glow.g3 { width: 44vw; height: 34vw; left: 26%; bottom: -16vw; background: #ffd9c4; animation-duration: 40s; }
+@keyframes v2drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(4vw,3vw,0) scale(1.08); } }
+.v2-q { position: absolute; padding: 9px 14px; border-radius: 18px; border-bottom-left-radius: 6px; font-size: 14px; line-height: 1.3; color: #2a2a2a; background: rgba(255,255,255,.72); box-shadow: 0 6px 24px rgba(40,60,120,.08); backdrop-filter: blur(6px); white-space: nowrap; opacity: 0; transform: translateY(10px) scale(.97); transition: opacity 1s ease, transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.v2-q.on { opacity: .9; transform: none; }
+.v2-q b { font-weight: 600; margin-left: 4px; }
+.v2-q.t-b b { color: #2a63cd; }
+.v2-q.t-p b { color: #7b5ce0; }
+.v2-q.t-o b { color: #d0703f; }
+@media (prefers-reduced-motion: reduce) { .v2-glow { animation: none; } .v2-q { transition: none; } }
 @media (max-width: 760px) {
   .v2-final { padding: 110px 20px 130px; }
   .v2-cards { grid-template-columns: 1fr; }
   .v2-card { padding: 28px 24px 0; min-height: 0; }
   .v2-stats strong { font-size: 32px; }
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .v2-q.hm { display: none; }
+  .v2-q { font-size: 12px; max-width: 64vw; white-space: normal; }
 }
 `;
