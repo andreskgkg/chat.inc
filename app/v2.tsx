@@ -338,10 +338,6 @@ export function V2Home() {
 
           <Reveal as="article" className="v2-card c2" delay={120}>
             <h3>Let your agent answer questions on your behalf</h3>
-            <p>
-              Your agent can identify the questions you qualify for and answer
-              them for you, so you make money.
-            </p>
             <ThreadDemo />
           </Reveal>
         </div>
@@ -409,7 +405,7 @@ const css = `
 .v2-agents { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0; margin: 28px 0 0; }
 .v2-agents li { font-size: 13px; color: #777; padding: 5px 11px; border-radius: 999px; background: #efefef; transition: background .2s, color .2s; }
 .v2-agents li.on { background: #111; color: #fff; }
-.v2-more { max-width: 1160px; width: 100%; margin: 0 auto; padding: 72px 20px 120px; text-align: center; }
+.v2-more { max-width: 1260px; width: 100%; margin: 0 auto; padding: 72px 20px 120px; text-align: center; }
 .v2-h2 { font-size: clamp(32px, 4.5vw, 52px); letter-spacing: -0.03em; font-weight: 600; margin: 0; }
 .v2-lede { color: #444; font-size: 19px; line-height: 1.55; max-width: 640px; margin: 16px auto 48px; }
 .v2-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; text-align: left; }
