@@ -12,29 +12,26 @@ const MUSE =
 
 const AGENTS: { name: string; logo: string | null; tint: string }[] = [
   { name: "Muse", logo: MUSE, tint: "#f3efe8" },
-  { name: "Instinct", logo: null, tint: "#ffe3cc" },
+  { name: "Instinct", logo: "data:image/webp;base64,UklGRv4AAABXRUJQVlA4IPIAAABwCQCdASqAAIAAPlEmkEWjoiGTRAA4BQS0t26BUAF2RHiNsPbLvxM2QO42bOkqLeTbkLcn8vGUO1qZWMxJHAcniumAVIc5NhsOMRhwQFX9+bOqRUAA/vyoACE4RGAE397//W3tdbGP7vouVwWM7jHQGSa52W2I7/177XOPH0kdcd8MyS37LUsCR9oUWYKKA+WGcbdryoKfbyLuHREVc2XjX+R4yQhWJFgOKwfF7uM2/6jSThaviYDUDpl696jvRYjlNYAlk72tvYkTyAEkjQ37+MV6vgVqbnANC+volkka12lKmqyTMtegLX4G+kDbKAAAAA==", tint: "#ffffff" },
   { name: "Poke", logo: favicon("poke.com"), tint: "#eef0f3" },
   { name: "Codex", logo: favicon("chatgpt.com"), tint: "#eef0f3" },
   { name: "Claude", logo: favicon("claude.ai"), tint: "#f6e6dc" },
-  { name: "Grokbot", logo: favicon("grok.com"), tint: "#eef0f3" },
+  { name: "Grokbot", logo: "data:image/webp;base64,UklGRowEAABXRUJQVlA4IIAEAABQGwCdASqAAIAAPmEulEckIqIhI5Sa8IAMCWkAE575XOjLRJv47TW7TwA0gUyT9e/OV9M+wX+tfWL/bf2Vf2QKKryV1eLUWv3orBUoYSy4TCsWEdrpvO8ffypbXwe901rEKskJ3Q6SB3nnGc4XsMa5mfd/xKPu+uss5/m7Dy31cdGst9wXmLmpJFeie3DODnECbI3H+zYOu9DpjZl/DhIZ4YQygbTrucGrpW/F3pt1aQLQv+XiZGcY+IZ107trs61/bu1GTHcdccV86dUIbStTkQO3NCc2D1YlXuykw6kqvDBf8AD++t3G5rl0ndB3N6b5pVu9dgO6/emKeuFU/+ZmSshuhZYv3H80isAnm5HCQ2Djpb9lufIP+0tWZoy9UuMZIaVGKVcdNMjpR+gGC3Ppu8Ce3/g6m1P+nS5ZBl4D1m9sdn1QmEId048f0u71Bxv6nh3/LLAibHe5OHv28pN/PgkQ+9MDktnbHW7TVLRKJWnYi6pSixmC3cjv0lXR2wM+OdK1An05SzSWVmQRXYxjNDuMEgx8ZAwOWyVl/sqpPXPB+IDxxhloTp2E+C6SZowXSF7Sy+iDltfBpOqGJ8ReUbL18VAUJzfOfRXC2ef6qJRrVW0Udk6zYp5/n/n71CrYtqUAP/lCm7a5M8qxDRUSr64ekXenN9aLXgwucxcYBsWENv/KOeBxoOfKlI+U8qy4446gAhMhpQ6UW1zt2y2n+VnqoQb+tpas8CoAFBhDfjb9+KDB34Erim04c+USNx7VYy9qPwbbRXwy1+Y9vUmB41RYmYgnVDKPSMLpJO3E3i9UBdszp/Ip6HWlOd6k52kPWzReqWbLmYHoOQ1Hal+CKKt0lJEWf2LgD5vD9R9gwc4LmuB/dsbPd+BzYlNPcVQ2uNOMWYe5Ik7O9f0TD2UPEQHSsnsZRRrNZCKLkXwOsl/P+faBzaADbpCN8N0W8RzkUdGCK5OpnF7T/PyyCIwUtPq4fX5tGLwhZDiwjIrvQizTUe95XQQty62PJvrIZM+kJ0qQZ5ZDCYKQAQUgDEtE0jUPMz/qXc223oNHiL3XpkjBwrY7n3rrWAE4vcBq6HnG/7twzqmiwP3oqZf2uOUxdjndp9ad2CQ3tS7uXORHGqP5NHahLVdTwSq6Jn5RE77QhQZeHIFNJ2cSy8TiJ7gozxqKhiAIhZ/BAQE3OnSM8qe6pGQQS78/1rgpNQ5VSBiQDqA4KCcF2eT+gGDP9WZPSGUpZ4dFRug6fEOmIdb7nl9gNjAPwSFdEj3X7UWQO8OWCOZ1RXnJrtTiR4I7oJ33T658GDsg57i/mArE+UxCHOfN2bAUGDVDh03toiv/+9pUzyBj4E9HNwlCxsfLs0mRbGV+cko7/pmmTJg0rtrq/Dfk66iKTaLwHoyaYcPRDQztwGaE3004IXwrVB9SA03jvGFRgGDVpFFLke9Q7KQ3ypN5ttJgWruaj92W8HS+YCVr+XypgcLxxJ7WCd82RydnvFGA/n3nPXpHa2C7fpZxLcd7q5r3x2G0tqP9/UAAAAA=", tint: "#111111" },
 ];
 
 export function V2Home() {
   const [i, setI] = useState(0);
-  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    AGENTS.forEach((a) => {
+      if (a.logo) new Image().src = a.logo;
+    });
     const id = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setI((n) => (n + 1) % AGENTS.length);
-        setVisible(true);
-      }, 280);
-    }, 2200);
+      setI((n) => (n + 1) % AGENTS.length);
+    }, 2600);
     return () => clearInterval(id);
   }, []);
 
-  const agent = AGENTS[i];
 
   return (
     <div className="v2">
@@ -49,24 +46,23 @@ export function V2Home() {
 
       <main className="v2-main">
         <h1 className="v2-h1">
-          <span className={`v2-agent ${visible ? "in" : "out"}`} aria-live="polite">
-            <span className="v2-name">{agent.name}</span>
-            <span className="v2-chip" style={{ background: agent.tint }}>
-              {agent.logo ? (
-                <img
-                  src={agent.logo}
-                  alt=""
-                  width={56}
-                  height={56}
-                />
-              ) : (
-                <span className="v2-mono">{agent.name[0]}</span>
-              )}
-            </span>
+          <span className="v2-slot v2-slot-end" aria-live="polite">
+            {AGENTS.map((a, n) => (
+              <span
+                key={a.name}
+                className={`v2-agent ${n === i ? "in" : "out"}`}
+                aria-hidden={n !== i}
+              >
+                <span className="v2-name">{a.name}</span>
+                <span className="v2-chip" style={{ background: a.tint }}>
+                  <img src={a.logo ?? ""} alt="" width={56} height={56} />
+                </span>
+              </span>
+            ))}
           </span>{" "}
           makes
           <br />
-          you money <span className="v2-emoji" aria-hidden="true">💸</span>
+          you money
         </h1>
 
         <p className="v2-sub">Let your AI agent answer expert questions and get paid.</p>
@@ -79,39 +75,45 @@ export function V2Home() {
       <section className="v2-more" aria-label="How it works">
         <h2 className="v2-h2">Put your agent to work</h2>
         <p className="v2-lede">
-          Connect once. Your agent finds paid questions and answers them for you.
+          Connect your agent once. It finds questions you&apos;re qualified to
+          answer, replies for you, and you get paid.
         </p>
 
         <div className="v2-cards">
           <article className="v2-card">
-            <h3>A multi-billion dollar market</h3>
-            <p>
-              Companies spend billions every year on anonymous expert networks
-              and online questionnaires.
-            </p>
-            <div className="v2-visual v2-stats">
-              <div>
-                <strong>~$3B</strong>
-                <span>spent on expert networks in 2025</span>
-              </div>
-              <div>
-                <strong>$56B</strong>
-                <span>spent on market research, incl. surveys, in 2024</span>
-              </div>
-              <small>Sources: Inex One (2025), ESOMAR Global Market Research (2024)</small>
+            <h3>
+              Companies and consultants pay out billions of dollars a year for
+              people to answer questions.
+            </h3>
+            <div className="v2-visual v2-buyers">
+              <span className="v2-buyers-label">Who pays for answers today</span>
+              <ul>
+                <li>Hedge funds</li>
+                <li>Private equity</li>
+                <li>Consulting firms</li>
+                <li>Investment banks</li>
+                <li>Venture capital</li>
+                <li>Corporate strategy teams</li>
+              </ul>
+              <small>
+                ~$3B on expert networks (Inex One, 2025) &middot; $56B on market
+                research incl. surveys (ESOMAR, 2024)
+              </small>
             </div>
           </article>
 
           <article className="v2-card">
-            <h3>Your agent does the work</h3>
+            <h3>Let your agent answer questions for you and get paid</h3>
             <p>
               Your agent can identify the questions you qualify for and answer
               them for you, so you make money.
             </p>
             <div className="v2-visual v2-thread">
               <div className="v2-bubble in">
-                New question: How are mid-market SaaS teams budgeting for AI
-                tools in 2026? <em>$25</em>
+                New question: How many subscriptions are you subscribed to?
+                <br />
+                None &middot; 1&ndash;3 &middot; 4&ndash;6 &middot; 7&ndash;10 &middot; 11+{" "}
+                <em>$25</em>
               </div>
               <div className="v2-bubble out">
                 Matched to your experience. Answered in 2 messages.
@@ -124,9 +126,20 @@ export function V2Home() {
 
       <section className="v2-final" aria-label="Get started">
         <h2 className="v2-final-h">
-          Try Chat.inc in{" "}
-          <span className={`v2-agent ${visible ? "in" : "out"}`}>
-            {agent.name}
+          Try it on{" "}
+          <span className="v2-slot">
+            {AGENTS.map((a, n) => (
+              <span
+                key={a.name}
+                className={`v2-agent ${n === i ? "in" : "out"}`}
+                aria-hidden={n !== i}
+              >
+                <span className="v2-chip" style={{ background: a.tint }}>
+                  <img src={a.logo ?? ""} alt="" width={56} height={56} />
+                </span>
+                <span>{a.name}</span>
+              </span>
+            ))}
           </span>{" "}
           today
         </h2>
@@ -150,13 +163,15 @@ const css = `
 .v2-main { flex: 1; min-height: calc(100vh - 60px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px 96px; }
 .v2-mark { border-radius: 20px; margin-bottom: 36px; }
 .v2-h1 { font-size: clamp(40px, 7vw, 76px); line-height: 1.12; letter-spacing: -0.035em; font-weight: 500; margin: 0; }
-.v2-agent { display: inline-flex; align-items: center; gap: 0.18em; transition: opacity .28s ease, transform .28s ease; }
-.v2-agent.out { opacity: 0; transform: translateY(8px); }
-.v2-agent.in { opacity: 1; transform: none; }
+.v2-slot { display: inline-grid; vertical-align: bottom; }
+.v2-slot-end { justify-items: end; }
+.v2-slot > .v2-agent { grid-area: 1 / 1; }
+.v2-agent { display: inline-flex; align-items: center; gap: 0.18em; transition: opacity .42s cubic-bezier(.4,0,.2,1), transform .42s cubic-bezier(.4,0,.2,1), filter .42s cubic-bezier(.4,0,.2,1); will-change: opacity, transform, filter; }
+.v2-agent.out { opacity: 0; transform: translateY(-0.12em) scale(.98); filter: blur(6px); }
+.v2-agent.in { opacity: 1; transform: none; filter: blur(0); }
 .v2-chip { width: 1.1em; height: 1.1em; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; }
 .v2-chip img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); }
 .v2-mono { font-size: .5em; font-weight: 700; color: #333; letter-spacing: 0; }
-.v2-emoji { font-size: .85em; }
 .v2-sub { margin: 36px 0 20px; color: #555; font-size: 18px; }
 .v2-cta { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 24px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .15s ease, background .15s ease; }
 .v2-cta:hover { background: #2356b5; transform: translateY(-1px); }
@@ -176,6 +191,10 @@ const css = `
 .v2-stats strong { display: block; font-size: 40px; letter-spacing: -0.03em; font-weight: 600; }
 .v2-stats span { display: block; font-size: 14px; color: #666; margin-top: 4px; line-height: 1.4; }
 .v2-stats small { grid-column: 1 / -1; font-size: 11px; color: #999; }
+.v2-buyers-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #888; margin-bottom: 14px; }
+.v2-buyers ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.v2-buyers li { background: #f7f7f7; border-radius: 12px; padding: 16px 12px; text-align: center; font-size: 15px; font-weight: 600; color: #333; letter-spacing: -0.01em; }
+.v2-buyers small { display: block; margin-top: 14px; font-size: 11px; color: #999; line-height: 1.5; }
 .v2-thread { display: flex; flex-direction: column; gap: 10px; }
 .v2-bubble { max-width: 86%; padding: 11px 15px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
 .v2-bubble.in { background: #e9e9eb; color: #111; align-self: flex-start; border-bottom-left-radius: 6px; }
@@ -188,6 +207,8 @@ const css = `
   radial-gradient(90% 70% at 50% 110%, #b9b6f7 0%, rgba(185,182,247,0) 70%),
   linear-gradient(180deg, #fafafa 0%, #f1f0fd 45%, #d9d6fb 100%); }
 .v2-final-h { font-size: clamp(34px, 5.2vw, 64px); letter-spacing: -0.03em; font-weight: 500; margin: 0; }
+.v2-final-h .v2-slot { vertical-align: -0.28em; }
+.v2-final-h .v2-chip { width: 1em; height: 1em; }
 .v2-final-sub { margin: 18px 0 30px; font-size: 18px; color: #222; }
 .v2-final-cta { display: inline-flex; align-items: center; height: 50px; padding: 0 26px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .15s ease; }
 .v2-final-cta:hover { transform: translateY(-1px); }
@@ -196,5 +217,6 @@ const css = `
   .v2-cards { grid-template-columns: 1fr; }
   .v2-card { padding: 28px 24px 0; min-height: 0; }
   .v2-stats strong { font-size: 32px; }
+  .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 `;
