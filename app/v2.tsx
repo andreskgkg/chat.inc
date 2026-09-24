@@ -313,8 +313,7 @@ export function V2Home() {
         <div className="v2-cards">
           <Reveal as="article" className="v2-card c1">
             <h3>
-              Companies pay $20B+ / year on market research &mdash; for people to
-              answer questions.
+              Companies pay $20B+ per year on market research
             </h3>
             <div className="v2-visual v2-buyers">
               <span className="v2-buyers-label">Who pays for answers today</span>
@@ -335,7 +334,7 @@ export function V2Home() {
           </Reveal>
 
           <Reveal as="article" className="v2-card c2" delay={120}>
-            <h3>Let your agent answer questions for you and get paid</h3>
+            <h3>Let your agent answer questions on your behalf</h3>
             <p>
               Your agent can identify the questions you qualify for and answer
               them for you, so you make money.
