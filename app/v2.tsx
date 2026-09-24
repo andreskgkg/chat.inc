@@ -138,14 +138,24 @@ export function V2Home() {
   const [i, setI] = useState(0);
   const finalRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [widths, setWidths] = useState<number[]>([]);
+  const heroRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const [heroWidths, setHeroWidths] = useState<number[]>([]);
 
   useEffect(() => {
     const measure = () =>
       setWidths(finalRefs.current.map((el) => el?.offsetWidth ?? 0));
+    const measureHero = () =>
+      setHeroWidths(heroRefs.current.map((el) => el?.offsetWidth ?? 0));
+    measureHero();
+    document.fonts?.ready.then(measureHero);
+    window.addEventListener("resize", measureHero);
     measure();
     document.fonts?.ready.then(measure);
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", measureHero);
+    };
   }, []);
 
   useEffect(() => {
@@ -173,22 +183,30 @@ export function V2Home() {
 
       <main className="v2-main">
         <h1 className="v2-h1">
-          <span className="v2-slot v2-slot-end" aria-live="polite">
-            {AGENTS.map((a, n) => (
-              <span
-                key={a.name}
-                className={`v2-agent ${n === i ? "in" : "out"}`}
-                aria-hidden={n !== i}
-              >
-                <span className="v2-name">{a.name}</span>
-                <span className="v2-chip" style={{ background: a.tint }}>
-                  <img src={a.logo ?? ""} alt="" width={56} height={56} />
+          <span className="v2-line1">
+            <span
+              className="v2-slot"
+              aria-live="polite"
+              style={heroWidths[i] ? { width: heroWidths[i] } : undefined}
+            >
+              {AGENTS.map((a, n) => (
+                <span
+                  key={a.name}
+                  ref={(el) => {
+                    heroRefs.current[n] = el;
+                  }}
+                  className={`v2-agent ${n === i ? "in" : "out"}`}
+                  aria-hidden={n !== i}
+                >
+                  <span className="v2-name">{a.name}</span>
+                  <span className="v2-chip" style={{ background: a.tint }}>
+                    <img src={a.logo ?? ""} alt="" width={56} height={56} />
+                  </span>
                 </span>
-              </span>
-            ))}
-          </span>{" "}
-          makes
-          <br />
+              ))}
+            </span>
+            <span>makes</span>
+          </span>
           you money
         </h1>
 
@@ -343,6 +361,9 @@ const css = `
   linear-gradient(180deg, #fafafa 0%, #f1f0fd 45%, #d9d6fb 100%); }
 .v2-final-h { font-size: clamp(34px, 5.2vw, 64px); letter-spacing: -0.03em; font-weight: 500; margin: 0; }
 .v2-final-h { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .26em; }
+.v2-line1 { display: flex; justify-content: center; align-items: center; column-gap: .22em; }
+.v2-line1 .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
+.v2-line1 .v2-agent { white-space: nowrap; }
 .v2-final-h .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
 .v2-final-h .v2-agent { white-space: nowrap; }
 .v2-final-h .v2-chip { width: 1em; height: 1em; }
