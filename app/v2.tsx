@@ -165,29 +165,32 @@ function ThreadDemo() {
       setStep(4);
       return;
     }
-    const plan = [700, 1300, 1500, 900, 4200];
+    // 0 empty, 1 question, 2 typing, 3 answer, 4 paid, 5 gentle fade-out
+    const plan = [700, 1500, 1700, 1000, 3800, 900];
     const t = window.setTimeout(
-      () => setStep((s) => (s + 1) % 5),
+      () => setStep((s) => (s + 1) % 6),
       plan[step]
     );
     return () => window.clearTimeout(t);
   }, [seen, step]);
 
   return (
-    <div ref={ref} className="v2-visual v2-thread">
+    <div ref={ref} className={`v2-visual v2-thread ${step === 5 ? "leaving" : ""}`}>
       <div className={`v2-bubble in ${step >= 1 ? "show" : ""}`}>
         New question: How many subscriptions are you subscribed to?
         <br />
         None &middot; 1&ndash;3 &middot; 4&ndash;6 &middot; 7&ndash;10 &middot; 11+{" "}
         <em>$25</em>
       </div>
-      <div className={`v2-typing ${step === 2 ? "show" : ""}`} aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </div>
-      <div className={`v2-bubble out ${step >= 3 ? "show" : ""}`}>
-        Matched to your experience. Answered in 2 messages.
+      <div className="v2-out-wrap">
+        <div className={`v2-bubble out ${step >= 3 ? "show" : ""}`}>
+          Matched to your experience. Answered in 2 messages.
+        </div>
+        <div className={`v2-typing ${step === 2 ? "show" : ""}`} aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
       </div>
       <div className={`v2-paid ${step >= 4 ? "show" : ""}`}>+$25.00 paid to you</div>
     </div>
@@ -469,15 +472,20 @@ const css = `
 .v2-reveal.seen .v2-buyers li:nth-child(6) { animation-delay: .40s; }
 @keyframes v2pop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
 .v2-thread { min-height: 250px; }
-.v2-thread .v2-bubble, .v2-thread .v2-paid { opacity: 0; transform: translateY(8px); transition: opacity .45s ease, transform .5s cubic-bezier(.2,.7,.2,1); }
+.v2-thread .v2-bubble, .v2-thread .v2-paid, .v2-thread .v2-typing { opacity: 0; transform: translateY(12px) scale(.97); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); will-change: opacity, transform; }
+.v2-thread .v2-bubble.in { transform-origin: bottom left; }
+.v2-thread .v2-bubble.out, .v2-thread .v2-typing { transform-origin: bottom right; }
 .v2-thread .show { opacity: 1; transform: none; }
-.v2-typing { align-self: flex-end; display: none; gap: 4px; padding: 12px 14px; border-radius: 18px; background: #0a84ff; }
-.v2-typing.show { display: inline-flex; }
+.v2-thread.leaving .v2-bubble, .v2-thread.leaving .v2-paid { opacity: 0; transform: translateY(-6px); transition-duration: .8s; }
+.v2-out-wrap { position: relative; align-self: flex-end; max-width: 86%; display: flex; justify-content: flex-end; }
+.v2-out-wrap .v2-bubble.out { max-width: 100%; }
+.v2-typing { position: absolute; right: 0; top: 0; display: inline-flex; gap: 4px; padding: 13px 15px; border-radius: 18px; border-bottom-right-radius: 6px; background: #0a84ff; pointer-events: none; }
+.v2-typing.show { transition-duration: .45s; }
 .v2-typing i { width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .5; animation: v2dot 1s infinite ease-in-out; }
 .v2-typing i:nth-child(2) { animation-delay: .15s; }
 .v2-typing i:nth-child(3) { animation-delay: .3s; }
 @keyframes v2dot { 0%, 80%, 100% { opacity: .35; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
-.v2-paid.show { animation: v2glow 1.2s ease; }
+.v2-paid.show { animation: v2glow 1.4s cubic-bezier(.22,1,.36,1) .2s; }
 @keyframes v2glow { 0% { box-shadow: 0 0 0 0 rgba(26,143,60,.35); } 100% { box-shadow: 0 0 0 14px rgba(26,143,60,0); } }
 @media (prefers-reduced-motion: reduce) { .v2-reveal { opacity: 1; transform: none; transition: none; } .v2-reveal.seen .v2-buyers li { animation: none; } }
 @media (max-width: 760px) {
