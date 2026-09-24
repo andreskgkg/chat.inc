@@ -304,7 +304,7 @@ export function V2Home() {
       </main>
 
       <section className="v2-more" aria-label="How it works">
-        <h2 className="v2-h2">Put your agent to work</h2>
+        <h2 className="v2-h2">Let your agent work for you</h2>
         <p className="v2-lede">
           Connect your agent once. It finds questions you&apos;re qualified to
           answer, replies for you, and you get paid.
