@@ -156,17 +156,22 @@ function useInView<T extends Element>() {
 }
 
 // Plays the question -> typing -> answer -> paid sequence on a slow loop.
+const OPTIONS = ["None", "1\u20133", "4\u20136", "7\u201310", "11+"];
+const PICK = 2;
+
+// An assistant-style chat: the agent gets a paid question, taps an answer, gets paid.
 function ThreadDemo() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const [step, setStep] = useState(0);
+  const claude = AGENTS.find((a) => a.name === "Claude");
   useEffect(() => {
     if (!seen) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setStep(4);
       return;
     }
-    // 0 empty, 1 question, 2 typing, 3 answer, 4 paid, 5 gentle fade-out
-    const plan = [700, 1500, 1700, 1000, 3800, 900];
+    // 0 empty, 1 question + options, 2 choosing, 3 answered, 4 paid, 5 fade-out
+    const plan = [700, 1700, 900, 1300, 3600, 900];
     const t = window.setTimeout(
       () => setStep((s) => (s + 1) % 6),
       plan[step]
@@ -175,23 +180,37 @@ function ThreadDemo() {
   }, [seen, step]);
 
   return (
-    <div ref={ref} className={`v2-visual v2-thread ${step === 5 ? "leaving" : ""}`}>
-      <div className={`v2-bubble in ${step >= 1 ? "show" : ""}`}>
-        New question: How many subscriptions are you subscribed to?
-        <br />
-        None &middot; 1&ndash;3 &middot; 4&ndash;6 &middot; 7&ndash;10 &middot; 11+{" "}
-        <em>$25</em>
+    <div ref={ref} className={`v2-visual v2-chat ${step === 5 ? "leaving" : ""}`}>
+      <div className="v2-chat-bar">
+        <span className="v2-chat-avatar" style={{ background: claude?.tint }}>
+          {claude?.logo && <img src={claude.logo} alt="" width={20} height={20} />}
+        </span>
+        <span>Claude</span>
+        <span className="v2-chat-sub">connected to chat.inc</span>
       </div>
-      <div className="v2-out-wrap">
-        <div className={`v2-bubble out ${step >= 3 ? "show" : ""}`}>
-          Matched to your experience. Answered in 2 messages.
-        </div>
-        <div className={`v2-typing ${step === 2 ? "show" : ""}`} aria-hidden="true">
-          <i />
-          <i />
-          <i />
+
+      <div className={`v2-chat-msg ${step >= 1 ? "show" : ""}`}>
+        <p className="v2-chat-lead">
+          chat.inc found a paid question for you <b>$25</b>
+        </p>
+        <p className="v2-chat-q">How many subscriptions are you subscribed to?</p>
+        <div className="v2-chat-opts" role="group" aria-label="Answer options">
+          {OPTIONS.map((o, n) => (
+            <span
+              key={o}
+              className={`v2-opt ${n === PICK && step === 2 ? "picking" : ""} ${
+                n === PICK && step >= 3 ? "picked" : ""
+              }`}
+            >
+              {o}
+            </span>
+          ))}
         </div>
       </div>
+
+      <p className={`v2-chat-note ${step >= 3 ? "show" : ""}`}>
+        Answered on your behalf based on your profile.
+      </p>
       <div className={`v2-paid ${step >= 4 ? "show" : ""}`}>+$25.00 paid to you</div>
     </div>
   );
@@ -375,6 +394,18 @@ export function V2Home() {
           Connect your agent
         </a>
       </section>
+
+      <footer className="v2-footer">
+        <a className="v2-brand" href="/?v=2">
+          <img src="/icon.svg" alt="" width={20} height={20} />
+          chat.inc
+        </a>
+        <nav aria-label="Footer">
+          <a href="mailto:a@chat.inc?subject=Support">Support</a>
+          <a href="#connect">Login</a>
+          <a href="mailto:a@chat.inc?subject=Inquiry">Inquiries</a>
+        </nav>
+      </footer>
     </div>
   );
 }
@@ -408,11 +439,11 @@ const css = `
 .v2-more { max-width: 1260px; width: 100%; margin: 0 auto; padding: 72px 20px 120px; text-align: center; }
 .v2-h2 { font-size: clamp(32px, 4.5vw, 52px); letter-spacing: -0.03em; font-weight: 600; margin: 0; }
 .v2-lede { color: #444; font-size: 19px; line-height: 1.55; max-width: 640px; margin: 16px auto 48px; }
-.v2-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; text-align: left; }
-.v2-card { background: #f3f2f0; border-radius: 28px; padding: 36px 36px 0; display: flex; flex-direction: column; overflow: hidden; min-height: 460px; }
-.v2-card h3 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+.v2-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto 1fr; column-gap: 20px; row-gap: 0; text-align: left; }
+.v2-card { background: #f3f2f0; border-radius: 28px; padding: 36px 36px 0; display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; overflow: hidden; }
+.v2-card h3 { font-size: 20px; font-weight: 600; margin: 0; align-self: start; }
 .v2-card p { font-size: 17px; line-height: 1.55; color: #333; margin: 0; }
-.v2-visual { margin-top: auto; background: #fff; border-radius: 18px 18px 0 0; padding: 24px; box-shadow: 0 -1px 0 rgba(0,0,0,.04), 0 10px 30px rgba(0,0,0,.06); }
+.v2-visual { margin-top: 24px; align-self: stretch; background: #fff; border-radius: 18px 18px 0 0; padding: 24px; box-shadow: 0 -1px 0 rgba(0,0,0,.04), 0 10px 30px rgba(0,0,0,.06); }
 .v2-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .v2-stats div { background: #f7f7f7; border-radius: 14px; padding: 18px; }
 .v2-stats strong { display: block; font-size: 40px; letter-spacing: -0.03em; font-weight: 600; }
@@ -485,12 +516,34 @@ const css = `
 .v2-typing i:nth-child(2) { animation-delay: .15s; }
 .v2-typing i:nth-child(3) { animation-delay: .3s; }
 @keyframes v2dot { 0%, 80%, 100% { opacity: .35; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
+.v2-chat { background: #faf9f5; display: flex; flex-direction: column; gap: 14px; min-height: 250px; color: #2b2a26; }
+.v2-chat-bar { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid #ebe7de; }
+.v2-chat-avatar { width: 24px; height: 24px; border-radius: 7px; overflow: hidden; display: inline-flex; }
+.v2-chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.v2-chat-sub { font-weight: 400; color: #8a8578; font-size: 13px; }
+.v2-chat p { margin: 0; }
+.v2-chat .v2-chat-lead { font-size: 14px; color: #6b665b; }
+.v2-chat-lead b { color: #1a8f3c; font-weight: 700; margin-left: 2px; }
+.v2-chat .v2-chat-q { font-size: 17px; font-weight: 600; margin-top: 6px; line-height: 1.35; color: #2b2a26; }
+.v2-chat-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.v2-opt { padding: 8px 14px; border-radius: 10px; background: #fff; border: 1px solid #e3ded3; font-size: 14px; font-weight: 500; color: #3d3a33; transition: background .5s cubic-bezier(.22,1,.36,1), border-color .5s ease, color .5s ease, transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s ease; }
+.v2-opt.picking { border-color: #d97757; box-shadow: 0 0 0 4px rgba(217,119,87,.14); transform: translateY(-1px); }
+.v2-opt.picked { background: #d97757; border-color: #d97757; color: #fff; box-shadow: 0 6px 16px rgba(217,119,87,.28); }
+.v2-chat .v2-chat-note { font-size: 14px; color: #6b665b; }
+.v2-chat .v2-chat-msg, .v2-chat .v2-chat-note, .v2-chat .v2-paid { opacity: 0; transform: translateY(10px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+.v2-chat .show { opacity: 1; transform: none; }
+.v2-chat.leaving .v2-chat-msg, .v2-chat.leaving .v2-chat-note, .v2-chat.leaving .v2-paid { opacity: 0; transform: translateY(-6px); transition-duration: .8s; }
+.v2-chat .v2-paid { align-self: flex-start; margin-top: 0; }
 .v2-paid.show { animation: v2glow 1.4s cubic-bezier(.22,1,.36,1) .2s; }
 @keyframes v2glow { 0% { box-shadow: 0 0 0 0 rgba(26,143,60,.35); } 100% { box-shadow: 0 0 0 14px rgba(26,143,60,0); } }
 @media (prefers-reduced-motion: reduce) { .v2-reveal { opacity: 1; transform: none; transition: none; } .v2-reveal.seen .v2-buyers li { animation: none; } }
+.v2-footer { max-width: 1260px; width: 100%; margin: 0 auto; padding: 28px 20px calc(28px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid rgba(0,0,0,.06); }
+.v2-footer nav { display: flex; gap: 28px; }
+.v2-footer nav a { color: #555; font-size: 15px; text-decoration: none; transition: color .2s ease; }
+.v2-footer nav a:hover { color: #2a63cd; }
 @media (max-width: 760px) {
   .v2-final { padding: 110px 20px 130px; }
-  .v2-cards { grid-template-columns: 1fr; }
+  .v2-cards { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 20px; }
   .v2-card { padding: 28px 24px 0; min-height: 0; }
   .v2-stats strong { font-size: 32px; }
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
