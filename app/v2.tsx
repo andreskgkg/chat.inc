@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
+import { AudienceToggle } from "./audience-toggle";
 
 // Agents rotate through the headline. `logo` is a URL (null → monogram chip).
 // To use a custom logo, drop a file in /public/agents/ and point `logo` at it.
@@ -284,6 +285,7 @@ export function V2Home() {
           <img src="/icon.svg" alt="" width={22} height={22} />
           chat.inc
         </a>
+        <AudienceToggle active="agents" />
         <a className="v2-signin" href="#connect">
           Sign in
         </a>
@@ -414,7 +416,7 @@ const css = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 .v2 { position: relative; min-height: 100vh; background: #fcfcfc; color: #111; font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; }
 .v2-nav { position: relative; z-index: 1; max-width: 1160px; width: 100%; margin: 0 auto; padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 0; display: flex; align-items: center; justify-content: space-between; }
-.v2-signin { display: inline-flex; align-items: center; height: 38px; padding: 0 18px; border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); color: #111; font-size: 15px; font-weight: 500; text-decoration: none; backdrop-filter: blur(6px); transition: background .2s ease, box-shadow .2s ease; }
+.v2-signin { white-space: nowrap; display: inline-flex; align-items: center; height: 38px; padding: 0 18px; border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); color: #111; font-size: 15px; font-weight: 500; text-decoration: none; backdrop-filter: blur(6px); transition: background .2s ease, box-shadow .2s ease; }
 .v2-signin:hover { background: #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,.14), 0 4px 14px rgba(40,60,120,.08); }
 .v2-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; color: #111; text-decoration: none; }
 .v2-brand img { border-radius: 5px; }
