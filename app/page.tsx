@@ -1,5 +1,6 @@
 import { HowItWorks } from "./how-it-works";
 import { JoinForm } from "./join-form";
+import { AudienceToggle } from "./audience-toggle";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
             chat.inc
           </a>
         </div>
+        <AudienceToggle active="people" />
       </header>
 
       <section className="hero" aria-label="Hero">
