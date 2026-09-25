@@ -280,13 +280,13 @@ export function V2Home() {
       <style>{css}</style>
       <QuestionField />
 
-      <header className="v2-nav">
-        <a className="v2-brand" href="/agents">
-          <img src="/icon.svg" alt="" width={22} height={22} />
+      <header className="v2-nav site-nav">
+        <a className="nav-brand" href="/agents">
+          <span className="nav-logo" aria-hidden="true" />
           chat.inc
         </a>
         <AudienceToggle active="agents" />
-        <a className="v2-signin" href="#connect">
+        <a className="site-signin" href="#connect">
           Sign in
         </a>
       </header>
@@ -415,7 +415,7 @@ export function V2Home() {
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 .v2 { position: relative; min-height: 100vh; background: #fcfcfc; color: #111; font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; }
-.v2-nav { position: relative; z-index: 1; max-width: 1160px; width: 100%; margin: 0 auto; padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.v2-nav { position: relative; z-index: 1; width: min(1120px, calc(100% - 56px)); margin: 0 auto; padding: calc(22px + env(safe-area-inset-top, 0px)) 0 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .v2-signin { white-space: nowrap; display: inline-flex; align-items: center; height: 38px; padding: 0 18px; border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); color: #111; font-size: 15px; font-weight: 500; text-decoration: none; backdrop-filter: blur(6px); transition: background .2s ease, box-shadow .2s ease; }
 .v2-signin:hover { background: #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,.14), 0 4px 14px rgba(40,60,120,.08); }
 .v2-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; color: #111; text-decoration: none; }
@@ -543,6 +543,7 @@ const css = `
 .v2-footer nav { display: flex; gap: 28px; }
 .v2-footer nav a { color: #555; font-size: 15px; text-decoration: none; transition: color .2s ease; }
 .v2-footer nav a:hover { color: #2a63cd; }
+@media (max-width: 640px) { .v2-nav { width: calc(100% - 28px); padding-top: calc(20px + env(safe-area-inset-top, 0px)); } }
 @media (max-width: 760px) {
   .v2-final { padding: 110px 20px 130px; }
   .v2-cards { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 20px; }
