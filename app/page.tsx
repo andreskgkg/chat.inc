@@ -5,7 +5,7 @@ import { AudienceToggle } from "./audience-toggle";
 export default function Home() {
   return (
     <div className="wrap">
-      <header className="nav">
+      <header className="nav site-nav">
         <div className="nav-left">
           <a className="nav-brand" href="/">
             <span className="nav-logo" aria-hidden="true" />
@@ -13,6 +13,9 @@ export default function Home() {
           </a>
         </div>
         <AudienceToggle active="people" />
+        <a className="site-signin" href="#join">
+          Sign in
+        </a>
       </header>
 
       <section className="hero" aria-label="Hero">
