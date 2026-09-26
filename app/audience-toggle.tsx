@@ -1,16 +1,42 @@
+"use client";
+
+import { useEffect, useState, type MouseEvent } from "react";
+import { useRouter } from "next/navigation";
+
 // Shared header pieces for the people site (/) and the agents site (/agents),
 // so the logo, toggle and Sign in sit in exactly the same place on both.
-// Switching pages uses a cross-document view transition: the header stays put,
-// the black pill slides to the other side and the page content cross-fades.
-export function AudienceToggle({ active }: { active: "people" | "agents" }) {
+// Clicking the other side slides the pill right away, then swaps pages
+// client-side (both routes are prefetched), so there is no reload lag.
+type Side = "people" | "agents";
+const HREF: Record<Side, string> = { people: "/", agents: "/agents" };
+
+export function AudienceToggle({ active }: { active: Side }) {
+  const router = useRouter();
+  const [side, setSide] = useState<Side>(active);
+
+  useEffect(() => {
+    setSide(active);
+    router.prefetch("/");
+    router.prefetch("/agents");
+  }, [active, router]);
+
+  const go = (target: Side) => (e: MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (target === side) return;
+    setSide(target);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.setTimeout(() => router.push(HREF[target]), reduce ? 0 : 240);
+  };
+
   return (
-    <nav className={`aud-toggle is-${active}`} aria-label="Choose site">
+    <nav className={`aud-toggle is-${side}`} aria-label="Choose site">
       <style>{css}</style>
       <span className="aud-pill" aria-hidden="true" />
-      <a href="/" className={active === "people" ? "on" : ""} aria-current={active === "people" ? "page" : undefined}>
+      <a href="/" onClick={go("people")} className={side === "people" ? "on" : ""} aria-current={active === "people" ? "page" : undefined}>
         For people
       </a>
-      <a href="/agents" className={active === "agents" ? "on" : ""} aria-current={active === "agents" ? "page" : undefined}>
+      <a href="/agents" onClick={go("agents")} className={side === "agents" ? "on" : ""} aria-current={active === "agents" ? "page" : undefined}>
         For agents
       </a>
     </nav>
@@ -32,9 +58,9 @@ const css = `
 ::view-transition-old(aud-toggle), ::view-transition-new(aud-toggle) { animation-duration: .35s; }
 .site-nav .nav-brand { font-family: ${font}; view-transition-name: site-brand; }
 .aud-toggle { position: absolute; left: 50%; top: calc(50% + 4px + env(safe-area-inset-top, 0px) / 2); transform: translate(-50%, -50%); z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.85); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), 0 2px 10px rgba(20,30,60,.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-family: ${font}; view-transition-name: aud-toggle; }
-.aud-pill { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 5px); border-radius: 999px; background: #111; view-transition-name: aud-pill; pointer-events: none; }
+.aud-pill { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 5px); border-radius: 999px; background: #111; view-transition-name: aud-pill; pointer-events: none; transition: left .38s ${ease}; will-change: left; }
 .aud-toggle.is-agents .aud-pill { left: calc(50% + 1px); }
-.aud-toggle a { position: relative; z-index: 1; text-align: center; padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.2; color: #555; text-decoration: none; white-space: nowrap; transition: color .3s ${ease}; }
+.aud-toggle a { position: relative; z-index: 1; text-align: center; padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.2; color: #555; text-decoration: none; white-space: nowrap; transition: color .38s ${ease}; -webkit-tap-highlight-color: transparent; }
 .aud-toggle a:hover { color: #111; }
 .aud-toggle a.on { color: #fff; }
 .site-signin { view-transition-name: site-signin; white-space: nowrap; display: inline-flex; align-items: center; height: 38px; padding: 0 18px; border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); color: #111; font-family: ${font}; font-size: 15px; font-weight: 500; text-decoration: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .2s ease, box-shadow .2s ease; }
@@ -46,7 +72,10 @@ const css = `
   .aud-toggle a { padding: 6px 12px; font-size: 13px; }
   .site-signin { height: 34px; padding: 0 14px; font-size: 14px; }
 }
+.v2-main, .v2-more, .v2-final, .v2-footer { animation: aud-page-in .45s ${ease} both; }
+@keyframes aud-page-in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) {
+  .v2-main, .v2-more, .v2-final, .v2-footer, .aud-pill { animation: none; transition: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 `;
