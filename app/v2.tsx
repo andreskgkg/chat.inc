@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type Ref } from "react";
 import { AudienceToggle } from "./audience-toggle";
 
 // Agents rotate through the headline. `logo` is a URL (null → monogram chip).
@@ -46,18 +46,22 @@ const QUESTIONS: [string, number][] = [
 ];
 
 // Slots sit around the edges so the headline stays clear.
-type Slot = { left?: string; right?: string; top: string; tone: string; hideMobile?: boolean };
+// `m` is the slot's position on phones (above and below the headline); slots
+// without it are hidden there.
+type Pos = { left?: string; right?: string; top: string };
+type Slot = Pos & { tone: string; m?: Pos };
 const SLOTS: Slot[] = [
-  { left: "6%", top: "16%", tone: "b" },
-  { left: "34%", top: "9%", tone: "p", hideMobile: true },
-  { right: "6%", top: "14%", tone: "o", hideMobile: true },
-  { left: "3%", top: "44%", tone: "p", hideMobile: true },
-  { right: "3%", top: "40%", tone: "b", hideMobile: true },
-  { left: "5%", top: "70%", tone: "o", hideMobile: true },
-  { right: "6%", top: "68%", tone: "p", hideMobile: true },
-  { left: "14%", top: "86%", tone: "p", hideMobile: true },
+  { left: "6%", top: "16%", tone: "b", m: { left: "5%", top: "15%" } },
+  { left: "34%", top: "9%", tone: "p" },
+  { right: "6%", top: "14%", tone: "o", m: { right: "5%", top: "25%" } },
+  { left: "3%", top: "44%", tone: "p" },
+  { right: "3%", top: "40%", tone: "b" },
+  { left: "5%", top: "70%", tone: "o", m: { right: "6%", top: "81%" } },
+  { right: "6%", top: "68%", tone: "p" },
+  { left: "14%", top: "86%", tone: "p", m: { left: "6%", top: "91%" } },
   { right: "12%", top: "86%", tone: "b" },
 ];
+const MOBILE_SLOTS = SLOTS.flatMap((s, n) => (s.m ? [n] : []));
 
 function QuestionField() {
   const [cells, setCells] = useState(() =>
@@ -65,10 +69,8 @@ function QuestionField() {
   );
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setCells((c) => c.map((x) => ({ ...x, on: true })));
-      return;
-    }
+    // On phones only a few slots fit, so cycle through just those.
+    const mq = window.matchMedia("(max-width: 760px)");
     let next = SLOTS.length;
     let tick = 0;
     const timers: number[] = [];
@@ -81,7 +83,8 @@ function QuestionField() {
       );
     });
     const id = window.setInterval(() => {
-      const slot = tick % SLOTS.length;
+      const order = mq.matches ? MOBILE_SLOTS : SLOTS.map((_, n) => n);
+      const slot = order[tick % order.length];
       tick += 1;
       setCells((c) => c.map((x, k) => (k === slot ? { ...x, on: false } : x)));
       timers.push(
@@ -109,8 +112,11 @@ function QuestionField() {
         return (
           <div
             key={n}
-            className={`v2-q t-${s.tone} ${c.on ? "on" : ""} ${s.hideMobile ? "hm" : ""}`}
-            style={{ left: s.left, right: s.right, top: s.top }}
+            className={`v2-q t-${s.tone} ${c.on ? "on" : ""} ${s.m ? "" : "hm"}`}
+            style={{
+              "--l": s.left ?? "auto", "--r": s.right ?? "auto", "--t": s.top,
+              "--ml": s.m?.left ?? "auto", "--mr": s.m?.right ?? "auto", "--mt": s.m?.top ?? s.top,
+            } as CSSProperties}
           >
             {text} <b>${price}</b>
           </div>
@@ -454,7 +460,7 @@ const css = `
   linear-gradient(180deg, #fafafa 0%, #f1f0fd 45%, #d9d6fb 100%); }
 .v2-final-h { font-size: clamp(34px, 5.2vw, 64px); letter-spacing: -0.03em; font-weight: 500; margin: 0; }
 .v2-final-h { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .26em; }
-.v2-line1 { display: flex; justify-content: center; align-items: center; column-gap: .22em; }
+.v2-line1 { display: flex; justify-content: center; align-items: center; column-gap: .36em; }
 .v2-line1 .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
 .v2-line1 .v2-agent { white-space: nowrap; }
 .v2-final-h .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
@@ -469,13 +475,13 @@ const css = `
 .v2-glow.g2 { width: 40vw; height: 40vw; right: -8vw; top: 10%; background: #d9c8ff; animation-duration: 34s; animation-direction: alternate-reverse; }
 .v2-glow.g3 { width: 44vw; height: 34vw; left: 26%; bottom: -16vw; background: #ffd9c4; animation-duration: 40s; }
 @keyframes v2drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(4vw,3vw,0) scale(1.08); } }
-.v2-q { position: absolute; padding: 9px 14px; border-radius: 18px; border-bottom-left-radius: 6px; font-size: 14px; line-height: 1.3; color: #2a2a2a; background: rgba(255,255,255,.72); box-shadow: 0 6px 24px rgba(40,60,120,.08); backdrop-filter: blur(6px); white-space: nowrap; opacity: 0; transform: translateY(10px) scale(.97); transition: opacity 1s ease, transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.v2-q { position: absolute; left: var(--l); right: var(--r); top: var(--t); padding: 9px 14px; border-radius: 18px; border-bottom-left-radius: 6px; font-size: 14px; line-height: 1.3; color: #2a2a2a; background: rgba(255,255,255,.72); box-shadow: 0 6px 24px rgba(40,60,120,.08); backdrop-filter: blur(6px); white-space: nowrap; opacity: 0; transform: translateY(10px) scale(.97); transition: opacity 1s ease, transform 1.2s cubic-bezier(.2,.7,.2,1); }
 .v2-q.on { opacity: .9; transform: none; }
 .v2-q b { font-weight: 600; margin-left: 4px; }
 .v2-q.t-b b { color: #2a63cd; }
 .v2-q.t-p b { color: #7b5ce0; }
 .v2-q.t-o b { color: #d0703f; }
-@media (prefers-reduced-motion: reduce) { .v2-glow { animation: none; } .v2-q { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .v2-glow { animation: none; } .v2-q { transform: none; transition: opacity 1s ease; } }
 .v2-card.c1 { background: linear-gradient(160deg, #eaf0ff 0%, #f4f2ff 55%, #f7f5f2 100%); }
 .v2-card.c2 { background: linear-gradient(200deg, #fff0e6 0%, #f6f0ff 55%, #f7f5f2 100%); }
 .v2-reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
@@ -536,6 +542,6 @@ const css = `
   .v2-stats strong { font-size: 32px; }
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v2-q.hm { display: none; }
-  .v2-q { font-size: 12px; max-width: 64vw; white-space: normal; }
+  .v2-q { left: var(--ml); right: var(--mr); top: var(--mt); font-size: 12px; max-width: 72vw; white-space: normal; }
 }
 `;
