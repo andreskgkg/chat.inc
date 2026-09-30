@@ -265,13 +265,13 @@ function PromptCard() {
   const [copied, copy] = useCopied();
   return (
     <div className="v2-prompt" id="connect">
-      <div className="v2-prompt-label">Copy this prompt into your agent</div>
       <button type="button" className="v2-prompt-box" onClick={copy} aria-label="Copy prompt">
         <span className="v2-prompt-text">{PROMPT}</span>
         <span className={`v2-prompt-copy ${copied ? "done" : ""}`} aria-live="polite">
           {copied ? "Copied" : "Copy prompt"}
         </span>
       </button>
+      <div className="v2-prompt-label">Copy this prompt into your agent</div>
     </div>
   );
 }
@@ -685,13 +685,13 @@ const css = `
 .v2-final-cta:hover { transform: translateY(-1px); }
 .v2-final-cta { border: 0; cursor: pointer; font-family: inherit; }
 .v2-prompt { width: min(100%, 560px); margin-top: 4px; }
-.v2-prompt-label { font-size: 14px; font-weight: 500; color: #555; margin-bottom: 10px; }
-.v2-prompt-box { display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; background: rgba(255,255,255,.82); border: 1px solid rgba(0,0,0,.08); border-radius: 18px; padding: 18px 20px 14px; box-shadow: 0 10px 30px rgba(40,60,120,.08); backdrop-filter: blur(8px); transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease; }
+.v2-prompt-label { font-size: 14px; font-weight: 500; color: #555; margin-top: 12px; }
+.v2-prompt-box { position: relative; display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; background: rgba(255,255,255,.82); border: 1px solid rgba(0,0,0,.08); border-radius: 18px; padding: 18px 20px; box-shadow: 0 10px 30px rgba(40,60,120,.08); backdrop-filter: blur(8px); transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease; overflow: hidden; }
 .v2-prompt-box:hover { border-color: rgba(42,99,205,.35); box-shadow: 0 12px 34px rgba(42,99,205,.12); transform: translateY(-1px); }
 .v2-prompt-text { display: block; font-size: 15px; line-height: 1.55; color: #222; }
-.v2-prompt-copy { display: inline-flex; align-items: center; height: 34px; padding: 0 16px; margin-top: 14px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 14px; font-weight: 500; transition: background .2s ease; }
-.v2-prompt-box:hover .v2-prompt-copy { background: #2356b5; }
-.v2-prompt-copy.done { background: #1a8f3c; }
+.v2-prompt-copy { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: inherit; background: rgba(255,255,255,.78); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); color: #2a63cd; font-size: 17px; font-weight: 600; opacity: 0; transition: opacity .2s ease, color .2s ease; pointer-events: none; }
+.v2-prompt-box:hover .v2-prompt-copy, .v2-prompt-box:focus-visible .v2-prompt-copy { opacity: 1; }
+.v2-prompt-copy.done { opacity: 1; color: #1a8f3c; }
 .v2-hero { position: relative; display: flex; flex-direction: column; }
 .v2-field { position: absolute; top: 0; left: 0; right: 0; bottom: 0; min-height: 640px; overflow: hidden; z-index: 0; pointer-events: none; }
 .v2-glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: v2drift 28s ease-in-out infinite alternate; }
@@ -767,7 +767,7 @@ const css = `
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v2-q.hm { display: none; }
   .v2-main { padding-top: 124px; padding-bottom: 128px; }
-  .v2-prompt-box { padding: 16px 16px 12px; }
+  .v2-prompt-box { padding: 16px; }
   .v2-prompt-text { font-size: 14px; }
   .v2-q { left: var(--ml); right: var(--mr); top: var(--mt); bottom: var(--mb); font-size: 12px; max-width: 72vw; white-space: normal; }
 }
