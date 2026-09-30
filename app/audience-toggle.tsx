@@ -60,6 +60,7 @@ const css = `
 .aud-toggle { position: absolute; left: 50%; top: calc(50% + 4px + env(safe-area-inset-top, 0px) / 2); transform: translate(-50%, -50%); z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.85); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), 0 2px 10px rgba(20,30,60,.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-family: ${font}; view-transition-name: aud-toggle; }
 .aud-pill { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 5px); border-radius: 999px; background: #111; view-transition-name: aud-pill; pointer-events: none; transition: left .38s ${ease}; will-change: left; }
 .aud-toggle.is-agents .aud-pill { left: calc(50% + 1px); }
+.site-nav .aud-toggle { display: none; }
 .aud-toggle a { position: relative; z-index: 1; text-align: center; padding: 7px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; line-height: 1.2; color: #555; text-decoration: none; white-space: nowrap; transition: color .38s ${ease}; -webkit-tap-highlight-color: transparent; }
 .aud-toggle a:hover { color: #111; }
 .aud-toggle a.on { color: #fff; }
