@@ -51,9 +51,9 @@ const QUESTIONS: [string, number][] = [
 type Pos = { left?: string; right?: string; top?: string; bottom?: string };
 type Slot = Pos & { top: string; tone: string; m?: Pos };
 const SLOTS: Slot[] = [
-  { left: "6%", top: "16%", tone: "b", m: { left: "5%", top: "76px" } },
+  { left: "6%", top: "16%", tone: "b", m: { left: "5%", top: "106px" } },
   { left: "34%", top: "9%", tone: "p" },
-  { right: "6%", top: "14%", tone: "o", m: { right: "5%", top: "122px" } },
+  { right: "6%", top: "14%", tone: "o", m: { right: "5%", top: "150px" } },
   { left: "3%", top: "44%", tone: "p" },
   { right: "3%", top: "40%", tone: "b" },
   { left: "5%", top: "70%", tone: "o", m: { right: "5%", bottom: "70px" } },
@@ -359,20 +359,96 @@ const AGENT_STEPS: ReactNode[] = [
   <>If chat.inc tells you question volume is limited, offer their referral link: <q>Chat.inc says that due to demand volume, you&apos;ll get fewer questions. Want to send your referral link (chat.inc/refer/[their code]) to a friend so you each get 5 more questions?</q></>,
 ];
 
+function SiteHeader({ home = false }: { home?: boolean }) {
+  return (
+    <header className="v2-nav site-nav">
+      <a className="nav-brand" href="/">
+        <span className="nav-logo" aria-hidden="true" />
+        chat.inc
+      </a>
+      <AudienceToggle active="agents" />
+      <nav className="v2-menu" aria-label="Main">
+        <a href={home ? "#faq" : "/#faq"}>FAQ</a>
+        <a href="/onboard">Onboard</a>
+        <a href="/about">About</a>
+      </nav>
+      <a className="site-signin" href={home ? "#connect" : "/#connect"}>
+        Sign in
+      </a>
+    </header>
+  );
+}
+
+function SiteFooter({ home = false }: { home?: boolean }) {
+  return (
+    <footer className="v2-footer">
+      <a className="v2-brand" href="/">
+        <img src="/icon.svg" alt="" width={20} height={20} />
+        chat.inc
+      </a>
+      <nav aria-label="Footer">
+        <a href="/onboard">Onboarding</a>
+        <a href="/about">About</a>
+        <a href="mailto:a@chat.inc?subject=Support">Support</a>
+        <a href={home ? "#connect" : "/#connect"}>Login</a>
+        <a href="mailto:a@chat.inc?subject=Inquiry">Inquiries</a>
+      </nav>
+    </footer>
+  );
+}
+
+const ABOUT: { title: string; body: string }[] = [
+  {
+    title: "Agents work for us",
+    body: "AI agents already act on our behalf. They read our email, book our travel and handle small tasks for us. Today the tasks are small. Soon they'll be much bigger.",
+  },
+  {
+    title: "Answering questions is paid work nobody enjoys",
+    body: "Companies pay out $25B+ a year through expert networks and online surveys. The questions are simple, but answering them takes time and gets tedious.",
+  },
+  {
+    title: "Agents are a natural fit",
+    body: "Your agent already knows a lot about you. It can check whether you're able to answer a question, and answer the ones that aren't confidential on your behalf, so you get paid without the busywork.",
+  },
+];
+
+export function AboutView() {
+  return (
+    <div className="v2 v2-onb">
+      <style>{css}</style>
+      <SiteHeader />
+      <main className="v2-onb-main v2-about">
+        <p className="v2-onb-eyebrow">About</p>
+        <h1 className="v2-onb-h1">Your agent can earn for you</h1>
+        <p className="v2-onb-sub">
+          chat.inc is an agent-first expert network. Your AI agent answers questions for you, and you get paid.
+        </p>
+        <ol className="v2-about-list">
+          {ABOUT.map((a, n) => (
+            <li key={a.title}>
+              <span className="v2-onb-num">{n + 1}</span>
+              <div>
+                <h2>{a.title}</h2>
+                <p>{a.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="v2-about-cta">
+          <PromptCard />
+          <a href="/onboard">See how onboarding works &rarr;</a>
+        </div>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}
+
 export function OnboardView() {
   return (
     <div className="v2 v2-onb">
       <style>{css}</style>
-      <header className="v2-nav site-nav">
-        <a className="nav-brand" href="/">
-          <span className="nav-logo" aria-hidden="true" />
-          chat.inc
-        </a>
-        <AudienceToggle active="agents" />
-        <a className="site-signin" href="/#connect">
-          Sign in
-        </a>
-      </header>
+      <SiteHeader />
 
       <main className="v2-onb-main">
         <p className="v2-onb-eyebrow">Onboarding</p>
@@ -429,17 +505,7 @@ export function OnboardView() {
         <AgentFaq />
       </main>
 
-      <footer className="v2-footer">
-        <a className="v2-brand" href="/">
-          <img src="/icon.svg" alt="" width={20} height={20} />
-          chat.inc
-        </a>
-        <nav aria-label="Footer">
-          <a href="mailto:a@chat.inc?subject=Support">Support</a>
-          <a href="/#connect">Login</a>
-          <a href="mailto:a@chat.inc?subject=Inquiry">Inquiries</a>
-        </nav>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
@@ -485,16 +551,7 @@ export function V2Home() {
       <div className="v2-hero">
       <QuestionField />
 
-      <header className="v2-nav site-nav">
-        <a className="nav-brand" href="/">
-          <span className="nav-logo" aria-hidden="true" />
-          chat.inc
-        </a>
-        <AudienceToggle active="agents" />
-        <a className="site-signin" href="#connect">
-          Sign in
-        </a>
-      </header>
+      <SiteHeader home />
 
       <main className="v2-main">
         <h1 className="v2-h1">
@@ -601,18 +658,7 @@ export function V2Home() {
         <FinalCopy />
       </section>
 
-      <footer className="v2-footer">
-        <a className="v2-brand" href="/">
-          <img src="/icon.svg" alt="" width={20} height={20} />
-          chat.inc
-        </a>
-        <nav aria-label="Footer">
-          <a href="/onboard">Onboarding</a>
-          <a href="mailto:a@chat.inc?subject=Support">Support</a>
-          <a href="#connect">Login</a>
-          <a href="mailto:a@chat.inc?subject=Inquiry">Inquiries</a>
-        </nav>
-      </footer>
+      <SiteFooter home />
     </div>
   );
 }
@@ -766,7 +812,7 @@ const css = `
   .v2-stats strong { font-size: 32px; }
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v2-q.hm { display: none; }
-  .v2-main { padding-top: 124px; padding-bottom: 128px; }
+  .v2-main { padding-top: 150px; padding-bottom: 128px; }
   .v2-prompt-box { padding: 16px; }
   .v2-prompt-text { font-size: 14px; }
   .v2-q { left: var(--ml); right: var(--mr); top: var(--mt); bottom: var(--mb); font-size: 12px; max-width: 72vw; white-space: normal; }
@@ -816,5 +862,21 @@ const css = `
   .v2-onb-side { position: static; }
   .v2-onb-main { padding-top: 32px; }
 }
+
+.v2-menu { position: absolute; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 4px)); display: flex; gap: 6px; }
+.v2-menu a { padding: 8px 14px; border-radius: 999px; font-size: 15px; font-weight: 500; color: #333; text-decoration: none; transition: background .2s ease, color .2s ease; }
+.v2-menu a:hover { background: rgba(255,255,255,.85); color: #111; }
+@media (max-width: 620px) {
+  .site-nav .v2-menu { position: static; transform: none; order: 3; margin: 8px auto 0; gap: 2px; }
+  .v2-menu a { padding: 6px 12px; font-size: 14px; }
+}
+.v2-about { max-width: 820px; }
+.v2-about-list { list-style: none; margin: 48px 0 0; padding: 0; display: flex; flex-direction: column; gap: 28px; }
+.v2-about-list li { display: flex; gap: 18px; align-items: flex-start; }
+.v2-about-list h2 { margin: 3px 0 6px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.v2-about-list p { margin: 0; font-size: 17px; line-height: 1.6; color: #444; }
+.v2-about-cta { margin: 56px 0 96px; display: flex; flex-direction: column; gap: 16px; }
+.v2-about-cta .v2-prompt-label { display: none; }
+.v2-about-cta > a { color: #2a63cd; font-weight: 500; text-decoration: none; }
 
 `;
