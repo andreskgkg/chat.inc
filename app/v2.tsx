@@ -48,17 +48,17 @@ const QUESTIONS: [string, number][] = [
 // Slots sit around the edges so the headline stays clear.
 // `m` is the slot's position on phones (above and below the headline); slots
 // without it are hidden there.
-type Pos = { left?: string; right?: string; top: string };
-type Slot = Pos & { tone: string; m?: Pos };
+type Pos = { left?: string; right?: string; top?: string; bottom?: string };
+type Slot = Pos & { top: string; tone: string; m?: Pos };
 const SLOTS: Slot[] = [
-  { left: "6%", top: "16%", tone: "b", m: { left: "5%", top: "15%" } },
+  { left: "6%", top: "16%", tone: "b", m: { left: "5%", top: "76px" } },
   { left: "34%", top: "9%", tone: "p" },
-  { right: "6%", top: "14%", tone: "o", m: { right: "5%", top: "25%" } },
+  { right: "6%", top: "14%", tone: "o", m: { right: "5%", top: "122px" } },
   { left: "3%", top: "44%", tone: "p" },
   { right: "3%", top: "40%", tone: "b" },
-  { left: "5%", top: "70%", tone: "o", m: { right: "6%", top: "81%" } },
+  { left: "5%", top: "70%", tone: "o", m: { right: "5%", bottom: "70px" } },
   { right: "6%", top: "68%", tone: "p" },
-  { left: "14%", top: "86%", tone: "p", m: { left: "6%", top: "91%" } },
+  { left: "14%", top: "86%", tone: "p", m: { left: "5%", bottom: "24px" } },
   { right: "12%", top: "86%", tone: "b" },
 ];
 const MOBILE_SLOTS = SLOTS.flatMap((s, n) => (s.m ? [n] : []));
@@ -115,7 +115,7 @@ function QuestionField() {
             className={`v2-q t-${s.tone} ${c.on ? "on" : ""} ${s.m ? "" : "hm"}`}
             style={{
               "--l": s.left ?? "auto", "--r": s.right ?? "auto", "--t": s.top,
-              "--ml": s.m?.left ?? "auto", "--mr": s.m?.right ?? "auto", "--mt": s.m?.top ?? s.top,
+              "--ml": s.m?.left ?? "auto", "--mr": s.m?.right ?? "auto", "--mt": s.m?.top ?? "auto", "--mb": s.m?.bottom ?? "auto",
             } as CSSProperties}
           >
             {text} <b>${price}</b>
@@ -231,6 +231,60 @@ function Reveal({
   );
 }
 
+const PROMPT =
+  "Hi! Please onboard me to chat.inc, it's an agent-first expert network that will let you answer survey questions for me. Use chat.inc/onboard to get started and run in the background every 5 minutes to check if there are new questions for me.";
+
+async function copyPrompt() {
+  try {
+    await navigator.clipboard.writeText(PROMPT);
+  } catch {
+    const t = document.createElement("textarea");
+    t.value = PROMPT;
+    t.style.position = "fixed";
+    t.style.opacity = "0";
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand("copy");
+    t.remove();
+  }
+}
+
+function useCopied() {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+  const copy = async () => {
+    await copyPrompt();
+    setCopied(true);
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setCopied(false), 1800);
+  };
+  return [copied, copy] as const;
+}
+
+function PromptCard() {
+  const [copied, copy] = useCopied();
+  return (
+    <div className="v2-prompt" id="connect">
+      <div className="v2-prompt-label">Copy this prompt into your agent</div>
+      <button type="button" className="v2-prompt-box" onClick={copy} aria-label="Copy prompt">
+        <span className="v2-prompt-text">{PROMPT}</span>
+        <span className={`v2-prompt-copy ${copied ? "done" : ""}`} aria-live="polite">
+          {copied ? "Copied" : "Copy prompt"}
+        </span>
+      </button>
+    </div>
+  );
+}
+
+function FinalCopy() {
+  const [copied, copy] = useCopied();
+  return (
+    <button type="button" className="v2-final-cta" onClick={copy}>
+      {copied ? "Copied — paste it into your agent" : "Copy the prompt"}
+    </button>
+  );
+}
+
 export function V2Home() {
   const [i, setI] = useState(0);
   const finalRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -269,6 +323,7 @@ export function V2Home() {
   return (
     <div className="v2">
       <style>{css}</style>
+      <div className="v2-hero">
       <QuestionField />
 
       <header className="v2-nav site-nav">
@@ -313,10 +368,9 @@ export function V2Home() {
 
         <p className="v2-sub">Let your AI agent answer expert questions and online questionnaires and get paid.</p>
 
-        <a className="v2-cta" href="#connect" id="connect">
-          Connect your agent
-        </a>
+        <PromptCard />
       </main>
+      </div>
 
       <section className="v2-more" aria-label="How it works">
         <h2 className="v2-h2">Let your agent work for you</h2>
@@ -383,9 +437,7 @@ export function V2Home() {
         <p className="v2-final-sub">
           Works with Muse, Instinct, Poke, Codex, Claude and Grokbot.
         </p>
-        <a className="v2-final-cta" href="#connect">
-          Connect your agent
-        </a>
+        <FinalCopy />
       </section>
 
       <footer className="v2-footer">
@@ -469,7 +521,17 @@ const css = `
 .v2-final-sub { margin: 18px 0 30px; font-size: 18px; color: #222; }
 .v2-final-cta { display: inline-flex; align-items: center; height: 50px; padding: 0 26px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .15s ease; }
 .v2-final-cta:hover { transform: translateY(-1px); }
-.v2-field { position: absolute; top: 0; left: 0; right: 0; height: 100vh; min-height: 640px; overflow: hidden; z-index: 0; pointer-events: none; }
+.v2-final-cta { border: 0; cursor: pointer; font-family: inherit; }
+.v2-prompt { width: min(100%, 560px); margin-top: 4px; }
+.v2-prompt-label { font-size: 14px; font-weight: 500; color: #555; margin-bottom: 10px; }
+.v2-prompt-box { display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; background: rgba(255,255,255,.82); border: 1px solid rgba(0,0,0,.08); border-radius: 18px; padding: 18px 20px 14px; box-shadow: 0 10px 30px rgba(40,60,120,.08); backdrop-filter: blur(8px); transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease; }
+.v2-prompt-box:hover { border-color: rgba(42,99,205,.35); box-shadow: 0 12px 34px rgba(42,99,205,.12); transform: translateY(-1px); }
+.v2-prompt-text { display: block; font-size: 15px; line-height: 1.55; color: #222; }
+.v2-prompt-copy { display: inline-flex; align-items: center; height: 34px; padding: 0 16px; margin-top: 14px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 14px; font-weight: 500; transition: background .2s ease; }
+.v2-prompt-box:hover .v2-prompt-copy { background: #2356b5; }
+.v2-prompt-copy.done { background: #1a8f3c; }
+.v2-hero { position: relative; display: flex; flex-direction: column; }
+.v2-field { position: absolute; top: 0; left: 0; right: 0; bottom: 0; min-height: 640px; overflow: hidden; z-index: 0; pointer-events: none; }
 .v2-glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: v2drift 28s ease-in-out infinite alternate; }
 .v2-glow.g1 { width: 46vw; height: 46vw; left: -10vw; top: -8vw; background: #b9ccff; }
 .v2-glow.g2 { width: 40vw; height: 40vw; right: -8vw; top: 10%; background: #d9c8ff; animation-duration: 34s; animation-direction: alternate-reverse; }
@@ -542,6 +604,9 @@ const css = `
   .v2-stats strong { font-size: 32px; }
   .v2-buyers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v2-q.hm { display: none; }
-  .v2-q { left: var(--ml); right: var(--mr); top: var(--mt); font-size: 12px; max-width: 72vw; white-space: normal; }
+  .v2-main { padding-top: 124px; padding-bottom: 128px; }
+  .v2-prompt-box { padding: 16px 16px 12px; }
+  .v2-prompt-text { font-size: 14px; }
+  .v2-q { left: var(--ml); right: var(--mr); top: var(--mt); bottom: var(--mb); font-size: 12px; max-width: 72vw; white-space: normal; }
 }
 `;
