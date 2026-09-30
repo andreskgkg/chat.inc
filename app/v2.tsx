@@ -460,11 +460,11 @@ const css = `
   linear-gradient(180deg, #fafafa 0%, #f1f0fd 45%, #d9d6fb 100%); }
 .v2-final-h { font-size: clamp(34px, 5.2vw, 64px); letter-spacing: -0.03em; font-weight: 500; margin: 0; }
 .v2-final-h { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .26em; }
-.v2-line1 { display: flex; justify-content: center; align-items: center; column-gap: .36em; }
+.v2-line1 { display: flex; justify-content: center; align-items: center; column-gap: .28em; }
 .v2-line1 .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
-.v2-line1 .v2-agent { white-space: nowrap; }
+.v2-line1 .v2-agent { white-space: nowrap; gap: .28em; }
 .v2-final-h .v2-slot { justify-items: start; transition: width .42s cubic-bezier(.4,0,.2,1); }
-.v2-final-h .v2-agent { white-space: nowrap; }
+.v2-final-h .v2-agent { white-space: nowrap; gap: .26em; }
 .v2-final-h .v2-chip { width: 1em; height: 1em; }
 .v2-final-sub { margin: 18px 0 30px; font-size: 18px; color: #222; }
 .v2-final-cta { display: inline-flex; align-items: center; height: 50px; padding: 0 26px; border-radius: 999px; background: #2a63cd; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; transition: transform .15s ease; }
